@@ -1,0 +1,27 @@
+{
+  "name": "mojrzeszow2",
+  "version": "1.0.0",
+  "description": "3 prototyp gry",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack --watch & live-server "
+  },
+  "author": "marqos12",
+  "license": "ISC",
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "phaser": "^3.16.2",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.4.3",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.0"
+  },
+  "dependencies": {
+    "@stomp/rx-stomp": "^0.3.0",
+    "@types/jquery": "^3.3.29",
+    "clean": "^4.0.2",
+    "jquery": "^3.3.1",
+    "websocket": "^1.0.28"
+  }
+}
