@@ -6,7 +6,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
-import pl.mojrzeszow.server.models.ChatMessage;
+import pl.mojrzeszow.server.models.messages.ChatMessage;
 
 @Controller
 public class ChatController {

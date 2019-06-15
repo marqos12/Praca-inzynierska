@@ -1,4 +1,4 @@
-package pl.mojrzeszow.server.models;
+package pl.mojrzeszow.server.models.messages;
 
 
 public class ChatMessage {
