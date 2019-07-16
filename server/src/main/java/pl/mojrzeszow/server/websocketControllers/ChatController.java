@@ -24,6 +24,8 @@ import pl.mojrzeszow.server.models.messages.Message;
 import pl.mojrzeszow.server.models.messages.OutputMessage;
 
 @Controller
+
+@Deprecated
 public class ChatController {
 
 	

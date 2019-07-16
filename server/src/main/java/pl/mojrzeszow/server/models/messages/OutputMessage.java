@@ -2,6 +2,7 @@ package pl.mojrzeszow.server.models.messages;
 
 import java.util.Date;
 
+@Deprecated
 public class OutputMessage {
 	private String from;
 	private String text;

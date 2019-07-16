@@ -1,5 +1,6 @@
 package pl.mojrzeszow.server.models.messages;
 
+@Deprecated
 public class Message {
 
 	private String to;
