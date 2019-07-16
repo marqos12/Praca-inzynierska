@@ -1,6 +1,6 @@
 package pl.mojrzeszow.server.models.messages;
 
-
+@Deprecated
 public class ChatMessage {
     private MessageType type;
     private String content;

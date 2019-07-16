@@ -11,6 +11,7 @@ import pl.mojrzeszow.server.models.Role;
 import pl.mojrzeszow.server.models.RoleName;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.repositories.RoleRepository;
+import pl.mojrzeszow.server.repositories.UserRepository;
 
 
 @Component
@@ -19,6 +20,8 @@ public class Data implements CommandLineRunner{
 	@Autowired
 	private RoleRepository roleRepository;
 
+	@Autowired
+	private UserRepository userRepository;
 
 	
 	@Override
@@ -35,6 +38,12 @@ public class Data implements CommandLineRunner{
 		r2.setName(RoleName.ROLE_ADMIN);
 		roleRepository.save(r2);
 		
+		/*User u1 = new User("name","user12","user1@gmail.com","user12");
+		
+		userRepository.save(u1);
+		User u2 = new User("name","user22","user2@gmail.com","user22");
+		userRepository.save(u2);
+		*/
 		
 		/*User u1=new User();
 		u1.setEmail("user111@gmail.com");
