@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import pl.mojrzeszow.server.enums.RoleName;
 import pl.mojrzeszow.server.models.Role;
-import pl.mojrzeszow.server.models.RoleName;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.repositories.RoleRepository;
 import pl.mojrzeszow.server.repositories.UserRepository;

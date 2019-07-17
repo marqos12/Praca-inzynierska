@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
  
 import org.hibernate.annotations.NaturalId;
+
+import pl.mojrzeszow.server.enums.RoleName;
  
 @Entity
 @Table(name = "roles")

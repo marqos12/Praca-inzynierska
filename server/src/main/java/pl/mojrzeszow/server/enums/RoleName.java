@@ -1,4 +1,4 @@
-package pl.mojrzeszow.server.models;
+package pl.mojrzeszow.server.enums;
 
 public enum  RoleName {
     ROLE_USER,

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pl.mojrzeszow.server.enums.RoleName;
 import pl.mojrzeszow.server.models.Role;
-import pl.mojrzeszow.server.models.RoleName;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.models.messages.JwtResponse;
 import pl.mojrzeszow.server.models.messages.LoginForm;
