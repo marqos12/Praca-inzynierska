@@ -24,10 +24,12 @@ import pl.mojrzeszow.server.models.Role;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.models.messages.JwtResponse;
 import pl.mojrzeszow.server.models.messages.LoginForm;
+import pl.mojrzeszow.server.models.messages.LoginResponse;
 import pl.mojrzeszow.server.models.messages.SignUpForm;
 import pl.mojrzeszow.server.repositories.RoleRepository;
 import pl.mojrzeszow.server.repositories.UserRepository;
 import pl.mojrzeszow.server.security.jwt.JwtProvider;
+import pl.mojrzeszow.server.service.impl.UserPrinciple;
  
  
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -62,7 +64,7 @@ public class AuthRestAPIs {
  
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwtToken(authentication);
-        return ResponseEntity.ok(new JwtResponse(jwt));
+        return ResponseEntity.ok( new LoginResponse(jwt,(UserPrinciple)authentication.getPrincipal()));
     }
  
     @PostMapping("/signup")

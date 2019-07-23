@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "games")
@@ -18,33 +19,40 @@ public class Game {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
+	@NotNull
 	@ManyToOne
 	private User author;
 	
-	@NotBlank
+	@NotNull
 	private boolean ended;
 	
-	@NotBlank
+	@NotNull
 	private boolean started;
 	
-	@NotBlank
+	@NotNull
 	private boolean isRTS;
 	
-	@NotBlank
+	@NotNull
 	private Long gameLimit;
 	
-	@NotBlank
-	private long elapsed;
+	@NotNull
+	private Long elapsed;
 
 
 	
-	public Game() {}
+	public Game() {	}
 
-
+	public Game(User user) {	
+		this.author = user;
+		this.elapsed = 0L;
+		this.started = false;
+		this.ended = false;
+		this.gameLimit = 45L;
+		this.isRTS = false;
+	}
 
 	public Game(Long id, @NotBlank User author, @NotBlank boolean ended, @NotBlank boolean started,
-			@NotBlank boolean isRTS, @NotBlank Long gameLimit, @NotBlank long elapsed) {
+			@NotBlank boolean isRTS, @NotBlank Long gameLimit, @NotBlank Long elapsed) {
 		super();
 		this.id = id;
 		this.author = author;
@@ -129,13 +137,13 @@ public class Game {
 
 
 
-	public long getElapsed() {
+	public Long getElapsed() {
 		return elapsed;
 	}
 
 
 
-	public void setElapsed(long elapsed) {
+	public void setElapsed(Long elapsed) {
 		this.elapsed = elapsed;
 	}
 

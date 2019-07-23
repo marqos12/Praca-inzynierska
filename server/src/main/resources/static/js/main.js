@@ -49,13 +49,15 @@ function connect(event) {
 					        console.log("Your current session is: " + url[url.length-2]);
 					        sessionID = url[url.length-2];
 					     
+					        //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
 					     const subscription = stompClient.subscribe("/user/"+sessionID+"/reply", function (x) {
 				    	//const subscription = stompClient.subscribe("/user/queue/msg", function (x) {    	
 				    		 console.log(x);
 				    	 });
-					     /*stompClient.subscribe('/user/reply', x=>{
+					     //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
+					     stompClient.subscribe('/user/queue/reply', x=>{
 					    	 console.log(x)
-					     });*/
+					     });
 					     
 				     });
 	    //}).catch(x=>console.log(x));
@@ -106,7 +108,8 @@ function sendMessage2(event) {
 	stompClient.send("/app/message3", {}, JSON.stringify(chatMessage));
 
     event.preventDefault();
-}/*
+}
+
 function sendMessage3(event) {
 	var chatMessage = {
             to: username,
@@ -115,10 +118,11 @@ function sendMessage3(event) {
         };
 
 	console.log(chatMessage)
-	stompClient.send("/app/message2", {}, chatMessage);
+	stompClient.send("/app/message", {}, "henio");
 
     event.preventDefault();
 }
+/*
 function sendMessage4(event) {
 	var chatMessage = {
             to: username,
@@ -180,8 +184,8 @@ function getAvatarColor(messageSender) {
 
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
-document.getElementById("myBtn").addEventListener("click", sendMessage2);/*
-document.getElementById("myBtn2").addEventListener("click", sendMessage3);
+document.getElementById("myBtn").addEventListener("click", sendMessage2);
+document.getElementById("myBtn2").addEventListener("click", sendMessage3);/*
 document.getElementById("myBtn3").addEventListener("click", sendMessage4);*/
 
 /*
