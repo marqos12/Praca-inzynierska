@@ -1,6 +1,5 @@
 package pl.mojrzeszow.server.config;
 
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -9,21 +8,19 @@ import org.springframework.session.web.socket.config.annotation.AbstractSessionW
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
-
 @Configuration
 @EnableScheduling
 @EnableWebSocketMessageBroker
-public class WebSocketConfig
-		extends AbstractSessionWebSocketMessageBrokerConfigurer<Session> { 
+public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfigurer<Session> {
 
 	@Override
-	protected void configureStompEndpoints(StompEndpointRegistry registry) { 
+	protected void configureStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/greeting").withSockJS();
 	}
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.enableSimpleBroker("/queue/", "/topic/","/user/");
+		registry.enableSimpleBroker("/queue/", "/topic/", "/user/");
 		registry.setApplicationDestinationPrefixes("/app");
 	}
 }
