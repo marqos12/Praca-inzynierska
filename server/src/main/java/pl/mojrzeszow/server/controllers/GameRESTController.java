@@ -17,20 +17,19 @@ import pl.mojrzeszow.server.repositories.UserRepository;
 @RestController
 @RequestMapping("/api/game")
 public class GameRESTController {
-	
-	 @Autowired
-	 private GameRepository gameRepository;
-	 
-	 @Autowired
-	 UserRepository userRepository;
-	
-	 @PostMapping
-	 private Game newGame(@Valid @RequestBody DataExchange userId)
-	 {
-		 User user = userRepository.findById(userId.getId()).orElse(null);
-		 
-		 Game game = new Game(user);
-		 gameRepository.save(game);
-		 return game;
-	 }
+
+	@Autowired
+	private GameRepository gameRepository;
+
+	@Autowired
+	UserRepository userRepository;
+
+	@PostMapping
+	private Game newGame(@Valid @RequestBody DataExchange userId) {
+		User user = userRepository.findById(userId.getId()).orElse(null);
+
+		Game game = new Game(user);
+		gameRepository.save(game);
+		return game;
+	}
 }

@@ -1,8 +1,5 @@
 package pl.mojrzeszow.server.enums;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 public enum TileType {
 	HOUSE(TileEdgeType.GREEN,TileEdgeType.GREEN,TileEdgeType.GREEN,TileEdgeType.ACCESS ),

@@ -1,6 +1,6 @@
 package pl.mojrzeszow.server.models.messages;
 
-import pl.mojrzeszow.server.models.User;
+
 import pl.mojrzeszow.server.service.impl.UserPrinciple;
 
 public class LoginResponse {
