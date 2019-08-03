@@ -1,22 +1,11 @@
-import { ADD_ARTICLE, WS_CONNECT_TO_SERVER, WS_OPEN_TEST_CANAL, WS_SEND_TEST_MESSAGE } from "../constants/action-types";
-import { foundBadWord, wsConnected } from "../actions/index";
+import { WS_CONNECT_TO_SERVER, WS_OPEN_TEST_CANAL, WS_SEND_TEST_MESSAGE, REGISTER, LOGIN } from "../constants/action-types";
+import { wsConnected, registered, registrationFailed, logged, loginFailed } from "../actions/index";
 
 
-
-const forbiddenWords = ["spam", "money"];
-export function forbiddenWordsMiddleware({ getState, dispatch }) {
+export function mainAppMiddleware({ getState, dispatch }) {
     return function (next) {
         return function (action) {
-            // do your stuff
-            if (action.type === ADD_ARTICLE) {
-
-                const foundWord = forbiddenWords.filter(word =>
-                    action.payload.title.includes(word)
-                );
-                if (foundWord.length) {
-                    return dispatch(foundBadWord(word));
-                }
-            }
+            
             if (action.type === WS_CONNECT_TO_SERVER) {
 
                 var socket = new SockJS('/greeting');
@@ -41,7 +30,7 @@ export function forbiddenWordsMiddleware({ getState, dispatch }) {
                     console.log(x);
                 });
             }
-            
+
             if (action.type === WS_SEND_TEST_MESSAGE) {
                 //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
                 let stompClient = getState().ws.client;
@@ -52,6 +41,50 @@ export function forbiddenWordsMiddleware({ getState, dispatch }) {
                 };
                 stompClient.send("/app/message3", {}, JSON.stringify(chatMessage));
             }
+
+            if (action.type === REGISTER) {
+                fetch("http://localhost:8080/api/auth/signup", {
+                    //fetch("api/auth/signup", {
+                    method: 'POST',
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(action.payload),
+                })
+                    .then(response => response.json()).then(response => {
+                        return dispatch(registered(response));
+                    })
+                    .catch(response => {
+                        return dispatch(registrationFailed(response));
+                    });
+            }
+
+            if (action.type === LOGIN) {
+                fetch("http://localhost:8080/api/auth/signin", {
+                    //fetch("api/auth/signup", {
+                    method: 'POST',
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(action.payload),
+                })
+                    .then(response => response.json()).then(response => {
+                      
+                        if (response.status == 400)
+                            return dispatch(loginFailed(response));
+                        else
+                            return dispatch(logged(response));
+                    })
+                    .catch(response => {
+
+                        return dispatch(loginFailed(response));
+                    });
+            }
+
 
 
             return next(action);

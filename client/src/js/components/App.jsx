@@ -1,21 +1,19 @@
 import React from "react";
-import List from "./List.jsx";
-import Form from "./Form.jsx";
-import Post from "./Post.jsx";
+import Home from "./Home.jsx";
+import Login from "./auth/Login.jsx";
+import Registration from "./auth/Registration.jsx";
+import "./css/main.scss";
+
+import { Route } from 'react-router-dom'
+
 const App = () => (
-  <div className="row mt-5">
-    <div className="col-md-4 offset-md-1">
-      <h2>Articles</h2>
-      <List />
-    </div>
-    <div className="col-md-4 offset-md-1">
-      <h2>Add a new article</h2>
-      <Form />
-    </div>
-    <div className="col-md-4 offset-md-1">
-      <h2>API posts</h2>
-      <Post />
-    </div>
+  
+  <div className="app">
+    
+    <Route exact path="/" component={Home}/>
+    <Route exact path="/login" component={Login}/>
+    <Route exact path="/registration" component={Registration}/>
+    
   </div>
 );
 export default App;

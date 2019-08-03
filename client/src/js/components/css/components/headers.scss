@@ -1,0 +1,17 @@
+@import "../variables";
+
+
+.gameTitle{
+    position: relative;
+    top:-12px;
+    font-size: 60px;
+    color:$primary_text_color;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-align: center;
+    span{
+        color:$accent_text_color;
+        position: relative;
+        font-size: 100px;
+        top:12px;
+    }
+}
