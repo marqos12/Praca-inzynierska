@@ -1,4 +1,4 @@
-import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE } from "../constants/action-types";
+import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GOT_GAMES_LIST } from "../constants/action-types";
 
 const initialState = {
   ws: {
@@ -68,6 +68,13 @@ function rootReducer(state = initialState, action) {
     console.log(SET_COOKIES_SERVICE,state)
     return Object.assign({}, state, {
       cookies: action.payload
+    });
+  }
+
+  if(action.type == WS_GOT_GAMES_LIST){
+    console.log(action.payload);
+    return Object.assign({}, state, {
+      gamesList: action.payload
     });
   }
 

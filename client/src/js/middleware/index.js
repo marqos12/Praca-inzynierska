@@ -1,5 +1,5 @@
 import { WS_CONNECT_TO_SERVER, REGISTER, LOGIN, WS_GET_GAMES_LIST, WS_OPEN_PRIVATE_CANALS, WS_SEND_MESSAGE } from "../constants/action-types";
-import { wsConnected, registered, registrationFailed, logged, loginFailed } from "../actions/index";
+import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList } from "../actions/index";
 
 
 export function mainAppMiddleware({ getState, dispatch }) {
@@ -25,7 +25,8 @@ export function mainAppMiddleware({ getState, dispatch }) {
                     });
                     //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
                     stompClient.subscribe('/user/queue/reply', x => {
-                        console.log("sami",x)
+                        
+                        dispatch(wsGotGamesList(JSON.parse(x.body)));
                     });
                     return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
                 });

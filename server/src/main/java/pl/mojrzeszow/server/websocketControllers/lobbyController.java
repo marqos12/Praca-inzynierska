@@ -31,7 +31,7 @@ public class lobbyController {
 	@MessageMapping("/getGames")
 	@SendToUser("/queue/reply") 
 	public List<Game> getAllgames(@Payload String message) throws Exception{
-		System.out.println("janusz");
+		
 		List<Game> games = this.gameRepository.findByPrivateGameFalseAndStartedFalse();
 		return games;
 	}

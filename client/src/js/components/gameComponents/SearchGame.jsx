@@ -15,7 +15,8 @@ const mapStateToProps = state => {
     return { 
         auth: state.auth,
         cookies: state.cookies,
-        ws : state.ws
+        ws : state.ws,
+        gamesList: state.gamesList
     };
 };
 
@@ -24,9 +25,10 @@ const mapStateToProps = state => {
 class SearchGamesComponent extends Component {
     constructor() {
         super();
-        this.state = {
-
-        };
+        
+        this.state={
+            initialized: false 
+        }
 
         this.wsConnect = this.wsConnect.bind(this);
         this.wsOpenPrivateCanals = this.wsOpenPrivateCanals.bind(this);
@@ -44,8 +46,11 @@ class SearchGamesComponent extends Component {
         this.props.wsSendMessage({ channel: "/lobby/getGames",payload:"" });
     }
 
+    componentWillMount(){
+        
+    }
+
     componentDidMount(){
-        console.log("siema",this.props.ws)
         if(this.props.ws.client){
             this.props.wsOpenPrivateCanals();
         }
@@ -54,15 +59,20 @@ class SearchGamesComponent extends Component {
         }
     }
 
-    componentWillMount() {
-        
+    componentWillUpdate(){
+        if(!this.state.initialized)
+        {
+            this.setState({initialized:true})
+            this.props.wsSendMessage({ channel: "/lobby/getGames",payload:"" });
+        }                
     }
+   
     handleChange(event) {
         this.setState({ [event.target.id]: event.target.value });
     }
     render() {
 
-        const { username, password } = this.state;
+        const { gamesList } = this.props;
         return (
             <div className="container">
                 <div className="menuContent">
@@ -71,10 +81,10 @@ class SearchGamesComponent extends Component {
                     <div className="buttonList">
                         
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.wsSendMessage}>Szukaj gry</a>
-                        <a className="button is-large  is-link is-rounded is-fullwidth" >Utwórz grę</a>
-                        <a className="button is-large  is-link is-rounded is-fullwidth" >Graj sam</a>
-                        <NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
-                        <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>
+                        
+                        {gamesList.map((game,index)=>{
+                            return <p>{game.id} {game.rts} {game.author.name}</p>
+                        })}
                     </div>
 
                 </div>
