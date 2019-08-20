@@ -1,14 +1,14 @@
-import { WS_CONNECT_TO_SERVER, WS_OPEN_TEST_CANAL, WS_SEND_TEST_MESSAGE, REGISTER, LOGIN } from "../constants/action-types";
+import { WS_CONNECT_TO_SERVER, REGISTER, LOGIN, WS_GET_GAMES_LIST, WS_OPEN_PRIVATE_CANALS, WS_SEND_MESSAGE } from "../constants/action-types";
 import { wsConnected, registered, registrationFailed, logged, loginFailed } from "../actions/index";
 
 
 export function mainAppMiddleware({ getState, dispatch }) {
     return function (next) {
         return function (action) {
-            
+
             if (action.type === WS_CONNECT_TO_SERVER) {
 
-                var socket = new SockJS('/greeting');
+                var socket = new SockJS('/gameWS');
                 var stompClient = Stomp.over(socket);
 
                 stompClient.connect({}, function (frame) {
@@ -17,29 +17,36 @@ export function mainAppMiddleware({ getState, dispatch }) {
                     url = url.split("/")
                     console.log("Your current session is: " + url[url.length - 2]);
                     let sessionId = url[url.length - 2];
-                    return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
 
+                    //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
+                    stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
+                        //const subscription = stompClient.subscribe("/user/queue/msg", function (x) {    	
+                        console.log("ogólny",x);
+                    });
+                    //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
+                    stompClient.subscribe('/user/queue/reply', x => {
+                        console.log("sami",x)
+                    });
+                    return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
                 });
             }
-            if (action.type === WS_OPEN_TEST_CANAL) {
+            if (action.type === WS_OPEN_PRIVATE_CANALS) {
                 //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
                 let stompClient = getState().ws.client;
                 let sessionId = getState().ws.sessionId;
-                const subscription = stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
+                stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
                     //const subscription = stompClient.subscribe("/user/queue/msg", function (x) {    	
-                    console.log(x);
+                    console.log("kierunkowy",x);
+                });
+                //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
+                stompClient.subscribe('/user/queue/reply', x => {
+                    console.log("sami do siebie",x)
                 });
             }
 
-            if (action.type === WS_SEND_TEST_MESSAGE) {
-                //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
+            if (action.type === WS_SEND_MESSAGE) {
                 let stompClient = getState().ws.client;
-                var chatMessage = {
-                    to: action.payload.targetSessionId,
-                    from: getState().ws.sessionId,
-                    text: 'Hello, WORLD!!!!'
-                };
-                stompClient.send("/app/message3", {}, JSON.stringify(chatMessage));
+                stompClient.send("/app"+action.payload.channel, {}, JSON.stringify(action.payload.payload));
             }
 
             if (action.type === REGISTER) {
@@ -73,7 +80,7 @@ export function mainAppMiddleware({ getState, dispatch }) {
                     body: JSON.stringify(action.payload),
                 })
                     .then(response => response.json()).then(response => {
-                      
+
                         if (response.status >= 400)
                             return dispatch(loginFailed(response));
                         else
@@ -85,7 +92,9 @@ export function mainAppMiddleware({ getState, dispatch }) {
                     });
             }
 
-
+            if (action.type === WS_GET_GAMES_LIST) {
+                
+            }
 
             return next(action);
         };

@@ -10,6 +10,7 @@ import { withCookies, Cookies } from 'react-cookie';
 
 import { Route } from 'react-router-dom'
 import NewGame from "./gameComponents/NewGame.jsx";
+import SearchGame from "./gameComponents/SearchGame.jsx";
 
 class App extends Component {
   constructor(props) {
@@ -31,6 +32,7 @@ class App extends Component {
         <Route exact path="/registration" component={Registration} />
         <Route exact path="/panel" component={UserPanel} />
         <Route exact path="/newGame" component={NewGame} />
+        <Route exact path="/searchGames" component={SearchGame} />
       </div>
     )
   }

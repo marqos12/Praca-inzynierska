@@ -13,7 +13,8 @@ const initialState = {
     registerSuccess:false,
     registerFailed:false
   },
-  cookies:null
+  cookies:null,
+  gamesList:[]
 };
 
 function rootReducer(state = initialState, action) {

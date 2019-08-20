@@ -58,7 +58,7 @@ class HomeComponent extends Component {
                     <h1 className="gameTitle">Witaj w grze!  {this.props.auth.user.username}</h1>
 
                     <div className="buttonList">
-                        <NavLink to="/searhGame" className="button is-large  is-link is-rounded is-fullwidth" >Szukaj gry</NavLink>
+                        <NavLink to="/searchGames" className="button is-large  is-link is-rounded is-fullwidth" >Szukaj gry</NavLink>
                         <NavLink to="/newGame" className="button is-large  is-link is-rounded is-fullwidth" >Utwórz grę</NavLink>
                         <NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth" >Graj sam</NavLink>
                         <NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>

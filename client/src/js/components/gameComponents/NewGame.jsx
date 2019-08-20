@@ -42,7 +42,7 @@ class NewGameComponent extends Component {
 
 
     componentWillMount() {
-        //console.log(this.props.auth.token)
+        console.log(this.props)
         if (this.props.auth.token == "")
             this.props.history.push("/")
     }
@@ -58,6 +58,7 @@ class NewGameComponent extends Component {
                     <h1 className="gameTitle">Utwórz nową grę </h1>
 
                     <div className="buttonList">
+                        
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.wsConnect}>Szukaj gry</a>
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.wsOpenTestCanal}>Utwórz grę</a>
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.wsSendTestMessage}>Graj sam</a>

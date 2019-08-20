@@ -15,7 +15,7 @@ public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfig
 
 	@Override
 	protected void configureStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/greeting").withSockJS();
+		registry.addEndpoint("/gameWS").setAllowedOrigins("*").withSockJS();
 	}
 
 	@Override

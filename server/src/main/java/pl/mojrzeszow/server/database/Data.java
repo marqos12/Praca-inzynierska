@@ -21,17 +21,20 @@ public class Data implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		Role r1 = new Role();
-		r1.setName(RoleName.ROLE_USER);
-		roleRepository.save(r1);
+		try {
+			Role r1 = new Role();
+			r1.setName(RoleName.ROLE_USER);
+			roleRepository.save(r1);
 
-		Role r3 = new Role();
-		r3.setName(RoleName.ROLE_PM);
-		roleRepository.save(r3);
-		Role r2 = new Role();
-		r2.setName(RoleName.ROLE_ADMIN);
-		roleRepository.save(r2);
+			Role r3 = new Role();
+			r3.setName(RoleName.ROLE_PM);
+			roleRepository.save(r3);
+			Role r2 = new Role();
+			r2.setName(RoleName.ROLE_ADMIN);
+			roleRepository.save(r2);
+		} catch (Exception e) {
 
+		}
 		/*
 		 * User u1 = new User("name","user12","user1@gmail.com","user12");
 		 * 
