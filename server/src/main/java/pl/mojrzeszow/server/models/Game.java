@@ -38,6 +38,8 @@ public class Game {
 	@NotNull
 	private Long elapsed;
 
+	
+	private Boolean privateGame;
 
 	
 	public Game() {	}
@@ -49,10 +51,11 @@ public class Game {
 		this.ended = false;
 		this.gameLimit = 45L;
 		this.isRTS = false;
+		this.privateGame = true;
 	}
 
 	public Game(Long id, @NotBlank User author, @NotBlank boolean ended, @NotBlank boolean started,
-			@NotBlank boolean isRTS, @NotBlank Long gameLimit, @NotBlank Long elapsed) {
+			@NotBlank boolean isRTS, @NotBlank Long gameLimit, @NotBlank Long elapsed,  Boolean privateGame) {
 		super();
 		this.id = id;
 		this.author = author;
@@ -61,6 +64,7 @@ public class Game {
 		this.isRTS = isRTS;
 		this.gameLimit = gameLimit;
 		this.elapsed = elapsed;
+		this.privateGame = privateGame;
 	}
 
 
@@ -150,6 +154,16 @@ public class Game {
 
 
 
+
+	public Long getPrivateGame() {
+		return elapsed;
+	}
+
+
+
+	public void setPrivateGame(Boolean privateGame) {
+		this.privateGame = privateGame;
+	}
 
 
 }

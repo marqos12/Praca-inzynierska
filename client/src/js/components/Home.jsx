@@ -1,34 +1,48 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
+import { setAuthFromCookies } from "../actions/index";
 
 function mapDispatchToProps(dispatch) {
     return {
-      
+        setAuthFromCookies: payload => dispatch(setAuthFromCookies(payload))
     };
 }
 
-const mapStateToProps = state => {
-    return { auth: state.auth };
+const mapStateToProps = (state) => {
+    return {
+        auth: state.auth,
+        cookies: state.cookies
+    };
 };
 
 
 class HomeComponent extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-           
-        };
-        
+
+        };  
     }
-   
     
-    componentWillMount() {
-        if (this.props.auth.loginSuccess)
-            this.props.history.push("/new")
+
+    componentDidMount() {
+        let auth = this.props.cookies.get('auth');
+        console.log(auth)
+        if (!auth && this.props.auth.loginSuccess) {
+            this.props.cookies.set('auth', JSON.stringify(this.props.auth), { path: '/' });
+            this.props.history.push("/panel")
+        }
+        else if (auth) {
+           
+            
+        this.props.setAuthFromCookies(auth);
+            this.props.history.push("/panel")
+        }
+        
     }
     render() {
-        
+
         return (
             <div className="container">
                 <div className="menuContent">

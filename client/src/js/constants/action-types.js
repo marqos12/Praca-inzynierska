@@ -8,3 +8,5 @@ export const REGISTRATION_FAILED = "REGISTRATION_FAILED";
 export const LOGIN = "LOGIN";
 export const LOGGED = "LOGGED";
 export const LOGIN_FAILED = "LOGIN_FAILED";
+export const AUTH_FROM_COOKIES = "AUTH_FROM_COOKIES";
+export const SET_COOKIES_SERVICE= "SET_COOKIES_SERVICE";

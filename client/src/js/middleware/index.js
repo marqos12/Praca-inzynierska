@@ -74,7 +74,7 @@ export function mainAppMiddleware({ getState, dispatch }) {
                 })
                     .then(response => response.json()).then(response => {
                       
-                        if (response.status == 400)
+                        if (response.status >= 400)
                             return dispatch(loginFailed(response));
                         else
                             return dispatch(logged(response));

@@ -1,4 +1,4 @@
-import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED } from "../constants/action-types";
+import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE } from "../constants/action-types";
 
 const initialState = {
   ws: {
@@ -12,7 +12,8 @@ const initialState = {
     token: "",
     registerSuccess:false,
     registerFailed:false
-  }
+  },
+  cookies:null
 };
 
 function rootReducer(state = initialState, action) {
@@ -52,6 +53,20 @@ function rootReducer(state = initialState, action) {
       auth: Object.assign({}, state.auth, {
         loginSuccess: false, loginFailed: true, user:{},token:""
       })
+    });
+  }
+
+  if (action.type === AUTH_FROM_COOKIES) {
+    console.log(AUTH_FROM_COOKIES,state)
+    return Object.assign({}, state, {
+      auth: Object.assign({}, state.auth, action.payload)
+    });
+  }
+
+  if (action.type === SET_COOKIES_SERVICE){
+    console.log(SET_COOKIES_SERVICE,state)
+    return Object.assign({}, state, {
+      cookies: action.payload
     });
   }
 
