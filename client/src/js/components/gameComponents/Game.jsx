@@ -22,7 +22,7 @@ const mapStateToProps = state => {
 
 
 
-class SearchGamesComponent extends Component {
+class GameComponent extends Component {
     constructor() {
         super();
 
@@ -81,7 +81,7 @@ class SearchGamesComponent extends Component {
 
                     <div className="buttonList">
 
-                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.joinGame(1)}>Szukaj gry</a>
+                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.wsSendMessage}>Szukaj gry</a>
 
 
                         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
@@ -113,8 +113,8 @@ class SearchGamesComponent extends Component {
         );
     }
 }
-const SearchGame = connect(mapStateToProps, mapDispatchToProps)(SearchGamesComponent);
-export default SearchGame;
+const Game = connect(mapStateToProps, mapDispatchToProps)(GameComponent);
+export default Game;
 
 
 

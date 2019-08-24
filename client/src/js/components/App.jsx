@@ -4,13 +4,14 @@ import Home from "./Home.jsx";
 import Login from "./auth/Login.jsx";
 import Registration from "./auth/Registration.jsx";
 import UserPanel from "./UserPanel.jsx";
-import { setCookiesService } from "../actions/index";
+import { setCookiesService, setHistory } from "../actions/index";
 import "./css/main.scss";
 import { withCookies, Cookies } from 'react-cookie';
 
 import { Route } from 'react-router-dom'
 import NewGame from "./gameComponents/NewGame.jsx";
 import SearchGame from "./gameComponents/SearchGame.jsx";
+import Game from "./gameComponents/Game.jsx";
 
 class App extends Component {
   constructor(props) {
@@ -21,6 +22,7 @@ class App extends Component {
   componentWillMount(){
     console.log(this.props.cookies.getAll())
     this.props.setCookiesService(this.props.cookies)
+    this.props.setHistory(this.props.history)
   }
 
   render() {
@@ -33,6 +35,7 @@ class App extends Component {
         <Route exact path="/panel" component={UserPanel} />
         <Route exact path="/newGame" component={NewGame} />
         <Route exact path="/searchGames" component={SearchGame} />
+        <Route exact path="/game/:id" component={Game} />
       </div>
     )
   }
@@ -40,7 +43,8 @@ class App extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    setCookiesService: payload => dispatch(setCookiesService(payload))
+    setCookiesService: payload => dispatch(setCookiesService(payload)),
+    setHistory:payload => dispatch(setHistory(payload))
   };
 }
 

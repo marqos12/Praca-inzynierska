@@ -1,4 +1,4 @@
-import {  WS_CONNECT_TO_SERVER, WS_CONNECTED_TO_SERVER, REGISTER, REGISTERED, REGISTRATION_FAILED, LOGIN, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GET_GAMES_LIST, WS_SEND_MESSAGE, WS_GOT_GAMES_LIST } from "../constants/action-types";
+import {  WS_CONNECT_TO_SERVER, WS_CONNECTED_TO_SERVER, REGISTER, REGISTERED, REGISTRATION_FAILED, LOGIN, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GET_GAMES_LIST, WS_SEND_MESSAGE, WS_GOT_GAMES_LIST, WS_OPEN_PRIVATE_CANALS, SET_HISTORY, WS_CONNECT_TO_GAME, WS_GAME_CONNECTED } from "../constants/action-types";
 
 export function wsConnect() {
     return { type: WS_CONNECT_TO_SERVER };
@@ -48,6 +48,19 @@ export function setCookiesService(payload){
     return { type: SET_COOKIES_SERVICE, payload };
 }
 
+
+export function setHistory(payload){
+    return { type: SET_HISTORY, payload };
+}
+
 export function wsGotGamesList(payload){
     return {type: WS_GOT_GAMES_LIST, payload};
+}
+
+export function wsConnectGame(payload){
+    return {type: WS_CONNECT_TO_GAME, payload};
+}
+
+export function wsGameConnected(payload){
+    return {type: WS_GAME_CONNECTED, payload};
 }

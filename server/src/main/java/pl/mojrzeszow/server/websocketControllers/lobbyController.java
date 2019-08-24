@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 
 @MessageMapping("/lobby")
 public class lobbyController {
-
+ 
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
 
