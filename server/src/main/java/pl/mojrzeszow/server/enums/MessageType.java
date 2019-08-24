@@ -9,5 +9,10 @@ public enum MessageType {
 	NEW_TILE,
 	NEXT_ROUND,
 	TILE_CHANGED,
-	GAME_END
+	GAME_END,
+	GAME_CREATED,
+
+
+
+	GAME_LIST_UPDATED
 }

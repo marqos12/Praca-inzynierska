@@ -24,7 +24,7 @@ import pl.mojrzeszow.server.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/api/game")
-public class GameRESTController {
+public class GameRESTController { 
 
 	@Autowired
 	private GameRepository gameRepository;

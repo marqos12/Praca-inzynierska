@@ -1,5 +1,15 @@
-import { WS_CONNECT_TO_SERVER, REGISTER, LOGIN, WS_GET_GAMES_LIST, WS_OPEN_PRIVATE_CANALS, WS_SEND_MESSAGE, WS_CONNECT_TO_GAME } from "../constants/action-types";
-import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList } from "../actions/index";
+import {
+    WS_CONNECT_TO_SERVER,
+    REGISTER,
+    LOGIN,
+    WS_GET_GAMES_LIST,
+    WS_OPEN_PRIVATE_CANALS,
+    WS_SEND_MESSAGE,
+    WS_CONNECT_TO_GAME,
+    WS_CANNEL_CONNECT,
+    WS_CANNEL_DISCONNECT
+} from "../constants/action-types";
+import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList, wsGameCreated } from "../actions/index";
 
 
 export function mainAppMiddleware({ getState, dispatch }) {
@@ -20,13 +30,24 @@ export function mainAppMiddleware({ getState, dispatch }) {
 
                     //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
                     stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
-                        //const subscription = stompClient.subscribe("/user/queue/msg", function (x) {    	
-                        console.log("ogólny",x);
+                        console.log("ogólny", x);
                     });
                     //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
                     stompClient.subscribe('/user/queue/reply', x => {
+
+                        let resp = JSON.parse(x.body)
+
+                        console.log("moja zwrotka /middleware/iindex/41 ", resp)
+                        switch(resp.type){
+                            case "GAME_LIST_UPDATED":
+                                dispatch(wsGotGamesList(resp.payload));
+                            break;
+                            case "GAME_CREATED":
+                                dispatch(wsGameCreated(resp.payload))
+                                break;
+                        }
                         
-                        dispatch(wsGotGamesList(JSON.parse(x.body)));
+                        
                     });
                     return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
                 });
@@ -37,17 +58,27 @@ export function mainAppMiddleware({ getState, dispatch }) {
                 let sessionId = getState().ws.sessionId;
                 stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
                     //const subscription = stompClient.subscribe("/user/queue/msg", function (x) {    	
-                    console.log("kierunkowy",x);
+                    console.log("kierunkowy", x);
                 });
                 //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
                 stompClient.subscribe('/user/queue/reply', x => {
-                    console.log("sami do siebie",x)
+                    console.log("sami do siebie", x)
                 });
+            }
+
+            if (action.type === WS_CANNEL_CONNECT) {
+                let stompClient = getState().ws.client;
+                subscription = stompClient.subscribe(action.payload.channel, action.payload.function);
+                dispatch(wsChannelSubscription({ channel: action.payload.channel, function: subscription }))
+            }
+
+            if (action.type === WS_CANNEL_DISCONNECT) {
+                dispatch(wsChannelSubscription({ channel: action.payload.channel, function: null }))
             }
 
             if (action.type === WS_SEND_MESSAGE) {
                 let stompClient = getState().ws.client;
-                stompClient.send("/app"+action.payload.channel, {}, JSON.stringify(action.payload.payload));
+                stompClient.send("/app" + action.payload.channel, {}, JSON.stringify(action.payload.payload));
             }
 
             if (action.type === REGISTER) {

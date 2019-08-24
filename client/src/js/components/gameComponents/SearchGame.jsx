@@ -64,8 +64,12 @@ class SearchGamesComponent extends Component {
     componentWillUpdate() {
         if (!this.state.initialized) {
             this.setState({ initialized: true })
-            this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });
+            this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });    
         }
+    }
+
+    componentWillUnmount(){
+        
     }
 
     handleChange(event) {

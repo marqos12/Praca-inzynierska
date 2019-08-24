@@ -53,19 +53,19 @@ class GameComponent extends Component {
 
 
     componentDidMount() {
-        if (this.props.ws.client) {
+       /* if (this.props.ws.client) {
             this.props.wsOpenPrivateCanals();
         }
         else {
             this.props.wsConnect();
-        }
+        }*/
     }
 
     componentWillUpdate() {
-        if (!this.state.initialized) {
+       /* if (!this.state.initialized) {
             this.setState({ initialized: true })
             this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });
-        }
+        }*/
     }
 
     handleChange(event) {
