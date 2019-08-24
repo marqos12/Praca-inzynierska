@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "gamers")
@@ -19,39 +20,57 @@ public class Gamer {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
+	@NotNull
 	@ManyToOne
 	private User user;
 	
-	@NotBlank
+	@NotNull
 	@ManyToOne
 	private Game game;
 
 
 	private String sessionId;
 	
-	@NotBlank
+	@NotNull
 	private Date notification;
 	
-	@NotBlank
+	@NotNull
 	private boolean status;
 	
-	@NotBlank
+	
 	private boolean ready;
 	
-	@NotBlank
+
+	@NotNull
 	private Long ordinalNumber;
 	
-	@NotBlank
+
+	@NotNull
 	private Long points;
 	
-	@NotBlank
+
+	@NotNull
 	private Long ducklings;
 
 	
 	public Gamer () {}
 	
 	
+	public Gamer( @NotBlank User user, @NotBlank Game game, String sessionId) {
+		super();
+		
+		this.user = user;
+		this.game = game;
+		this.sessionId = sessionId;
+		this.notification = new Date();
+		this.status = false;
+		this.ready = false;
+		this.ordinalNumber = 0L;//do poprawienia
+		this.points = 0L;
+		this.ducklings = 0L;
+	}
+
+
 	public Gamer(Long id, @NotBlank User user, @NotBlank Game game, String sessionId, @NotBlank Date notification,
 			@NotBlank boolean status, @NotBlank boolean ready, @NotBlank Long ordinalNumber, @NotBlank Long points,
 			@NotBlank Long ducklings) {
