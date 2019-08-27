@@ -9,7 +9,7 @@ import {
     WS_CANNEL_CONNECT,
     WS_CANNEL_DISCONNECT
 } from "../constants/action-types";
-import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList, wsGameCreated } from "../actions/index";
+import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList, wsGameCreated, wsGameConnected, wsConnectGame, wsChannelSubscription } from "../actions/index";
 
 
 export function mainAppMiddleware({ getState, dispatch }) {
@@ -44,6 +44,10 @@ export function mainAppMiddleware({ getState, dispatch }) {
                             break;
                             case "GAME_CREATED":
                                 dispatch(wsGameCreated(resp.payload))
+                                dispatch(wsConnectGame(resp.payload))
+                                break;
+                            case "ME_GAMER":
+                                dispatch(wsConnectGame(resp.payload))
                                 break;
                         }
                         
@@ -124,7 +128,14 @@ export function mainAppMiddleware({ getState, dispatch }) {
                     });
             }
 
-
+            if (action.type === WS_CONNECT_TO_GAME) {
+                console.log("middleware 132")
+                let stompClient = getState().ws.client;
+                let subscription = stompClient.subscribe("/lobby/game/"+action.payload.id, resp =>{
+                    console.log("middleware 134",resp)
+                });
+                dispatch(wsChannelSubscription({ channel:"GAME_LOBBY_CHANNEL", subscription: subscription }))
+            }
 
             return next(action);
         };

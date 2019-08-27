@@ -27,19 +27,12 @@ class HomeComponent extends Component {
     
 
     componentDidMount() {
-        let auth = this.props.cookies.get('auth');
-        console.log(auth)
-        if (!auth && this.props.auth.loginSuccess) {
-            this.props.cookies.set('auth', JSON.stringify(this.props.auth), { path: '/' });
+    console.log("home 30",this.props.auth)   
+    console.log("home 30/1",this.props.auth.token==""?1:0)   
+    console.log("home 31",this.props.cookies.getAll())     
+        if(this.props.auth.token){
             this.props.history.push("/panel")
         }
-        else if (auth) {
-           
-            
-        this.props.setAuthFromCookies(auth);
-            this.props.history.push("/panel")
-        }
-        
     }
     render() {
 

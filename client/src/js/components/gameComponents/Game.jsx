@@ -77,12 +77,12 @@ class GameComponent extends Component {
         return (
             <div className="container">
                 <div className="menuContent">
-                    <h1 className="gameTitle">Utwórz nową grę </h1>
+                    <h1 className="gameTitle">Pokój gry </h1>
 
                     <div className="buttonList">
 
-                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.wsSendMessage}>Szukaj gry</a>
-
+                   
+                        
 
                         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                             <thead>

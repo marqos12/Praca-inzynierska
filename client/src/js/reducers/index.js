@@ -4,7 +4,7 @@ const initialState = {
   ws: {
     client: null,
     sessionId: "",
-    subscriptions: []
+    gameLobbyChannelSybscription:null
   },
   auth: {
     loginSuccess: false,
@@ -92,14 +92,20 @@ function rootReducer(state = initialState, action) {
   }
 
   if (action.type === WS_CANNEL_SUBSCRIPTION) {
-    subscriptions = state.ws.subscriptions;
-    subscriptions[action.payload.channel] = action.payload.function;
-
-    return Object.assign({}, state, {
-      ws: Object.assign({}, state.ws, {
-        subscriptions: subscriptions
-      })
-    });
+    console.log('reducer 95',state)
+    console.log("reducer 96",action.payload)
+    
+    switch(action.payload.channel){
+      case "GAME_LOBBY_CHANNEL":
+          return Object.assign({}, state, {
+            ws: Object.assign({}, state.ws, {
+              gameLobbyChannelSybscription: action.payload.subscription
+            })
+          });
+      
+    }
+    
+    
   }
   
 

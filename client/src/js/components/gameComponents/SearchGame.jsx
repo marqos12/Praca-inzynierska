@@ -54,7 +54,7 @@ class SearchGamesComponent extends Component {
 
     componentDidMount() {
         if (this.props.ws.client) {
-            this.props.wsOpenPrivateCanals();
+            //this.props.wsOpenPrivateCanals();
         }
         else {
             this.props.wsConnect();
@@ -62,9 +62,13 @@ class SearchGamesComponent extends Component {
     }
 
     componentWillUpdate() {
+
         if (!this.state.initialized) {
+            if(this.props.ws.client){
             this.setState({ initialized: true })
             this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });    
+
+            }
         }
     }
 

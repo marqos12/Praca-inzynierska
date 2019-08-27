@@ -14,5 +14,6 @@ public enum MessageType {
 
 
 
-	GAME_LIST_UPDATED
+	GAME_LIST_UPDATED,
+	ME_GAMER
 }

@@ -51,13 +51,13 @@ class HomeComponent extends Component {
 
 componentDidUpdate(){
     
-    console.log("stefan linia 54")
+    console.log("user panel linia 54", this.props.actualGame)
     if (this.props.actualGame.game != null)
-        this.props.history.push("/game/" + this.props.actualGame.game.id)
+        this.props.history.push("/newGame/" + this.props.actualGame.game.id)
 }
 
     componentWillMount() {
-        //console.log(this.props.auth.token)
+        console.log("userPanel 60",this.props.auth.token)
         if (this.props.auth.token == "")
             this.props.history.push("/")
     }
