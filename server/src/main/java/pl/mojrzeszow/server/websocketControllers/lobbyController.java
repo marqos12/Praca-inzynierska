@@ -107,7 +107,17 @@ public class lobbyController {
 
 		gamers = this.gamerRepository.findByGame(game);
 		
-		simpMessagingTemplate.convertAndSend("/lobby/game/"+gamersData.getGameId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+		
+		
+		System.out.println("D");
+		System.out.println("U");
+		System.out.println("P");
+		System.out.println("A");
+		System.out.println("/lobby/game/"+gamersData.getGameId());
+		
+
+
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+gamersData.getGameId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
 
 		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, gamer);

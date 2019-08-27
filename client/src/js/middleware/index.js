@@ -43,11 +43,11 @@ export function mainAppMiddleware({ getState, dispatch }) {
                                 dispatch(wsGotGamesList(resp.payload));
                             break;
                             case "GAME_CREATED":
-                                dispatch(wsGameCreated(resp.payload))
+                                dispatch(wsGameCreated(resp.payload.game))
                                 dispatch(wsConnectGame(resp.payload))
                                 break;
                             case "ME_GAMER":
-                                dispatch(wsConnectGame(resp.payload))
+                                dispatch(wsConnectGame(resp.payload.game))
                                 break;
                         }
                         
@@ -131,7 +131,8 @@ export function mainAppMiddleware({ getState, dispatch }) {
             if (action.type === WS_CONNECT_TO_GAME) {
                 console.log("middleware 132")
                 let stompClient = getState().ws.client;
-                let subscription = stompClient.subscribe("/lobby/game/"+action.payload.id, resp =>{
+                let subscription = stompClient.subscribe("/topic/lobby/game/"+action.payload.id, resp =>{
+                    resp = JSON.parse(resp.body)
                     console.log("middleware 134",resp)
                 });
                 dispatch(wsChannelSubscription({ channel:"GAME_LOBBY_CHANNEL", subscription: subscription }))
