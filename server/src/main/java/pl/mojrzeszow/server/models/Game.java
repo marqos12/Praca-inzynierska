@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "games")
 
 public class Game {
-   
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

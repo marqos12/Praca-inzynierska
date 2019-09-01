@@ -43,7 +43,7 @@ export function mainAppMiddleware({ getState, dispatch }) {
                                 dispatch(wsGotGamesList(resp.payload));
                             break;
                             case "GAME_CREATED":
-                                dispatch(wsGameCreated(resp.payload.game))
+                                dispatch(wsGameCreated(resp.payload))
                                 dispatch(wsConnectGame(resp.payload))
                                 break;
                             case "ME_GAMER":

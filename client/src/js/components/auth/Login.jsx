@@ -34,7 +34,7 @@ class LoginComponent extends Component {
         this.props.login({ username: username, password: password })
     }
     componentDidUpdate(){
-        console.log(this.props)
+        //console.log(this.props)
         if(this.props.auth.loginSuccess)
             this.props.history.push("/")
     }
