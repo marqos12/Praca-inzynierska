@@ -7,9 +7,10 @@ import {
     WS_SEND_MESSAGE,
     WS_CONNECT_TO_GAME,
     WS_CANNEL_CONNECT,
-    WS_CANNEL_DISCONNECT
+    WS_CANNEL_DISCONNECT,
+    WS_GAME_DISCONNECT
 } from "../constants/action-types";
-import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList, wsGameCreated, wsGameConnected, wsConnectGame, wsChannelSubscription } from "../actions/index";
+import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList, wsGameCreated, wsGameConnected, wsConnectGame, wsChannelSubscription, wsGamersStatusUpdate, wsGameJooined, wsGameJoined, wsGameDisconnect, wsSendMessage, wsGameDisconnected, wsGameUpdated } from "../actions/index";
 
 
 export function mainAppMiddleware({ getState, dispatch }) {
@@ -34,7 +35,9 @@ export function mainAppMiddleware({ getState, dispatch }) {
                     });
                     //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
                     stompClient.subscribe('/user/queue/reply', x => {
-
+                        
+                        console.log("middleware 39 ", x)
+                        console.log("middleware 40 ", x.body)
                         let resp = JSON.parse(x.body)
 
                         console.log("moja zwrotka /middleware/iindex/41 ", resp)
@@ -47,15 +50,18 @@ export function mainAppMiddleware({ getState, dispatch }) {
                                 dispatch(wsConnectGame(resp.payload))
                                 break;
                             case "ME_GAMER":
+                                dispatch(wsGameJoined(resp.payload))
                                 dispatch(wsConnectGame(resp.payload.game))
                                 break;
+                            case "GAME_LEFT":
+                                dispatch(wsGameDisconnected())
+                                break;
                         }
-                        
-                        
                     });
                     return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
                 });
             }
+
             if (action.type === WS_OPEN_PRIVATE_CANALS) {
                 //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
                 let stompClient = getState().ws.client;
@@ -74,11 +80,7 @@ export function mainAppMiddleware({ getState, dispatch }) {
                 let stompClient = getState().ws.client;
                 subscription = stompClient.subscribe(action.payload.channel, action.payload.function);
                 dispatch(wsChannelSubscription({ channel: action.payload.channel, function: subscription }))
-            }
-
-            if (action.type === WS_CANNEL_DISCONNECT) {
-                dispatch(wsChannelSubscription({ channel: action.payload.channel, function: null }))
-            }
+            }   
 
             if (action.type === WS_SEND_MESSAGE) {
                 let stompClient = getState().ws.client;
@@ -134,8 +136,26 @@ export function mainAppMiddleware({ getState, dispatch }) {
                 let subscription = stompClient.subscribe("/topic/lobby/game/"+action.payload.id, resp =>{
                     resp = JSON.parse(resp.body)
                     console.log("middleware 134",resp)
+                    switch(resp.type){
+                        case "GAMERS_STATUS_UPDATE":
+                                dispatch(wsGamersStatusUpdate(resp.payload));
+                            break;
+                            case "GAME_UPDATE":
+                                    dispatch(wsGameUpdated(resp.payload));
+                                break;
+                    }
                 });
                 dispatch(wsChannelSubscription({ channel:"GAME_LOBBY_CHANNEL", subscription: subscription }))
+            }
+
+            if (action.type === WS_GAME_DISCONNECT) {
+                console.log("middleware 147")
+                dispatch(wsChannelSubscription({ channel:"GAME_LOBBY_CHANNEL", subscription: null }));
+                dispatch(wsSendMessage({
+                    channel: "/lobby/leaveGame", payload: {
+                        gamerId:getState().actualGame.meGamer.id
+                    }
+                }));
             }
 
             return next(action);

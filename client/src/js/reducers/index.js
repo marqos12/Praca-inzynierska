@@ -1,4 +1,4 @@
-import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GOT_GAMES_LIST, SET_HISTORY, WS_CANNEL_SUBSCRIPTION, WS_GAME_CREATED, WS_GAME_UPDATED } from "../constants/action-types";
+import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GOT_GAMES_LIST, SET_HISTORY, WS_CANNEL_SUBSCRIPTION, WS_GAME_CREATED, WS_GAME_UPDATED, WS_GAMERS_STATUS_UPDATE, WS_GAME_JOINED, WS_GAME_DISCONNECTED } from "../constants/action-types";
 
 const initialState = {
   ws: {
@@ -20,7 +20,8 @@ const initialState = {
   actualGame:{
     game:null,
     gamers: [],
-    amIAuthor:false
+    amIAuthor:false,
+    meGamer:null
   }
 };
 
@@ -77,7 +78,6 @@ function rootReducer(state = initialState, action) {
     });
   }
 
-
   if (action.type === SET_HISTORY) {
     return Object.assign({}, state, {
       history: action.payload
@@ -101,13 +101,9 @@ function rootReducer(state = initialState, action) {
             ws: Object.assign({}, state.ws, {
               gameLobbyChannelSybscription: action.payload.subscription
             })
-          });
-      
+          }); 
     }
-    
-    
   }
-  
 
   if (action.type === WS_GAME_CREATED) {
     console.log("reducer 107",action.payload)
@@ -125,8 +121,39 @@ function rootReducer(state = initialState, action) {
     
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
-        game: action.payload,
-        amIAuthor:true
+        game: action.payload
+      })
+    });
+  }
+
+  if (action.type === WS_GAMERS_STATUS_UPDATE) {
+    
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        gamers: action.payload
+      })
+    });
+  }
+
+  if (action.type === WS_GAME_JOINED) {
+    console.log("reducer 145", action.payload.game.author.id == action.payload.user.id)
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        game: action.payload.game,
+        meGamer: action.payload,
+        amIAuthor:action.payload.game.author.id == action.payload.user.id
+      })
+    });
+  }
+
+  if (action.type === WS_GAME_DISCONNECTED) {
+    console.log("reducer 151", action.payload)
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        game:null,
+        gamers: [],
+        amIAuthor:false,
+        meGamer:null
       })
     });
   }

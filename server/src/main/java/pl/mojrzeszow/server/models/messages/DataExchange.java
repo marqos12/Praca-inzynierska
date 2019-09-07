@@ -6,15 +6,17 @@ public class DataExchange {
 	private Long userId;
 	private Long gameId;
 	private String sessionId;
+	private Long gamerId;
 
     public DataExchange() {}
     
-	public DataExchange(Long id,Long userId,Long gameId,String sessionId) {
+	public DataExchange(Long id,Long userId,Long gameId,String sessionId, Long gamerId) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.gameId = gameId;
 		this.sessionId = sessionId;
+		this.gamerId = gamerId;
 	}
 
 	public Long getId() {
@@ -44,6 +46,16 @@ public class DataExchange {
 
 	public void setGameId(Long id) {
 		this.gameId = id;
+	}
+
+	
+
+	public Long getGamerId() {
+		return gamerId;
+	}
+
+	public void setGamerId(Long id) {
+		this.gamerId = id;
 	}
 
 	

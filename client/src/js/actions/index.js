@@ -20,7 +20,11 @@ import {
     WS_CANNEL_DISCONNECT,
     WS_CANNEL_SUBSCRIPTION,
     WS_GAME_CREATED,
-    WS_GAME_UPDATED
+    WS_GAME_UPDATED,
+    WS_GAMERS_STATUS_UPDATE,
+    WS_GAME_JOINED,
+    WS_GAME_DISCONNECT,
+    WS_GAME_DISCONNECTED
 } from "../constants/action-types";
 
 export function wsConnect() {
@@ -107,4 +111,20 @@ export function wsGameCreated(payload) {
 
 export function wsGameUpdated(payload) {
     return { type: WS_GAME_UPDATED, payload };
+}
+
+export function wsGamersStatusUpdate(payload) {
+    return { type: WS_GAMERS_STATUS_UPDATE, payload };
+}
+
+export function wsGameJoined(payload) {
+    return { type: WS_GAME_JOINED, payload };
+}
+
+export function wsGameDisconnect(payload) {
+    return { type: WS_GAME_DISCONNECT, payload };
+}
+
+export function wsGameDisconnected(payload) {
+    return { type: WS_GAME_DISCONNECTED, payload };
 }

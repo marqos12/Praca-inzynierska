@@ -74,6 +74,7 @@ public class lobbyController {
 		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
 
 		simpMessagingTemplate.convertAndSend("/lobby/allGames", allGames);
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+game.getId(), new GameMessage<Game>(MessageType.GAME_UPDATE, game));
 
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_UPDATE, game);
 		return gameMessage;
@@ -100,8 +101,13 @@ public class lobbyController {
 			}
 		}
 
-		if (!exists)
+		if (!exists){
 			gamer = new Gamer(user, game, gamersData.getSessionId());
+			game.setGamersCount(game.getGamersCount()+1);
+			gameRepository.save(game);
+			List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
+			simpMessagingTemplate.convertAndSend("/lobby/allGames", allGames);
+		}
 
 		gamer = gamerRepository.save(gamer);
 
@@ -109,13 +115,9 @@ public class lobbyController {
 		
 		
 		
-		System.out.println("D");
-		System.out.println("U");
-		System.out.println("P");
-		System.out.println("A");
 		System.out.println("/lobby/game/"+gamersData.getGameId());
 		
-
+ 
 
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+gamersData.getGameId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
@@ -123,5 +125,62 @@ public class lobbyController {
 		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, gamer);
 		return gameMessage;
 	}
+
+	@MessageMapping("/leaveGame")
+	@SendToUser("/queue/reply")
+	public GameMessage<Boolean> leaveGame(@Payload DataExchange gamersData) {
+
+		Gamer gamer = gamerRepository.findById(gamersData.getGamerId()).orElse(null);
+		Game game = gamer.getGame();
+		
+		List<Gamer> gamers2 = this.gamerRepository.findByGame(game);
+		if(game.getAuthor().equals(gamer.getUser()))
+		{
+			for (Gamer gameGamer : gamers2)
+				if(!game.getAuthor().equals(gameGamer.getUser())){
+					game.setAuthor(gameGamer.getUser());
+					break;
+				}	
+		}
+		
+		gamerRepository.delete(gamer);	
+		game.setGamersCount(game.getGamersCount()-1);
+		gameRepository.save(game);
+		
+		List<Gamer> gamers = this.gamerRepository.findByGame(game);
+
+		if(gamers.size()<1){
+			this.gameRepository.delete(game);
+		}
+
+		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
+		simpMessagingTemplate.convertAndSend("/lobby/allGames", allGames);	
+
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+game.getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+
+		System.out.println("lobby controller 135");
+		System.out.println(gamers.size());
+		
+		GameMessage<Boolean> gameMessage = new GameMessage<Boolean>(MessageType.GAME_LEFT, true);
+		return gameMessage;
+	}
+
+	@MessageMapping("/statusUpdate")
+	public void gamerStatusUpdate (@Payload Gamer gamer) {
+
+		System.out.println("lobby 126");
+
+		Gamer exactGamer = this.gamerRepository.findById(gamer.getId()).orElse(gamer);
+		exactGamer.setStatus(gamer.isStatus());
+		exactGamer.setReady(gamer.isReady());
+		
+		this.gamerRepository.save(exactGamer);
+
+		List<Gamer> gamers = this.gamerRepository.findByGame(gamer.getGame());
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+gamer.getGame().getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+
+	}
+
+
 
 }

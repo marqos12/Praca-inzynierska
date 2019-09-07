@@ -16,7 +16,7 @@ const mapStateToProps = state => {
         auth: state.auth,
         cookies: state.cookies,
         ws: state.ws,
-        gamesList: state.gamesList
+        actualGame: state.actualGame
     };
 };
 
@@ -73,7 +73,7 @@ class GameComponent extends Component {
     }
     render() {
 
-        const { gamesList } = this.props;
+        const { actualGame } = this.props;
         return (
             <div className="container">
                 <div className="menuContent">
@@ -87,19 +87,19 @@ class GameComponent extends Component {
                         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                             <thead>
                                 <tr>
-                                    <th>Type</th>
-                                    <th>Gamers</th>
-                                    <th>Game limit</th>
-                                    <th>Author</th>
+                                    <th>Numer</th>
+                                    <th>Gotowość</th>
+                                    <th>Gracz</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {gamesList.map((game, index) => {
-                                    return <tr key={index} onClick={() => this.joinGame(game.id)}>
-                                        <td>{game.rts?"RTS":"Turowa"}</td>
-                                        <td>2</td>
-                                        <td>{game.gameLimit}</td>
-                                        <td>{game.author.username}</td>
+                                {actualGame.gamers.map((gamer, index) => {
+                                    return <tr key={index} >
+                                        <td>{gamer.ordinalNumber}</td>
+                                        <td>{gamer.redy}</td>
+                                        <td>{gamer.user.username}</td>
+                                        <td>{gamer.status}</td>
                                     </tr>
                                 })}
                             </tbody>
