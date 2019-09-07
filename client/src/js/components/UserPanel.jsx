@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
-import { wsConnect, wsOpenTestCanal, wsSendTestMessage, wsSendMessage, setHistory } from "../actions/index";
+import { wsConnect, wsOpenTestCanal, wsSendTestMessage, wsSendMessage, setHistory, logout } from "../actions/index";
 
 function mapDispatchToProps(dispatch) {
     return {
         wsConnect: () => dispatch(wsConnect()),
         wsSendMessage: payload => dispatch(wsSendMessage(payload)),
-        setHistory: payload => dispatch(setHistory(payload))
+        setHistory: payload => dispatch(setHistory(payload)),
+        logout:payload => dispatch(logout(payload))
     };
 }
 
@@ -16,7 +17,8 @@ const mapStateToProps = state => {
         auth: state.auth,
         ws: state.ws,
         stateHistory: state.history,
-        actualGame: state.actualGame
+        actualGame: state.actualGame,
+        cookies: state.cookies
     };
 };
 
@@ -31,6 +33,7 @@ class HomeComponent extends Component {
 
         this.createNewGame = this.createNewGame.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.logout = this.logout.bind(this);
     }
 
     createNewGame() {
@@ -47,6 +50,11 @@ class HomeComponent extends Component {
         else {
             this.props.wsConnect();
         }
+    }
+    logout(){
+        this.props.cookies.set('auth', JSON.stringify({}), { path: '/' });
+        this.props.logout();
+        this.props.history.push("/");
     }
 
 componentDidUpdate(){
@@ -78,6 +86,7 @@ componentDidUpdate(){
                         <NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth" >Graj sam</NavLink>
                         <NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
                         <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>
+                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Wyloguj</a>
                     </div>
 
                 </div>

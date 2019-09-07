@@ -56,7 +56,8 @@ public class Game {
 		this.gameLimit = 45L;
 		this.isRTS = false;
 		this.privateGame = true;
-		this.gameLimit=4L;
+		this.gamersCountLimit=4L;
+		this.gamersCount=0L;
 	}
 
 	public Game(Long id, @NotBlank User author, @NotBlank boolean ended, @NotBlank boolean started,

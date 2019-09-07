@@ -24,7 +24,8 @@ import {
     WS_GAMERS_STATUS_UPDATE,
     WS_GAME_JOINED,
     WS_GAME_DISCONNECT,
-    WS_GAME_DISCONNECTED
+    WS_GAME_DISCONNECTED,
+    LOGOUT
 } from "../constants/action-types";
 
 export function wsConnect() {
@@ -57,6 +58,10 @@ export function registrationFailed(payload) {
 
 export function login(payload) {
     return { type: LOGIN, payload };
+}
+
+export function logout(payload) {
+    return { type: LOGOUT, payload };
 }
 
 export function logged(payload) {

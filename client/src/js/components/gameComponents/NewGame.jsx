@@ -31,6 +31,7 @@ class NewGameComponent extends Component {
             gameLimit:45,
         };
 
+        this.checkboxHandleChange = this.checkboxHandleChange.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.leaveGame = this.leaveGame.bind(this);
         this.updateGame=this.updateGame.bind(this);
@@ -56,6 +57,7 @@ class NewGameComponent extends Component {
         game.privateGame = privateGame;
         game.rts = isRts;
         game.gameLimit = gameLimit;
+        
         this.props.wsSendMessage({
             channel: "/lobby/updateGame", payload: game
         })
@@ -92,7 +94,12 @@ class NewGameComponent extends Component {
     }
 
     handleChange(event) {
+        console.log("new game 96",event.target.id, event.target.value)
         this.setState({ [event.target.id]: event.target.value });
+    }
+    checkboxHandleChange(event) {
+        console.log("new game 96",event.target.id, event.target.checked)
+        this.setState({ [event.target.id]: event.target.checked });
     }
 
     render() {
@@ -113,20 +120,20 @@ class NewGameComponent extends Component {
                             {this.props.actualGame.amIAuthor?
 <div>
                             <div className="field">
-                                <input id="gameMode" type="checkbox" name="gameMode" className="switch is-medium is-rounded is-info" value={isRts} onChange={this.handleChange}/>
-                                <label for="gameMode">Tryb gry: RTS</label>
+                                <input id="isRts" type="checkbox" name="isRts" className="switch is-medium is-rounded is-info" checked={isRts} onChange={this.checkboxHandleChange}/>
+                                <label for="isRts">Tryb gry: RTS</label>
                             </div>
 
                             <div className="field">
                                 <div className="control">
                                     <label class="label">Limit gry</label>
-                                    <input className="input is-medium is-info" type="text" placeholder="Limit gry" value={gameLimit} onChange={this.handleChange}/>
+                                    <input className="input is-medium is-info" type="text" placeholder="Limit gry" id="gameLimit" value={gameLimit} onChange={this.handleChange}/>
                                 </div>
                             </div>
 
                             <div className="field">
-                                <input id="isPrivateGame" type="checkbox" name="isPrivateGame" className="switch is-medium is-rounded is-info" value={privateGame} onChange={this.handleChange} />
-                                <label for="isPrivateGame">Gra prywatna</label>
+                                <input id="privateGame" type="checkbox" name="privateGame" className="switch is-medium is-rounded is-info" checked={privateGame} onChange={this.checkboxHandleChange} />
+                                <label for="privateGame">Gra prywatna</label>
                             </div>
 
                             <h3>Kod do bezpośredniego dołączenia: {this.props.actualGame.game.id}</h3>

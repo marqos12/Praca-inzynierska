@@ -28,6 +28,7 @@ export const REGISTRATION_FAILED = "REGISTRATION_FAILED";
 export const LOGIN = "LOGIN";
 export const LOGGED = "LOGGED";
 export const LOGIN_FAILED = "LOGIN_FAILED";
+export const LOGOUT = "LOGOUT";
 
 export const AUTH_FROM_COOKIES = "AUTH_FROM_COOKIES";
 

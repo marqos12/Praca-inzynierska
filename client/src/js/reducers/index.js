@@ -1,10 +1,11 @@
-import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GOT_GAMES_LIST, SET_HISTORY, WS_CANNEL_SUBSCRIPTION, WS_GAME_CREATED, WS_GAME_UPDATED, WS_GAMERS_STATUS_UPDATE, WS_GAME_JOINED, WS_GAME_DISCONNECTED } from "../constants/action-types";
+import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GOT_GAMES_LIST, SET_HISTORY, WS_CANNEL_SUBSCRIPTION, WS_GAME_CREATED, WS_GAME_UPDATED, WS_GAMERS_STATUS_UPDATE, WS_GAME_JOINED, WS_GAME_DISCONNECTED, LOGOUT } from "../constants/action-types";
 
 const initialState = {
   ws: {
     client: null,
     sessionId: "",
-    gameLobbyChannelSybscription:null
+    gameLobbyChannelSybscription:null,
+    subscriptions:{}
   },
   auth: {
     loginSuccess: false,
@@ -65,6 +66,19 @@ function rootReducer(state = initialState, action) {
     });
   }
 
+  if (action.type === LOGOUT) {
+    return Object.assign({}, state, {
+      auth: Object.assign({}, state.auth, {
+        loginSuccess: false,
+        loginFailed: false,
+        user: {},
+        token: "",
+        registerSuccess: false,
+        registerFailed: false
+      })
+    });
+  }
+
   if (action.type === AUTH_FROM_COOKIES) {
     console.log(AUTH_FROM_COOKIES, state)
     return Object.assign({}, state, {
@@ -94,7 +108,17 @@ function rootReducer(state = initialState, action) {
   if (action.type === WS_CANNEL_SUBSCRIPTION) {
     console.log('reducer 95',state)
     console.log("reducer 96",action.payload)
-    
+    console.log("reduced 111",state.ws)
+    if(state.ws.subscriptions&&state.ws.subscriptions[action.payload.channel])state.ws.subscriptions[action.payload.channel].unsubscribe();
+
+    return Object.assign({}, state, {
+      ws: Object.assign({}, state.ws, {
+        subscriptions: Object.assign({}, state.ws.subscriptions, {
+          [action.payload.channel]: action.payload.subscription
+        })
+      })
+    }); 
+/*
     switch(action.payload.channel){
       case "GAME_LOBBY_CHANNEL":
           return Object.assign({}, state, {
@@ -102,7 +126,7 @@ function rootReducer(state = initialState, action) {
               gameLobbyChannelSybscription: action.payload.subscription
             })
           }); 
-    }
+    }*/
   }
 
   if (action.type === WS_GAME_CREATED) {

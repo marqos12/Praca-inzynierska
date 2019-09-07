@@ -10,7 +10,7 @@ import {
     WS_CANNEL_DISCONNECT,
     WS_GAME_DISCONNECT
 } from "../constants/action-types";
-import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList, wsGameCreated, wsGameConnected, wsConnectGame, wsChannelSubscription, wsGamersStatusUpdate, wsGameJooined, wsGameJoined, wsGameDisconnect, wsSendMessage, wsGameDisconnected, wsGameUpdated } from "../actions/index";
+import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList, wsGameCreated, wsGameConnected, wsConnectGame, wsChannelSubscription, wsGamersStatusUpdate, wsGameJooined, wsGameJoined, wsGameDisconnect, wsSendMessage, wsGameDisconnected, wsGameUpdated, wsChannelDisconnect } from "../actions/index";
 
 
 export function mainAppMiddleware({ getState, dispatch }) {
@@ -35,16 +35,16 @@ export function mainAppMiddleware({ getState, dispatch }) {
                     });
                     //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
                     stompClient.subscribe('/user/queue/reply', x => {
-                        
+
                         console.log("middleware 39 ", x)
                         console.log("middleware 40 ", x.body)
                         let resp = JSON.parse(x.body)
 
                         console.log("moja zwrotka /middleware/iindex/41 ", resp)
-                        switch(resp.type){
+                        switch (resp.type) {
                             case "GAME_LIST_UPDATED":
                                 dispatch(wsGotGamesList(resp.payload));
-                            break;
+                                break;
                             case "GAME_CREATED":
                                 dispatch(wsGameCreated(resp.payload))
                                 dispatch(wsConnectGame(resp.payload))
@@ -80,7 +80,7 @@ export function mainAppMiddleware({ getState, dispatch }) {
                 let stompClient = getState().ws.client;
                 subscription = stompClient.subscribe(action.payload.channel, action.payload.function);
                 dispatch(wsChannelSubscription({ channel: action.payload.channel, function: subscription }))
-            }   
+            }
 
             if (action.type === WS_SEND_MESSAGE) {
                 let stompClient = getState().ws.client;
@@ -133,27 +133,29 @@ export function mainAppMiddleware({ getState, dispatch }) {
             if (action.type === WS_CONNECT_TO_GAME) {
                 console.log("middleware 132")
                 let stompClient = getState().ws.client;
-                let subscription = stompClient.subscribe("/topic/lobby/game/"+action.payload.id, resp =>{
+                let subscription = stompClient.subscribe("/topic/lobby/game/" + action.payload.id, resp => {
                     resp = JSON.parse(resp.body)
-                    console.log("middleware 134",resp)
-                    switch(resp.type){
+                    console.log("middleware 134", resp)
+                    switch (resp.type) {
                         case "GAMERS_STATUS_UPDATE":
-                                dispatch(wsGamersStatusUpdate(resp.payload));
+                            dispatch(wsGamersStatusUpdate(resp.payload));
                             break;
-                            case "GAME_UPDATE":
-                                    dispatch(wsGameUpdated(resp.payload));
-                                break;
+                        case "GAME_UPDATE":
+                            dispatch(wsGameUpdated(resp.payload));
+                            break;
                     }
                 });
-                dispatch(wsChannelSubscription({ channel:"GAME_LOBBY_CHANNEL", subscription: subscription }))
+                console.log("middleware 148",subscription)
+                dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: subscription }))
             }
+
 
             if (action.type === WS_GAME_DISCONNECT) {
                 console.log("middleware 147")
-                dispatch(wsChannelSubscription({ channel:"GAME_LOBBY_CHANNEL", subscription: null }));
+                dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL" ,subscription:null}));
                 dispatch(wsSendMessage({
                     channel: "/lobby/leaveGame", payload: {
-                        gamerId:getState().actualGame.meGamer.id
+                        gamerId: getState().actualGame.meGamer.id
                     }
                 }));
             }

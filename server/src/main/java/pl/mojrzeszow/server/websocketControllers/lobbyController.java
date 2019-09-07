@@ -103,7 +103,7 @@ public class lobbyController {
 
 		if (!exists){
 			gamer = new Gamer(user, game, gamersData.getSessionId());
-			game.setGamersCount(game.getGamersCount()+1);
+			game.setGamersCount(game.getGamersCount()+1L);	
 			gameRepository.save(game);
 			List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
 			simpMessagingTemplate.convertAndSend("/lobby/allGames", allGames);
@@ -136,12 +136,19 @@ public class lobbyController {
 		List<Gamer> gamers2 = this.gamerRepository.findByGame(game);
 		if(game.getAuthor().equals(gamer.getUser()))
 		{
+					System.out.println("lobby controller 139, user był autorem, jego id: "+gamer.getUser().getId());
 			for (Gamer gameGamer : gamers2)
-				if(!game.getAuthor().equals(gameGamer.getUser())){
+				if(!game.getAuthor().getId().equals(gameGamer.getUser().getId())){
+					System.out.println("lobby controller 141, ten user to nie autor, jego id: "+gameGamer.getUser().getId());
 					game.setAuthor(gameGamer.getUser());
 					break;
-				}	
+				}
+				else 
+					System.out.println("lobby controller 147, ten gamer to autor");
+				
 		}
+		else 
+		System.out.println("lobby controller 147, user nie był autorem");
 		
 		gamerRepository.delete(gamer);	
 		game.setGamersCount(game.getGamersCount()-1);

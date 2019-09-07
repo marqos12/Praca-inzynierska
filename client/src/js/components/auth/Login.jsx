@@ -10,7 +10,10 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = state => {
-    return { auth: state.auth };    
+    return { 
+        auth: state.auth,
+        cookies: state.cookies
+    };    
 };
 
 class LoginComponent extends Component {
@@ -35,8 +38,11 @@ class LoginComponent extends Component {
     }
     componentDidUpdate(){
         //console.log(this.props)
-        if(this.props.auth.loginSuccess)
-            this.props.history.push("/")
+        if(this.props.auth.loginSuccess){
+            this.props.cookies.set('auth', JSON.stringify(this.props.auth), { path: '/' });
+            this.props.history.push("/panel")
+
+        }
     }
     render() {
         const { auth } = this.props
