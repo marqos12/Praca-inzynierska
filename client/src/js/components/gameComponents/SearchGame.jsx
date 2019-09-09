@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
-import { wsConnect, wsOpenPrivateCanals, wsSendMessage } from "../../actions/index";
+import { wsConnect, wsOpenPrivateCanals, wsSendMessage, wsChannelSubscription, wsSubscribeGameListChannel, wsUnsubscribeGameListChannel } from "../../actions/index";
 
 function mapDispatchToProps(dispatch) {
     return {
-        wsConnect: () => dispatch(wsConnect()),
-        wsOpenPrivateCanals: () => dispatch(wsOpenPrivateCanals()),
+        wsSubscribeGameListChannel: payload => dispatch(wsSubscribeGameListChannel(payload)),
+        wsUnsubscribeGameListChannel: payload => dispatch(wsUnsubscribeGameListChannel(payload)),
         wsSendMessage: payload => dispatch(wsSendMessage(payload))
     };
 }
@@ -30,50 +30,42 @@ class SearchGamesComponent extends Component {
             initialized: false
         }
 
-        this.wsConnect = this.wsConnect.bind(this);
-        this.wsOpenPrivateCanals = this.wsOpenPrivateCanals.bind(this);
-        this.wsSendMessage = this.wsSendMessage.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.joinGame = this.joinGame.bind(this);
     }
 
-    wsConnect() {
-        this.props.wsConnect();
-    }
-    wsOpenPrivateCanals() {
-        this.props.wsOpenPrivateCanals();
-    }
-    wsSendMessage() {
-        this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });
-    }
+
 
     joinGame(id){
-        this.props.history.push("/game/"+id)
+        this.props.history.push("/newGame/"+id)
     }
 
 
     componentDidMount() {
-        if (this.props.ws.client) {
-            //this.props.wsOpenPrivateCanals();
-        }
-        else {
-            this.props.wsConnect();
+        console.log("search game 45 ",this.props, this.state)
+        if (!this.state.initialized) {
+            if(this.props.ws.client){
+            this.props.wsSubscribeGameListChannel(); 
+            this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });  
+            this.setState({ initialized: true })
+            }
         }
     }
 
-    componentWillUpdate() {
-
+    componentDidUpdate() {
+        console.log("search game 54 ",this.props)
         if (!this.state.initialized) {
             if(this.props.ws.client){
+            this.props.wsSubscribeGameListChannel(); 
+            this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });  
             this.setState({ initialized: true })
-            this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });    
-
             }
         }
     }
 
     componentWillUnmount(){
-        
+        console.log("search game 76",this.props.location)
+        this.props.wsUnsubscribeGameListChannel();
     }
 
     handleChange(event) {
@@ -85,11 +77,11 @@ class SearchGamesComponent extends Component {
         return (
             <div className="container">
                 <div className="menuContent">
-                    <h1 className="gameTitle">Utwórz nową grę </h1>
+                    <h1 className="gameTitle">Lista otwartych gier </h1>
 
                     <div className="buttonList">
 
-                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.joinGame(1)}>Szukaj gry</a>
+                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.joinGame(1)}>Podaj kod gry</a>
 
 
                         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
@@ -105,7 +97,7 @@ class SearchGamesComponent extends Component {
                                 {gamesList.map((game, index) => {
                                     return <tr key={index} onClick={() => this.joinGame(game.id)}>
                                         <td>{game.rts?"RTS":"Turowa"}</td>
-                                        <td>2</td>
+                                        <td>{game.gamersCount}/{game.gamersCountLimit}</td>
                                         <td>{game.gameLimit}</td>
                                         <td>{game.author.username}</td>
                                     </tr>

@@ -25,7 +25,9 @@ import {
     WS_GAME_JOINED,
     WS_GAME_DISCONNECT,
     WS_GAME_DISCONNECTED,
-    LOGOUT
+    LOGOUT,
+    WS_SUBSCRIBE_GAME_LIST_CHANNEL,
+    WS_UNSUBSCRIBE_GAME_LIST_CHANNEL
 } from "../constants/action-types";
 
 export function wsConnect() {
@@ -132,4 +134,12 @@ export function wsGameDisconnect(payload) {
 
 export function wsGameDisconnected(payload) {
     return { type: WS_GAME_DISCONNECTED, payload };
+}
+
+export function wsSubscribeGameListChannel(payload) {
+    return { type: WS_SUBSCRIBE_GAME_LIST_CHANNEL, payload };
+}
+
+export function wsUnsubscribeGameListChannel(payload) {
+    return { type: WS_UNSUBSCRIBE_GAME_LIST_CHANNEL, payload };
 }

@@ -73,7 +73,7 @@ public class lobbyController {
 
 		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
 
-		simpMessagingTemplate.convertAndSend("/lobby/allGames", allGames);
+		simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+game.getId(), new GameMessage<Game>(MessageType.GAME_UPDATE, game));
 
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_UPDATE, game);
@@ -106,7 +106,7 @@ public class lobbyController {
 			game.setGamersCount(game.getGamersCount()+1L);	
 			gameRepository.save(game);
 			List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
-			simpMessagingTemplate.convertAndSend("/lobby/allGames", allGames);
+			simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
 		}
 
 		gamer = gamerRepository.save(gamer);
@@ -161,7 +161,7 @@ public class lobbyController {
 		}
 
 		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
-		simpMessagingTemplate.convertAndSend("/lobby/allGames", allGames);	
+		simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);	
 
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+game.getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 

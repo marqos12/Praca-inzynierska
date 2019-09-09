@@ -8,7 +8,9 @@ import {
     WS_CONNECT_TO_GAME,
     WS_CANNEL_CONNECT,
     WS_CANNEL_DISCONNECT,
-    WS_GAME_DISCONNECT
+    WS_GAME_DISCONNECT,
+    WS_SUBSCRIBE_GAME_LIST_CHANNEL,
+    WS_UNSUBSCRIBE_GAME_LIST_CHANNEL
 } from "../constants/action-types";
 import { wsConnected, registered, registrationFailed, logged, loginFailed, wsGotGamesList, wsGameCreated, wsGameConnected, wsConnectGame, wsChannelSubscription, wsGamersStatusUpdate, wsGameJooined, wsGameJoined, wsGameDisconnect, wsSendMessage, wsGameDisconnected, wsGameUpdated, wsChannelDisconnect } from "../actions/index";
 
@@ -159,6 +161,24 @@ export function mainAppMiddleware({ getState, dispatch }) {
                     }
                 }));
             }
+ 
+            if (action.type === WS_SUBSCRIBE_GAME_LIST_CHANNEL) {
+                console.log("middleware 165")
+                let stompClient = getState().ws.client;
+                let subscription = stompClient.subscribe("/topic/lobby/allGames", resp => {
+                    resp = JSON.parse(resp.body)
+                    console.log("middleware 134", resp)
+                    dispatch(wsGotGamesList(resp)); 
+                });
+                dispatch(wsChannelSubscription({ channel: "GAME_LIST_CHANNEL", subscription: subscription }))
+            }
+
+            if (action.type === WS_UNSUBSCRIBE_GAME_LIST_CHANNEL) {
+                console.log("middleware 186")
+                dispatch(wsChannelSubscription({ channel: "GAME_LIST_CHANNEL" ,subscription:null}));
+            }
+
+
 
             return next(action);
         };
