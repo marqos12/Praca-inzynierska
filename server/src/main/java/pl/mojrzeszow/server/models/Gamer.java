@@ -63,7 +63,7 @@ public class Gamer {
 		this.game = game;
 		this.sessionId = sessionId;
 		this.notification = new Date();
-		this.status = false;
+		this.status = true;
 		this.ready = false;
 		this.ordinalNumber = 0L;//do poprawienia
 		this.points = 0L;

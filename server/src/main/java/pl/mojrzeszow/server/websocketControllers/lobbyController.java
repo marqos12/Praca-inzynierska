@@ -173,7 +173,7 @@ public class lobbyController {
 	}
 
 	@MessageMapping("/statusUpdate")
-	public void gamerStatusUpdate (@Payload Gamer gamer) {
+	public GameMessage<Gamer> gamerStatusUpdate (@Payload Gamer gamer) {
 
 		System.out.println("lobby 126");
 
@@ -186,6 +186,8 @@ public class lobbyController {
 		List<Gamer> gamers = this.gamerRepository.findByGame(gamer.getGame());
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+gamer.getGame().getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
+		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, gamer);
+		return gameMessage;
 	}
 
 
