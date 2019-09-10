@@ -1,4 +1,4 @@
-import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GOT_GAMES_LIST, SET_HISTORY, WS_CANNEL_SUBSCRIPTION, WS_GAME_CREATED, WS_GAME_UPDATED, WS_GAMERS_STATUS_UPDATE, WS_GAME_JOINED, WS_GAME_DISCONNECTED, LOGOUT } from "../constants/action-types";
+import { WS_CONNECTED_TO_SERVER, REGISTERED, REGISTRATION_FAILED, LOGGED, LOGIN_FAILED, AUTH_FROM_COOKIES, SET_COOKIES_SERVICE, WS_GOT_GAMES_LIST, SET_HISTORY, WS_CANNEL_SUBSCRIPTION, WS_GAME_CREATED, WS_GAME_UPDATED, WS_GAMERS_STATUS_UPDATE, WS_GAME_JOINED, WS_GAME_DISCONNECTED, LOGOUT, SET_ORIGIN } from "../constants/action-types";
 
 const initialState = {
   ws: {
@@ -23,7 +23,8 @@ const initialState = {
     gamers: [],
     amIAuthor:false,
     meGamer:null
-  }
+  },
+  origin:""
 };
 
 function rootReducer(state = initialState, action) {
@@ -179,6 +180,13 @@ function rootReducer(state = initialState, action) {
         amIAuthor:false,
         meGamer:null
       })
+    });
+  }
+
+  if (action.type === SET_ORIGIN) {
+    console.log("reducer 187", action.payload)
+    return Object.assign({}, state, {
+      origin: action.payload
     });
   }
 

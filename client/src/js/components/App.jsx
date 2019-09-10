@@ -5,7 +5,7 @@ import Login from "./auth/Login.jsx";
 import Registration from "./auth/Registration.jsx";
 import UserPanel from "./UserPanel.jsx";
 import { Route , withRouter} from 'react-router-dom';
-import { setCookiesService, setHistory, wsConnect, setAuthFromCookies } from "../actions/index";
+import { setCookiesService, setHistory, wsConnect, setAuthFromCookies, setOrigin } from "../actions/index";
 import "./css/main.scss";
 import { withCookies, Cookies } from 'react-cookie';
 
@@ -44,6 +44,13 @@ class App extends Component {
     }
   }
 
+  componentDidMount(){
+    
+    console.log("app 49",window.location.href  )
+      
+    this.props.setOrigin(window.location.href.split("/#")[0])
+  }
+
   render() {
     return (
       <div className="app">
@@ -64,6 +71,7 @@ class App extends Component {
 function mapDispatchToProps(dispatch) {
   return {
     wsConnect: () => dispatch(wsConnect()),
+    setOrigin: payload => dispatch(setOrigin(payload)),
     setCookiesService: payload => dispatch(setCookiesService(payload)),
     setHistory: payload => dispatch(setHistory(payload)),
     setAuthFromCookies: payload => dispatch(setAuthFromCookies(payload))

@@ -29,14 +29,18 @@ class NewGameComponent extends Component {
             privateGame: true,
             isRts: false,
             gameLimit: 45,
-            ready:false,
+            ready: false,
+            canStart: false,
+            loopPrevent:false
         };
 
+        this.loopPrevent=false;
         this.checkboxHandleChange = this.checkboxHandleChange.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.leaveGame = this.leaveGame.bind(this);
         this.updateGame = this.updateGame.bind(this);
     }
+
 
     componentDidMount() {
         const { id } = this.props.match.params;
@@ -56,14 +60,14 @@ class NewGameComponent extends Component {
         let gamer = this.props.actualGame.meGamer;
         gamer.ready = !this.state.ready
         this.setState({ ready: !this.state.ready })
-        console.log("new game 62",gamer,this.state)
+        console.log("new game 62", gamer, this.state)
         this.props.wsSendMessage({
             channel: "/lobby/statusUpdate", payload: gamer
         })
     }
 
     startGame() {
-        
+
     }
 
     updateGame() {
@@ -102,6 +106,17 @@ class NewGameComponent extends Component {
                     channel: "/lobby/statusUpdate", payload: gamer
                 })
             }
+            let i = 0;
+                console.log("newgame 108", i, this.props.actualGame.gamers.length,this.loopPrevent, this.state)
+            if (this.props.actualGame.gamers.length > 0 && !this.loopPrevent) {
+                this.loopPrevent=true
+                for(const gamer of this.props.actualGame.gamers)if (gamer.ready) i++
+                /*this.props.actualGame.gamers.foreach(function(gamer) {
+                    
+                })*/
+                this.setState({ canStart: (i == this.props.actualGame.gamers.length) })
+            }
+            else if (this.loopPrevent) this.loopPrevent=false;
         }
         if (this.state.initialized && !this.props.actualGame.meGamer) {
             this.props.history.push("/panel")
@@ -121,7 +136,7 @@ class NewGameComponent extends Component {
 
     render() {
 
-        const { privateGame, isRts, gameLimit, ready } = this.state;
+        const { privateGame, isRts, gameLimit, ready,canStart } = this.state;
 
         return (
             <div className="container">
@@ -136,7 +151,7 @@ class NewGameComponent extends Component {
 
                             {this.props.actualGame.amIAuthor ?
                                 <div>
-                                    
+
                                     <div className="field">
                                         <input id="isRts" type="checkbox" name="isRts" className="switch is-medium is-rounded is-info" checked={isRts} onChange={this.checkboxHandleChange} />
                                         <label for="isRts">Tryb gry: RTS</label>
@@ -191,15 +206,15 @@ class NewGameComponent extends Component {
                                 <tbody>
                                     {this.props.actualGame.gamers.map((gamer, index) => {
                                         return <tr key={index} >
-                                            <td>{gamer.status?":)":":("}</td>
+                                            <td>{gamer.status ? ":)" : ":("}</td>
                                             <td>{gamer.user.username}</td>
-                                            <td>{gamer.ready?"+":""}</td>
+                                            <td>{gamer.ready ? "+" : ""}</td>
                                         </tr>
                                     })}
                                 </tbody>
                             </table>
-                            <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.setReady()}>{ready?"Nie gotowy":"Gotowy"}</a>
-                            {(this.props.actualGame.amIAuthor)?<a className="button is-large  is-link is-rounded is-fullwidth " disabled = {(this.props.actualGame.amIAuthor)? "disabled" : ""} onClick={() => this.startGame()}>Rozpocznij grę</a>:<span></span>}
+                            <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.setReady()}>{ready ? "Nie gotowy" : "Gotowy"}</a>
+                            {(this.props.actualGame.amIAuthor) ? <a className="button is-large  is-link is-rounded is-fullwidth " disabled={(canStart) ?  "":"disabled" } onClick={() => this.startGame()}>Rozpocznij grę</a> : <span></span>}
                             <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.leaveGame()}>Wyjdź z gry</a>
                         </div>
                         : <div></div>}

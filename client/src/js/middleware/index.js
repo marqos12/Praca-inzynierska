@@ -90,7 +90,8 @@ export function mainAppMiddleware({ getState, dispatch }) {
             }
 
             if (action.type === REGISTER) {
-                fetch("http://localhost:8080/api/auth/signup", {
+                fetch(getState().origin+"/api/auth/signup", {
+                //fetch("http://localhost:8080/api/auth/signup", {
                     //fetch("api/auth/signup", {
                     method: 'POST',
                     cache: 'no-cache',
@@ -109,7 +110,8 @@ export function mainAppMiddleware({ getState, dispatch }) {
             }
 
             if (action.type === LOGIN) {
-                fetch("http://localhost:8080/api/auth/signin", {
+                fetch(getState().origin+"/api/auth/signin", {
+                //fetch("http://localhost:8080/api/auth/signin", {
                     //fetch("api/auth/signup", {
                     method: 'POST',
                     cache: 'no-cache',

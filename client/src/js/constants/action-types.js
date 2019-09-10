@@ -36,3 +36,4 @@ export const AUTH_FROM_COOKIES = "AUTH_FROM_COOKIES";
 
 export const SET_COOKIES_SERVICE= "SET_COOKIES_SERVICE";
 export const SET_HISTORY = "SET_HISTORY";
+export const SET_ORIGIN = "SET_ORIGIN";
