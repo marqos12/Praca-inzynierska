@@ -1,0 +1,18 @@
+
+@import "bulma.sass";
+@import "components/headers.scss";
+@import "components/menu.scss";
+
+
+
+.app{
+    background-image:url("/assets/wawa.jpg");
+    background-size: cover; 
+    width: 100vw;
+    height: 100vh;
+    //overflow: hidden;
+}
+
+html{
+    //overflow: hidden;
+}
