@@ -8,7 +8,7 @@ import GameScene from "./scenes/GameScene";
 
 function mapDispatchToProps(dispatch) {
     return {
-        wsConnect: () => dispatch(wsConnect())
+
     };
 }
 
@@ -29,23 +29,34 @@ class MainGameComponent extends Component {
 
     componentDidMount() {
         const config = {
-          type: Phaser.AUTO,
-          width: window.innerWidth,
-          height: window.innerHeight,
-          parent: 'phaser-game',
-          scene: [GameScene]
+            title: "Moje miasto",
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            parent: 'phaser-game',
+            physics: {
+                default: "arcade",
+                arcade: {
+                    debug: false
+                }
+            },
+            backgroundColor: "#3131ff",
+            scene: [GameScene]
         }
-    
+
         new Phaser.Game(config)
-      }
+    }
 
     shouldComponentUpdate() {
         return false
-      }
+    }
     render() {
 
         return (
-            <div id="phaser-game" />
+            <div>
+                <div id="phaser-game" />
+                <div> asd </div>
+            </div>
         );
     }
 }

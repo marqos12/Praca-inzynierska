@@ -1,9 +1,9 @@
 
 import Phaser from "../../phaser/phaser.min.js";
 
-export class FixedPlate extends Phaser.GameObjects.Sprite {
+export class FixedTile extends Phaser.GameObjects.Sprite {
     constructor (scene, x, y, texture) { 
-      super(scene, x, y, 'plates',texture)
+      super(scene, x, y, 'tiles',texture)
       this.setInteractive()
       this.scene = scene;
     }
@@ -16,6 +16,7 @@ export class FixedPlate extends Phaser.GameObjects.Sprite {
     makeScale(scale){
       let oldWidth = this.displayWidth;
       this.setScale(scale);
+      
       let newWidth = this.displayWidth;
       this.x-=window.innerWidth/2
       this.y-=window.innerHeight/2
