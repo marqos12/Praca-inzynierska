@@ -55,7 +55,44 @@ class MainGameComponent extends Component {
         return (
             <div>
                 <div id="phaser-game" />
-                <div> asd </div>
+                <div className="hud">
+                    <div className="hud_card timer">
+                        <img src="assets/timer.png"></img>
+                        Upłynęło czasu: 15:11
+                        <br />
+                        <img src="assets/left.png"></img>
+                        Upłynęło rund: 15/45
+                    </div>
+                    <div className="hud_card gamersList">
+                        <div>
+                            <img src="assets/arrow.png"></img>Stefan
+                        </div>
+                        <div>
+                            <img src="assets/null.png"></img>Józef
+                        </div>
+                    </div>
+                    <div className="hud_card newTile">
+
+                    </div>
+                    <div className="hud_card resources">
+                        <div >
+                            <img src="assets/duck.png"></img>
+                            1000
+                        </div>
+                        <div>
+                            <img src="assets/P.png"></img>
+                            99
+                        </div>
+                    </div>
+                    <div className="hud_card rank">
+                        <div>
+                            <img src="assets/1.png"></img>Stefan 100P
+                        </div>
+                        <div>
+                            <img src="assets/2.png"></img>Józef 99P
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

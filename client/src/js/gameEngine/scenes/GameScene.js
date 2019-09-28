@@ -43,7 +43,7 @@ export default class GameScene extends Scene {
 
     this.fixedTiles.forEach(x => { x.setScale(this.myScale) })
 
-    this.hud = new Hud(this);
+    //this.hud = new Hud(this);
     addEventListener('clickedNewTile', (x) => {
       const tile = { name: x.detail.name, posx: 375, posy: 375, angle: 0 }
       //new Plate(this,375,375,x.detail.name,-1).setScale(0.5);
@@ -75,7 +75,7 @@ export default class GameScene extends Scene {
     addEventListener("wheel", x => {
 
 //////////////////////////////
-store.dispatch(wsSendMessage({ channel: "/lobby/createGame", payload: { id: "asdasd" } }));
+//store.dispatch(wsSendMessage({ channel: "/lobby/createGame", payload: { id: "asdasd" } }));
 ///////////////////////////////
 
 
@@ -114,6 +114,7 @@ store.dispatch(wsSendMessage({ channel: "/lobby/createGame", payload: { id: "asd
   update() {
     if (this.input.activePointer.isDown) {
       if (this.origDragPoint) {
+        console.log("GameScene 117", this.input.activePointer, this.input.activePointer.prevPosiotion)
         this.tiles.forEach(x => {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           x.y -= this.origDragPoint.y - this.input.activePointer.position.y;

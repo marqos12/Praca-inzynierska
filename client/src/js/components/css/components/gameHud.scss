@@ -1,0 +1,81 @@
+@import "../variables";
+
+$tab-width:12vw;
+$tile-tab-width:20vw;
+$timer-tab-height:95px;
+$rank-tab-heigth:30vh;
+$resources-tab-width:20vw;
+$resources-tab-height:7vh;
+
+
+
+.hud{
+    .hud_card{
+        position: absolute;
+        z-index: 100;
+        background-color: $card-background-color;
+        padding:10px;
+        border:2px solid $card-border-color;
+    }
+    img{
+        width:25px;
+        height:25px;
+        position: relative;
+        top: 6px;
+        margin-right: 10px;
+    }
+    .timer{
+        right: 0;
+        width:$tab-width;
+        height:$timer-tab-height;
+        border-bottom: 0
+    }
+
+    .gamersList{
+        right: 0;
+        top:$timer-tab-height;
+        width:$tab-width;
+        height:$rank-tab-heigth;
+        border-bottom-left-radius: 15px;
+
+        
+    }
+    
+    .newTile{
+        right: 0;
+        bottom: 0;
+        width:$tile-tab-width;
+        height:30vh;
+        border-top-left-radius: 15px;
+    }
+
+    .rank{
+        left: 0;
+        bottom: 0;
+        width:$tab-width;
+        height:$rank-tab-heigth;
+        border-top-right-radius: 15px;
+    }
+
+    .resources{
+        left: $tab-width;
+        bottom: 0;
+        width:$resources-tab-width;
+        height:$resources-tab-height;
+        border-top-right-radius: 15px;
+        border-left:0;
+
+        div{
+            width:9vw;
+            display: inline-block;
+        }
+    }
+}
+
+#phaser-game{
+    z-index: 10;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: absolute;
+}
