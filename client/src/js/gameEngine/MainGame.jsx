@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { NavLink } from 'react-router-dom';
-import { wsConnect } from "../actions";
-import Phaser from "./phaser/phaser.min.js";
 
-import GameScene from "./scenes/GameScene";
+import GameComponent from "./GameComponent.jsx";
+import comunicationEngine from "./comunicationEngine";
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -14,47 +12,34 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = state => {
     return {
-        auth: state.auth
+        auth: state.auth,
+        actualGame: state.actualGame
     };
 };
-
-
 
 class MainGameComponent extends Component {
     constructor() {
         super();
-
-
+        this.state = {
+            gameJoined: false,
+        }
     }
 
     componentDidMount() {
-        const config = {
-            title: "Moje miasto",
-            type: Phaser.AUTO,
-            width: window.innerWidth,
-            height: window.innerHeight,
-            parent: 'phaser-game',
-            physics: {
-                default: "arcade",
-                arcade: {
-                    debug: false
-                }
-            },
-            backgroundColor: "#3131ff",
-            scene: [GameScene]
+        if (this.props.actualGame.meGamer && !this.state.gameJoined) {
+            console.log("mainGame 37", this.props)
+            comunicationEngine.wsConnect(this.props.actualGame.meGamer);
+            console.log("mainGame 39", this.props)
+            this.setState({
+                gameJoined: true,
+            })
         }
-
-        new Phaser.Game(config)
     }
 
-    shouldComponentUpdate() {
-        return false
-    }
     render() {
-
         return (
             <div>
-                <div id="phaser-game" />
+                <GameComponent />
                 <div className="hud">
                     <div className="hud_card timer">
                         <img src="assets/timer.png"></img>
@@ -68,7 +53,7 @@ class MainGameComponent extends Component {
                             <img src="assets/arrow.png"></img>Stefan
                         </div>
                         <div>
-                            <img src="assets/null.png"></img>Józef
+                            <img src="assets/null.png"></img>Józef S
                         </div>
                     </div>
                     <div className="hud_card newTile">

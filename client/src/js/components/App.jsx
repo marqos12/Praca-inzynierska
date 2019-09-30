@@ -49,6 +49,10 @@ class App extends Component {
     }
   }
 
+componentWillUpdate(){
+  console.log("app 53")
+}
+
   componentDidMount() {
 
     console.log("app 49", window.location.href)
@@ -56,6 +60,17 @@ class App extends Component {
     this.props.setOrigin(window.location.href.split("/#")[0])
   }
 
+  componentDidUpdate(){
+    let actualGame = this.props.actualGame;
+    if((actualGame&&actualGame.game!=null&&actualGame.game.started)!=this.state.gameStarted){
+    console.log("app 60",actualGame&&actualGame.game!=null&&actualGame.game.started);
+      this.forceUpdate();
+      this.setState({
+        gameStarted: actualGame&&actualGame.game!=null&&actualGame.game.started,
+      })  
+    }
+   
+  }
   render() {
     const { gameStarted } = this.state;
     return (
@@ -74,7 +89,8 @@ class App extends Component {
         :
         <div>
          <MainGame />
-        </div>}
+        </div>
+      }
       </div>
     )
   }
@@ -86,6 +102,7 @@ function mapDispatchToProps(dispatch) {
     setOrigin: payload => dispatch(setOrigin(payload)),
     setCookiesService: payload => dispatch(setCookiesService(payload)),
     setHistory: payload => dispatch(setHistory(payload)),
+    wsSendMessage: payload => dispatch(wsSendMessage(payload)),
     setAuthFromCookies: payload => dispatch(setAuthFromCookies(payload))
   };
 }
@@ -94,7 +111,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     auth: state.auth,
     cookies: ownProps.cookies,
-    ws: state.ws
+    ws: state.ws,
+    actualGame:state.actualGame
   };
 };
 

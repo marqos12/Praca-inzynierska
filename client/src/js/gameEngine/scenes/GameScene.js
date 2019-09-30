@@ -26,9 +26,12 @@ export default class GameScene extends Scene {
     this.login;
 
     this.comunicationEngine = comunicationEngine
+    this.unsubscribe = store.subscribe(() => console.log(store.getState()))
   }
 
   create() {
+
+
     for (let i = 0; i < 30; i++) {
       for (let j = 0; j < 30; j++) {
         let tile = new FixedTile(this, (i * 150) - 15 * 150 + Math.floor(window.innerWidth / 2 / 150) * 150, j * 150 - 15 * 150 + Math.floor(window.innerHeight / 2 / 150) * 150, 'green' + Phaser.Math.Between(1, 2))
@@ -80,9 +83,9 @@ export default class GameScene extends Scene {
 
 
       if (x.deltaY < 0)
-        this.myScale -= 0.05;
-      else
         this.myScale += 0.05;
+      else
+        this.myScale -= 0.05;
 
       if (this.myScale < 0.2)
         this.myScale = 0.2;
@@ -114,7 +117,7 @@ export default class GameScene extends Scene {
   update() {
     if (this.input.activePointer.isDown) {
       if (this.origDragPoint) {
-        console.log("GameScene 117", this.input.activePointer, this.input.activePointer.prevPosiotion)
+        
         this.tiles.forEach(x => {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           x.y -= this.origDragPoint.y - this.input.activePointer.position.y;

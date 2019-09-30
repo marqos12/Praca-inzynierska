@@ -11,6 +11,7 @@ public enum MessageType {
 	TILE_CHANGED,
 	GAME_END,
 	GAME_CREATED,
+	GAME_STARTED,
 
 
 

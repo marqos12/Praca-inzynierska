@@ -7,22 +7,27 @@ class CommunicationEngine {
         this.stompClient = Stomp.over(this.socket);
         this.connected = false;
         this.sessionId = "";
+        this.gamer = null;
 
+        this.gameChannelSubscripption = null;
+        this.userPrivateChannelSubscripption = null;
+        this.userPublicChannelSubscripption = null;
+        
     }
 
-    wsConnect() {
+    wsConnect(gamer) {
         this.stompClient.connect({}, frame => {
 
-            var url = stompClient.ws._transport.url;
+            var url = this.stompClient.ws._transport.url;
             url = url.split("/")
             this.sessionId = url[url.length - 2];
 
             //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
-            this.stompClient.subscribe("/user/" + sessionId + "/reply", message => {
+            this.userPublicChannelSubscripption = this.stompClient.subscribe("/user/" + this.sessionId + "/reply", message => {
                 console.log("CommunicationEngine 17", message);
             });
             //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
-            this.stompClient.subscribe('/user/queue/reply', message => {
+            this.userPrivateChannelSubscripption=this.stompClient.subscribe('/user/queue/reply', message => {
 
                 console.log("CommunicationEngine 22 ", message)
                 console.log("CommunicationEngine 23 ", message.body)
@@ -47,17 +52,22 @@ class CommunicationEngine {
                 }
             });
             this.connected = true;
+            this.wsJoinGame(gamer)
         });
     }
 
-    wsJoinGame() {
-        //TODO:
-        this.stompClient.send("/app" + action.payload.channel, {}, JSON.stringify(action.payload.payload));
+    wsJoinGame(gamer) {
+        gamer.sessionId = this.sessionId;
+        this.gamer=gamer;
+        console.log("communicationEngine 62");
+        this.gameChannelSubscripption =this.stompClient.subscribe("/topic/game/game/" + gamer.game.id, message => {
+            console.log("CommunicationEngine 60", message);
+        });
+        this.stompClient.send("/app/game/joinGame", {}, JSON.stringify(gamer));
     }
     wsSendMovedPlate(plate) {
         //TODO:
         this.stompClient.send("/app" + action.payload.channel, {}, JSON.stringify(action.payload.payload));
-
     }
 }
 

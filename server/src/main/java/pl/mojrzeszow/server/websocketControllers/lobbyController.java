@@ -190,6 +190,23 @@ public class lobbyController {
 		return gameMessage;
 	}
 
+	@MessageMapping("/startGame")
+	public void startGame (@Payload Game game) {
 
+		System.out.println("lobby 196");
+
+		Game updatingGame = this.gameRepository.findById(game.getId()).orElse(null);
+		updatingGame.setStarted(game.isStarted());
+		updatingGame=this.gameRepository.save(updatingGame);
+		
+		List<Gamer> gamers = this.gamerRepository.findByGame(updatingGame);
+
+		for(Gamer gamer : gamers){
+			gamer.setReady(false);
+			this.gamerRepository.save(gamer);
+		}
+
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+game.getId(), new GameMessage<Game>(MessageType.GAME_STARTED, updatingGame));	
+	}
 
 }

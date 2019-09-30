@@ -9,7 +9,6 @@ import {
     LOGIN_FAILED,
     AUTH_FROM_COOKIES,
     SET_COOKIES_SERVICE,
-    WS_GET_GAMES_LIST,
     WS_SEND_MESSAGE,
     WS_GOT_GAMES_LIST,
     WS_OPEN_PRIVATE_CANALS,
@@ -28,7 +27,7 @@ import {
     LOGOUT,
     WS_SUBSCRIBE_GAME_LIST_CHANNEL,
     WS_UNSUBSCRIBE_GAME_LIST_CHANNEL,
-    SET_ORIGIN
+    SET_ORIGIN,
 } from "../constants/action-types";
 
 export function wsConnect() {
