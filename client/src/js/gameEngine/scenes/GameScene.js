@@ -1,9 +1,9 @@
 import { Scene } from "../phaser/phaser.min.js";
+import Phaser from "../phaser/phaser.min.js";
 import { FixedTile } from "./components/FixedTile";
-import { Hud } from "./components/Hud";
-import comunicationEngine from "../comunicationEngine";
 import store from "../../store";
-import { wsSendMessage } from "../../actions/index.js";
+import { gameWsGameJoined, gameNewTileDisplayed } from "../../actions/gameActions.js";
+import { Tile } from "./components/Tile.js";
 
 export default class GameScene extends Scene {
 
@@ -13,75 +13,69 @@ export default class GameScene extends Scene {
     });
 
     this.fixedTiles = [];
-    this.hud;
     this.tiles = [];
     this.origDragPoint;
-    this.x = 0;
-    this.y = 0;
-    this.stompClient;
-    this.socket;
+    this.tableCenterX = 0;
+    this.tableCenterY = 0;
     this.myScale = 0.5;
-    this.point0;
-    this.id;
-    this.login;
 
-    this.comunicationEngine = comunicationEngine
-    this.unsubscribe = store.subscribe(() => console.log(store.getState()))
+    this.tileWidth = 150;
+    this.halfOfTable = 15;
+    this.tableWidth = this.halfOfTable * 2 + 1;
+
+    this.state = store.getState();
+    this.gameConnected = false;
+
   }
 
   create() {
+    for (let i = 0; i < this.tableWidth; i++) {
+      for (let j = 0; j < this.tableWidth; j++) {
+        let tile = new FixedTile(this,
+          (i - this.halfOfTable) * this.tileWidth + Math.floor(window.innerWidth / 2),
+          (j - this.halfOfTable) * this.tileWidth + Math.floor(window.innerHeight / 2),
+          'green' + Phaser.Math.Between(1, 2));
 
-
-    for (let i = 0; i < 30; i++) {
-      for (let j = 0; j < 30; j++) {
-        let tile = new FixedTile(this, (i * 150) - 15 * 150 + Math.floor(window.innerWidth / 2 / 150) * 150, j * 150 - 15 * 150 + Math.floor(window.innerHeight / 2 / 150) * 150, 'green' + Phaser.Math.Between(1, 2))
         tile.setAngle(Phaser.Math.Between(0, 3) * 90)
         this.fixedTiles.push(tile);
-        this.add.existing(tile.setDepth(0))
+        //this.add.existing(tile.setDepth(0))
       }
     }
-    this.point0 = this.fixedTiles[30 * 15 + 15];
-    this.x = Math.floor(window.innerWidth / 2 % 150)
-    this.y = Math.floor(window.innerHeight / 2 % 150)
 
-    this.fixedTiles.forEach(x => { x.setScale(this.myScale) })
+    //////////////////////
 
-    //this.hud = new Hud(this);
-    addEventListener('clickedNewTile', (x) => {
-      const tile = { name: x.detail.name, posx: 375, posy: 375, angle: 0 }
-      //new Plate(this,375,375,x.detail.name,-1).setScale(0.5);
 
-      // let plateC = new PlateClass(null,375,375,x.name);
-      //console.log(plate, JSON.parse(JSON.stringify(plate)))
-      /*fetch('/newPlate/0', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(plate)
-      })
-        .then(x => x.json())
-        .then(x => {
-          this.sendMove(x);
-        });*/
+    ///////////////////
+    
+
+    console.log("GameScene 26", this.state)
+    this.unsubscribe = store.subscribe(() => {
+      this.drawElipse();
+      console.log("GameScene 47", this.state)
+      this.state = store.getState();
+      this.stateChanged();
+    });
+
+    this.events.on('destroy', ()=>{
+      console.log("GameScene 67")
+      this.unsubscribe();
     })
 
+    this.tableCenterX = Math.floor(window.innerWidth / 2)
+    this.tableCenterY = Math.floor(window.innerHeight / 2)
+    this.fixedTiles.forEach(x => { x.setScale(this.myScale) })
+
+    /*
     addEventListener('draggedTile', (x) => {
-      ///console.log('4',x.detail)
       this.sendMove(x.detail);
     })
 
     addEventListener('rotatedTile', (x) => {
       this.sendMove(x.detail);
     })
+    */
 
     addEventListener("wheel", x => {
-
-//////////////////////////////
-//store.dispatch(wsSendMessage({ channel: "/lobby/createGame", payload: { id: "asdasd" } }));
-///////////////////////////////
-
-
       if (x.deltaY < 0)
         this.myScale += 0.05;
       else
@@ -95,15 +89,14 @@ export default class GameScene extends Scene {
 
       this.tiles.forEach(x => {
         x.makeScale(this.myScale);
-        /*x.x-= this.origDragPoint.x - this.input.activePointer.position.x;
-        x.y-= this.origDragPoint.y - this.input.activePointer.position.y;*/
-     })
+      })
       this.fixedTiles.forEach(x => {
         x.makeScale(this.myScale);
-        /*x.x-= this.origDragPoint.x - this.input.activePointer.position.x;
-        x.y-= this.origDragPoint.y - this.input.activePointer.position.y;*/
-     })
+      })
+      this.tileWidth = this.fixedTiles[0].displayWidth
+      console.log("GameScene 82", this.tileWidth)
     })
+
 
   }
 
@@ -117,7 +110,7 @@ export default class GameScene extends Scene {
   update() {
     if (this.input.activePointer.isDown) {
       if (this.origDragPoint) {
-        
+
         this.tiles.forEach(x => {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           x.y -= this.origDragPoint.y - this.input.activePointer.position.y;
@@ -127,8 +120,8 @@ export default class GameScene extends Scene {
           x.y -= this.origDragPoint.y - this.input.activePointer.position.y;
         })
 
-        this.x -= this.origDragPoint.x - this.input.activePointer.position.x;
-        this.y -= this.origDragPoint.y - this.input.activePointer.position.y;
+        this.tableCenterX -= this.origDragPoint.x - this.input.activePointer.position.x;
+        this.tableCenterY -= this.origDragPoint.y - this.input.activePointer.position.y;
       }
 
       this.origDragPoint = this.input.activePointer.position.clone();
@@ -136,5 +129,50 @@ export default class GameScene extends Scene {
     else {
       this.origDragPoint = null;
     }
+  }
+
+  stateChanged() {
+    if (!this.gameConnected && this.state.ws.client && this.state.actualGame.game) {
+      this.gameConnected = true;
+      store.dispatch(gameWsGameJoined(this.state.actualGame.game));
+    }
+    if (this.state.actualGame.tilesToDisplay.length != 0) {
+      this.state.actualGame.tilesToDisplay.forEach(tile => {
+        console.log("GameScene 121", this)
+        let tile2 = new FixedTile(this,
+           Math.floor(window.innerWidth / 2),
+           Math.floor(window.innerHeight / 2),
+          'green' + Phaser.Math.Between(1, 2));
+
+        tile2.setAngle(Phaser.Math.Between(0, 3) * 90)
+        this.fixedTiles.push(tile2);
+        this.add.existing(tile2.setDepth(0))
+        /*
+        let tileSprite = new Tile(this,
+          this.tableCenterX - this.tileWidth / 2 + tile.posX * this.tileWidth,
+          this.tableCenterY - this.tileWidth / 2 + tile.posY * this.tileWidth,
+          'house',
+          tile.id).setScale(this.myScale);
+
+        tileSprite.setAngle(tile.angle)
+        this.tiles.push(tileSprite);
+        this.add.existing(tileSprite.setDepth(10))*/
+
+      })
+      store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
+      console.log(this)
+    }
+  }
+
+  drawElipse(){
+    let tile = new FixedTile(this,
+      Math.floor(window.innerWidth / 2),
+      Math.floor(window.innerHeight / 2),
+     'green' + Phaser.Math.Between(1, 2));
+
+   tile.setAngle(Phaser.Math.Between(0, 3) * 90)
+   this.fixedTiles.push(tile);
+   this.add.existing(tile.setDepth(0))
+    console.log("GameScene 160")
   }
 }

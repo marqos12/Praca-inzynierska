@@ -2,18 +2,19 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import GameComponent from "./GameComponent.jsx";
-import comunicationEngine from "./comunicationEngine";
+import { gameWsGameJoin } from "../actions/gameActions.js";
 
 function mapDispatchToProps(dispatch) {
     return {
-
+        gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload))
     };
 }
 
 const mapStateToProps = state => {
     return {
         auth: state.auth,
-        actualGame: state.actualGame
+        actualGame: state.actualGame,
+        ws:state.ws
     };
 };
 
@@ -25,11 +26,10 @@ class MainGameComponent extends Component {
         }
     }
 
-    componentDidMount() {
-        if (this.props.actualGame.meGamer && !this.state.gameJoined) {
-            console.log("mainGame 37", this.props)
-            comunicationEngine.wsConnect(this.props.actualGame.meGamer);
-            console.log("mainGame 39", this.props)
+    componentDidUpdate() {
+        if(!this.state.gameJoined&&this.props.ws.client){
+            console.log("MainGame 31")
+            this.props.gameWsGameJoin(this.props.actualGame.game)
             this.setState({
                 gameJoined: true,
             })

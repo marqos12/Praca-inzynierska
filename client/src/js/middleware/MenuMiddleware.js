@@ -8,9 +8,7 @@ import {
   WS_CANNEL_CONNECT,
   WS_GAME_DISCONNECT,
   WS_SUBSCRIBE_GAME_LIST_CHANNEL,
-  WS_UNSUBSCRIBE_GAME_LIST_CHANNEL,
-  WS_GAME_GAME_JOINED,
-  WS_GAME_GAME_DISCONNECT
+  WS_UNSUBSCRIBE_GAME_LIST_CHANNEL
 } from "../constants/action-types";
 
 import {
@@ -29,6 +27,7 @@ import {
   wsGameDisconnected,
   wsGameUpdated,
 } from "../actions/index";
+import { gameTileUpdate, gameNewTileToDisplay } from "../actions/gameActions";
 
 export function menuMiddleware(getState, dispatch, action) {
 
@@ -61,17 +60,22 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(wsGotGamesList(resp.payload));
             break;
           case "GAME_CREATED":
-            dispatch(wsGameCreated(resp.payload))
-            dispatch(wsConnectGame(resp.payload))
+            dispatch(wsGameCreated(resp.payload));
+            dispatch(wsConnectGame(resp.payload));
             break;
           case "ME_GAMER":
-            dispatch(wsGameJoined(resp.payload))
-            dispatch(wsConnectGame(resp.payload.game))
+            dispatch(wsGameJoined(resp.payload));
+            dispatch(wsConnectGame(resp.payload.game));
             break;
           case "GAME_LEFT":
-            dispatch(wsGameDisconnected())
+            dispatch(wsGameDisconnected());
+            break;
+          case "GAME_JOINED":
+            console.log("menuMiddleware 74",resp)
+            dispatch(gameNewTileToDisplay(resp.payload));
             break;
         }
+
       });
       return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
     });
@@ -189,27 +193,6 @@ export function menuMiddleware(getState, dispatch, action) {
   if (action.type === WS_UNSUBSCRIBE_GAME_LIST_CHANNEL) {
     console.log("menuMiddleware 186")
     dispatch(wsChannelSubscription({ channel: "GAME_LIST_CHANNEL", subscription: null }));
-  }
-
-  if (action.type === WS_GAME_GAME_JOINED) {
-    console.log("menuMiddleware 189")
-    let stompClient = getState().ws.client;
-    let subscription = stompClient.subscribe("/topic/game/game/" + action.payload.id, resp => {
-      resp = JSON.parse(resp.body)
-      console.log("menuMiddleware 194", resp)
-      switch (resp.type) {
-        case "ME_GAMER":
-          dispatch(wsConnectGame(resp.payload.game))
-          break;
-      }
-    });
-    console.log("menuMiddleware 148", subscription)
-    dispatch(wsChannelSubscription({ channel: "GAME_GAME_CHANNEL", subscription: subscription }))
-  }
-
-  if (action.type === WS_GAME_GAME_DISCONNECT) {
-    console.log("menuMiddleware 212")
-    dispatch(wsChannelSubscription({ channel: "GAME_GAME_CHANNEL", subscription: null }));
   }
 
 }

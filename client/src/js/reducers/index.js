@@ -23,7 +23,9 @@ const initialState = {
     game: null,
     gamers: [],
     amIAuthor: false,
-    meGamer: null
+    meGamer: null,
+    tilesDisplayed:[],
+    tilesToDisplay:[]
   },
   origin: ""
 };

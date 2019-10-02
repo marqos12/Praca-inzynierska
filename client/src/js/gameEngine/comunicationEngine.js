@@ -1,5 +1,4 @@
-
-
+///////////////////////////?
 class CommunicationEngine {
 
     constructor() {
@@ -12,7 +11,6 @@ class CommunicationEngine {
         this.gameChannelSubscripption = null;
         this.userPrivateChannelSubscripption = null;
         this.userPublicChannelSubscripption = null;
-        
     }
 
     wsConnect(gamer) {

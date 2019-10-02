@@ -13,13 +13,16 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import pl.mojrzeszow.server.enums.MessageType;
+import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
+import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
 import pl.mojrzeszow.server.repositories.GameRepository;
 import pl.mojrzeszow.server.repositories.GamerRepository;
+import pl.mojrzeszow.server.repositories.TileRepository;
 import pl.mojrzeszow.server.repositories.UserRepository;
 
 import com.google.gson.Gson;
@@ -37,6 +40,9 @@ public class lobbyController {
 
 	@Autowired
 	private GamerRepository gamerRepository;
+
+	@Autowired
+	private TileRepository tileRepository;
 
 	@Autowired
 	UserRepository userRepository;
@@ -74,7 +80,8 @@ public class lobbyController {
 		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
 
 		simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
-		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+game.getId(), new GameMessage<Game>(MessageType.GAME_UPDATE, game));
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+				new GameMessage<Game>(MessageType.GAME_UPDATE, game));
 
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_UPDATE, game);
 		return gameMessage;
@@ -101,9 +108,9 @@ public class lobbyController {
 			}
 		}
 
-		if (!exists){
+		if (!exists) {
 			gamer = new Gamer(user, game, gamersData.getSessionId());
-			game.setGamersCount(game.getGamersCount()+1L);	
+			game.setGamersCount(game.getGamersCount() + 1L);
 			gameRepository.save(game);
 			List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
 			simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
@@ -112,15 +119,11 @@ public class lobbyController {
 		gamer = gamerRepository.save(gamer);
 
 		gamers = this.gamerRepository.findByGame(game);
-		
-		
-		
-		System.out.println("/lobby/game/"+gamersData.getGameId());
-		
- 
 
-		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+gamersData.getGameId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+		System.out.println("/lobby/game/" + gamersData.getGameId());
 
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + gamersData.getGameId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
 		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, gamer);
 		return gameMessage;
@@ -132,81 +135,86 @@ public class lobbyController {
 
 		Gamer gamer = gamerRepository.findById(gamersData.getGamerId()).orElse(null);
 		Game game = gamer.getGame();
-		
+
 		List<Gamer> gamers2 = this.gamerRepository.findByGame(game);
-		if(game.getAuthor().equals(gamer.getUser()))
-		{
-					System.out.println("lobby controller 139, user był autorem, jego id: "+gamer.getUser().getId());
+		if (game.getAuthor().equals(gamer.getUser())) {
+			System.out.println("lobby controller 139, user był autorem, jego id: " + gamer.getUser().getId());
 			for (Gamer gameGamer : gamers2)
-				if(!game.getAuthor().getId().equals(gameGamer.getUser().getId())){
-					System.out.println("lobby controller 141, ten user to nie autor, jego id: "+gameGamer.getUser().getId());
+				if (!game.getAuthor().getId().equals(gameGamer.getUser().getId())) {
+					System.out.println(
+							"lobby controller 141, ten user to nie autor, jego id: " + gameGamer.getUser().getId());
 					game.setAuthor(gameGamer.getUser());
 					break;
-				}
-				else 
+				} else
 					System.out.println("lobby controller 147, ten gamer to autor");
-				
-		}
-		else 
-		System.out.println("lobby controller 147, user nie był autorem");
-		
-		gamerRepository.delete(gamer);	
-		game.setGamersCount(game.getGamersCount()-1);
+
+		} else
+			System.out.println("lobby controller 147, user nie był autorem");
+
+		gamerRepository.delete(gamer);
+		game.setGamersCount(game.getGamersCount() - 1);
 		gameRepository.save(game);
-		
+
 		List<Gamer> gamers = this.gamerRepository.findByGame(game);
 
-		if(gamers.size()<1){
+		if (gamers.size() < 1) {
 			this.gameRepository.delete(game);
 		}
 
 		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
-		simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);	
+		simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
 
-		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+game.getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
 		System.out.println("lobby controller 135");
 		System.out.println(gamers.size());
-		
+
 		GameMessage<Boolean> gameMessage = new GameMessage<Boolean>(MessageType.GAME_LEFT, true);
 		return gameMessage;
 	}
 
 	@MessageMapping("/statusUpdate")
-	public GameMessage<Gamer> gamerStatusUpdate (@Payload Gamer gamer) {
+	public GameMessage<Gamer> gamerStatusUpdate(@Payload Gamer gamer) {
 
 		System.out.println("lobby 126");
 
 		Gamer exactGamer = this.gamerRepository.findById(gamer.getId()).orElse(gamer);
 		exactGamer.setStatus(gamer.isStatus());
 		exactGamer.setReady(gamer.isReady());
-		
+
 		this.gamerRepository.save(exactGamer);
 
 		List<Gamer> gamers = this.gamerRepository.findByGame(gamer.getGame());
-		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+gamer.getGame().getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + gamer.getGame().getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
 		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, gamer);
 		return gameMessage;
 	}
 
 	@MessageMapping("/startGame")
-	public void startGame (@Payload Game game) {
+	public void startGame(@Payload Game game) {
 
 		System.out.println("lobby 196");
 
 		Game updatingGame = this.gameRepository.findById(game.getId()).orElse(null);
 		updatingGame.setStarted(game.isStarted());
-		updatingGame=this.gameRepository.save(updatingGame);
-		
+		updatingGame = this.gameRepository.save(updatingGame);
+
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatingGame);
 
-		for(Gamer gamer : gamers){
+		Tile startTile = new Tile(null, gamers.get(0), game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L);
+
+		tileRepository.save(startTile);
+
+		for (Gamer gamer : gamers) {
 			gamer.setReady(false);
 			this.gamerRepository.save(gamer);
 		}
 
-		simpMessagingTemplate.convertAndSend("/topic/lobby/game/"+game.getId(), new GameMessage<Game>(MessageType.GAME_STARTED, updatingGame));	
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+				new GameMessage<Game>(MessageType.GAME_STARTED, updatingGame));
 	}
 
 }

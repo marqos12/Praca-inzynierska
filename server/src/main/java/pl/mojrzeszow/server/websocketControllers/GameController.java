@@ -15,11 +15,13 @@ import org.springframework.stereotype.Controller;
 import pl.mojrzeszow.server.enums.MessageType;
 import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
+import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
 import pl.mojrzeszow.server.repositories.GameRepository;
 import pl.mojrzeszow.server.repositories.GamerRepository;
+import pl.mojrzeszow.server.repositories.TileRepository;
 import pl.mojrzeszow.server.repositories.UserRepository;
 
 import com.google.gson.Gson;
@@ -41,6 +43,9 @@ public class GameController {
 	@Autowired
 	UserRepository userRepository;
 
+	@Autowired
+	private TileRepository tileRepository;
+
 	@MessageMapping("/updateStatus")
 	@SendToUser("/queue/reply")
 	public GameMessage<Gamer> getAllgames(@Payload Gamer gamer) throws Exception {
@@ -60,24 +65,20 @@ public class GameController {
 
 	@MessageMapping("/joinGame")
 	@SendToUser("/queue/reply")
-	public GameMessage<Gamer> joinGame(@Payload Gamer gamer) {
+	public GameMessage<List<Tile>> joinGame(@Payload Gamer gamer) {
 
 		Gamer updatedGamer = this.gamerRepository.findById(gamer.getId()).orElse(null);
-		updatedGamer.setSessionId(gamer.getSessionId());
-		updatedGamer = gamerRepository.save(updatedGamer);
+		updatedGamer.setReady(true);
+		updatedGamer = this.gamerRepository.save(updatedGamer);
 
 		List<Gamer>	gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
-		
-		
-		
 		System.out.println("/game/game/"+updatedGamer.getGame().getId());
-		
- 
 
 		simpMessagingTemplate.convertAndSend("/topic/gme/game/"+updatedGamer.getGame().getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
+		List<Tile> tiles = tileRepository.findByGame(updatedGamer.getGame());
 
-		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, gamer);
+		GameMessage<List<Tile>> gameMessage = new GameMessage<List<Tile>>(MessageType.GAME_JOINED, tiles);
 		return gameMessage;
 	}
 

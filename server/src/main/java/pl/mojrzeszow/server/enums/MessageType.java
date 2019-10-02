@@ -13,6 +13,8 @@ public enum MessageType {
 	GAME_CREATED,
 	GAME_STARTED,
 
+	GAME_JOINED,
+
 
 
 	GAME_LIST_UPDATED,

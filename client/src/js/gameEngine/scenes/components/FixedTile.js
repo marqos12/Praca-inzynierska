@@ -9,8 +9,7 @@ export class FixedTile extends Phaser.GameObjects.Sprite {
     }
 
     update(){
-      //if(this.scene.input.activePointer.buttons>0)console.log(this.scene.input.activePointer)
-      //if(this.scene.input.activePointer.leftButton.isDown) console.log("kutaas")
+
     }
 
     makeScale(scale){
@@ -25,6 +24,5 @@ export class FixedTile extends Phaser.GameObjects.Sprite {
 
       this.x+=window.innerWidth/2
       this.y+=window.innerHeight/2
-
     }
   }

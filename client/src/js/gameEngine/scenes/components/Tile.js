@@ -5,16 +5,12 @@ export class Tile extends Phaser.GameObjects.Sprite {
         super(scene, x, y, 'tiles', texture)
         this.setOrigin(0, 0);
         this.name = texture;
-        this.posx = x;
-        this.posy = y;
         this.id = id;
-        this.w = id;
         this.scene = scene;
-
         this.dx = 0;
         this.dy = 0;
         this.isDragged = false;
-        clicked = false;
+        this.clicked = false;
 
         this.setInteractive();
         scene.input.setDraggable(this)
@@ -139,11 +135,11 @@ export class Tile extends Phaser.GameObjects.Sprite {
         let oldWidth = this.displayWidth;
         this.setScale(scale);
         let newWidth = this.displayWidth;
-        this.x -= window.innerWidth / 2
-        this.y -= window.innerHeight / 2
+        this.x -= window.innerWidth / 2;
         this.x = this.x / oldWidth * newWidth;
+        this.x += window.innerWidth / 2;
+        this.y -= window.innerHeight / 2;
         this.y = this.y / oldWidth * newWidth;
-        this.x += window.innerWidth / 2
-        this.y += window.innerHeight / 2
+        this.y += window.innerHeight / 2;
     }
 }
