@@ -26,6 +26,13 @@ export default class GameScene extends Scene {
     this.state = store.getState();
     this.gameConnected = false;
 
+    console.log("GameScene 26", this.state)
+    this.unsubscribe = store.subscribe(() => {
+      console.log("GameScene 47", this.state)
+      this.state = store.getState();
+    });
+
+
   }
 
   create() {
@@ -38,33 +45,22 @@ export default class GameScene extends Scene {
 
         tile.setAngle(Phaser.Math.Between(0, 3) * 90)
         this.fixedTiles.push(tile);
-        //this.add.existing(tile.setDepth(0))
+        this.add.existing(tile.setDepth(0))
       }
     }
 
-    //////////////////////
 
-
-    ///////////////////
-    
-
-    console.log("GameScene 26", this.state)
-    this.unsubscribe = store.subscribe(() => {
-      this.drawElipse();
-      console.log("GameScene 47", this.state)
-      this.state = store.getState();
-      this.stateChanged();
-    });
-
-    this.events.on('destroy', ()=>{
-      console.log("GameScene 67")
-      this.unsubscribe();
-    })
 
     this.tableCenterX = Math.floor(window.innerWidth / 2)
     this.tableCenterY = Math.floor(window.innerHeight / 2)
     this.fixedTiles.forEach(x => { x.setScale(this.myScale) })
+    this.tileWidth = this.fixedTiles[0].displayWidth
 
+    this.stateChanged();
+    this.events.on('destroy', () => {
+      console.log("GameScene 67")
+      this.unsubscribe();
+    })
     /*
     addEventListener('draggedTile', (x) => {
       this.sendMove(x.detail);
@@ -138,41 +134,19 @@ export default class GameScene extends Scene {
     }
     if (this.state.actualGame.tilesToDisplay.length != 0) {
       this.state.actualGame.tilesToDisplay.forEach(tile => {
-        console.log("GameScene 121", this)
-        let tile2 = new FixedTile(this,
-           Math.floor(window.innerWidth / 2),
-           Math.floor(window.innerHeight / 2),
-          'green' + Phaser.Math.Between(1, 2));
-
-        tile2.setAngle(Phaser.Math.Between(0, 3) * 90)
-        this.fixedTiles.push(tile2);
+        let tile2 = new Tile(this,
+          this.tableCenterX + tile.posX * this.tileWidth -150,
+          this.tableCenterY + tile.posY * this.tileWidth -150 ,
+          'roadExitDouble',
+          tile.id);
+        tile2.makeScale(this.myScale);
+        tile2.setAngle(tile.angle);
+        this.tiles.push(tile2);
         this.add.existing(tile2.setDepth(0))
-        /*
-        let tileSprite = new Tile(this,
-          this.tableCenterX - this.tileWidth / 2 + tile.posX * this.tileWidth,
-          this.tableCenterY - this.tileWidth / 2 + tile.posY * this.tileWidth,
-          'house',
-          tile.id).setScale(this.myScale);
-
-        tileSprite.setAngle(tile.angle)
-        this.tiles.push(tileSprite);
-        this.add.existing(tileSprite.setDepth(10))*/
-
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
-      console.log(this)
     }
   }
 
-  drawElipse(){
-    let tile = new FixedTile(this,
-      Math.floor(window.innerWidth / 2),
-      Math.floor(window.innerHeight / 2),
-     'green' + Phaser.Math.Between(1, 2));
 
-   tile.setAngle(Phaser.Math.Between(0, 3) * 90)
-   this.fixedTiles.push(tile);
-   this.add.existing(tile.setDepth(0))
-    console.log("GameScene 160")
-  }
 }

@@ -13,7 +13,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.clicked = false;
 
         this.setInteractive();
-        scene.input.setDraggable(this)
+        //scene.input.setDraggable(this)
 
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             scene.input.activePointer.isDown = false;

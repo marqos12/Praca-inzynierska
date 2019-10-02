@@ -18,7 +18,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gameStarted: true,
+      gameStarted: false,
     }
 
     console.log("App 19", props)
