@@ -1,7 +1,7 @@
 {"frames": [
 
     {
-        "filename": "shoppingCenter",
+        "filename": "SHOPPING_CENTER",
         "frame": {"x":0,"y":301,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -9,7 +9,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "house",
+        "filename": "HOUSE",
         "frame": {"x":301,"y":301,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -17,7 +17,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "church",
+        "filename": "CHURCH",
         "frame": {"x":601,"y":301,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -25,7 +25,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "groceryStore",
+        "filename": "GROCERY_STORE",
         "frame": {"x":901,"y":301,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -33,7 +33,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "roadStraight",
+        "filename": "ROAD_STRAIGHT",
         "frame": {"x":0,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -41,7 +41,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "roadExit",
+        "filename": "ROAD_ACCESS_SINGLE",
         "frame": {"x":301,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -49,7 +49,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "roadCross",
+        "filename": "ROAD_CROSS_SINGLE",
         "frame": {"x":601,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -57,7 +57,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "roadExitDouble",
+        "filename": "ROAD_ACCESS_DOUBLE",
         "frame": {"x":901,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -65,7 +65,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "roadCrossDouble",
+        "filename": "ROAD_CROSS_DOUBLE",
         "frame": {"x":1201,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -73,7 +73,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "roadCurve",
+        "filename": "ROAD_CURVE",
         "frame": {"x":1501,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,

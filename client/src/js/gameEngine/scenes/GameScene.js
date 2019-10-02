@@ -137,7 +137,7 @@ export default class GameScene extends Scene {
         let tile2 = new Tile(this,
           this.tableCenterX + tile.posX * this.tileWidth -150,
           this.tableCenterY + tile.posY * this.tileWidth -150 ,
-          'roadExitDouble',
+          tile.type,
           tile.id);
         tile2.makeScale(this.myScale);
         tile2.setAngle(tile.angle);
