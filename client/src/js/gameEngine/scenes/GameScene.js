@@ -25,6 +25,8 @@ export default class GameScene extends Phaser.Scene {
     this.gameConnected = false;
 
     this.newTile = null;
+    this.newTileCard = null;
+    this.newTileCardBorder = null;
 
     console.log("GameScene 26", this.state)
     this.unsubscribe = store.subscribe(() => {
@@ -61,16 +63,21 @@ export default class GameScene extends Phaser.Scene {
       console.log("GameScene 67")
       this.unsubscribe();
     })
-    
+
     addEventListener('draggedTile', (x) => {
       this.newTile.makeScale(this.myScale);
       this.tiles.push(this.newTile);
+
+      this.newTileCard.destroy();
+      this.newTileCard = null;
+      this.newTileCardBorder.destroy();
+      this.newTileCardBorder = null;
     })
-/*
-    addEventListener('rotatedTile', (x) => {
-      this.sendMove(x.detail);
-    })
-    */
+    /*
+        addEventListener('rotatedTile', (x) => {
+          this.sendMove(x.detail);
+        })
+        */
 
     addEventListener("wheel", x => {
       if (x.deltaY < 0)
@@ -151,15 +158,36 @@ export default class GameScene extends Phaser.Scene {
     if (this.state.actualGame.myNewTile && !this.newTile) {
       this.newTile = new Tile(
         this,
-        window.innerWidth+400,
+        window.innerWidth + 400,
         window.innerHeight,
         this.state.actualGame.myNewTile,
         -1
       )
       this.newTile.makeScale(0.5)
       this.input.setDraggable(this.newTile)
-      console.log("GameScene 160", this.newTile)
+
       this.add.existing(this.newTile.setDepth(1))
+
+
+      this.newTileCardBorder = new Phaser.GameObjects.Rectangle(
+        this,
+        window.innerWidth * 0.9 - 2,
+        window.innerHeight * 0.85 - 2,
+        window.innerWidth * 0.2 + 4,
+        window.innerHeight * 0.3 + 4,
+        0x41E3FF);
+      this.add.existing(this.newTileCardBorder.setDepth(0))
+
+      this.newTileCard = new Phaser.GameObjects.Rectangle(
+        this,
+        window.innerWidth * 0.9,
+        window.innerHeight * 0.85,
+        window.innerWidth * 0.2 ,
+        window.innerHeight* 0.3,
+        0x5d8FBD,
+        0.815);
+      this.add.existing(this.newTileCard.setDepth(0))
+
     }
 
   }
