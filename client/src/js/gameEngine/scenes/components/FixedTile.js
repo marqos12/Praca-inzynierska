@@ -1,5 +1,4 @@
 
-import Phaser from "../../phaser/phaser.min.js";
 
 export class FixedTile extends Phaser.GameObjects.Sprite {
     constructor (scene, x, y, texture) { 

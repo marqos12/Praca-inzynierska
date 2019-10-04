@@ -1,4 +1,3 @@
-import Phaser from "../../phaser/phaser.min.js";
 import comunicationEngine from "../../comunicationEngine.js";
 
 export class Hud {

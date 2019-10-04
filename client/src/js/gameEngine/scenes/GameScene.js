@@ -1,11 +1,9 @@
-import { Scene } from "../phaser/phaser.min.js";
-import Phaser from "../phaser/phaser.min.js";
 import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
 import { gameWsGameJoined, gameNewTileDisplayed } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
 
-export default class GameScene extends Scene {
+export default class GameScene extends Phaser.Scene {
 
   constructor() {
     super({
