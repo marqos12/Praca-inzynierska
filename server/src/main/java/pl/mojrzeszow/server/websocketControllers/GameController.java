@@ -23,6 +23,7 @@ import pl.mojrzeszow.server.repositories.GameRepository;
 import pl.mojrzeszow.server.repositories.GamerRepository;
 import pl.mojrzeszow.server.repositories.TileRepository;
 import pl.mojrzeszow.server.repositories.UserRepository;
+import pl.mojrzeszow.server.service.GameService;
 
 import com.google.gson.Gson;
 
@@ -32,59 +33,17 @@ import com.google.gson.Gson;
 public class GameController {
 
 	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;
-
-	@Autowired
-	private GameRepository gameRepository;
-
-	@Autowired
-	private GamerRepository gamerRepository;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	private TileRepository tileRepository;
+	private GameService gameService;
 
 	@MessageMapping("/updateStatus")
 	@SendToUser("/queue/reply")
 	public GameMessage<Gamer> getAllgames(@Payload Gamer gamer) throws Exception {
-
-		Gamer updatedGamer = this.gamerRepository.findById(gamer.getId()).orElse(null);
-		updatedGamer.setReady(true);
-		updatedGamer = this.gamerRepository.save(updatedGamer);
-
-		
-		List<Gamer> gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
-		simpMessagingTemplate.convertAndSend("/topic/game/game/"+gamer.getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
-
-
-		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, updatedGamer);
-		return gameMessage;
+		return gameService.getAllgames(gamer);
 	}
 
 	@MessageMapping("/joinGame")
 	@SendToUser("/queue/reply")
 	public GameMessage<List<Tile>> joinGame(@Payload Gamer gamer) {
-
-		Gamer updatedGamer = this.gamerRepository.findById(gamer.getId()).orElse(null);
-		updatedGamer.setReady(true);
-		updatedGamer = this.gamerRepository.save(updatedGamer);
-
-		List<Gamer>	gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
-		System.out.println("/game/game/"+updatedGamer.getGame().getId());
-
-		simpMessagingTemplate.convertAndSend("/topic/gme/game/"+updatedGamer.getGame().getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
-
-		List<Tile> tiles = tileRepository.findByGame(updatedGamer.getGame());
-
-		GameMessage<List<Tile>> gameMessage = new GameMessage<List<Tile>>(MessageType.GAME_JOINED, tiles);
-		return gameMessage;
-	}
-
-
-
-
-	
-	
+		return gameService.joinGame(gamer);
+	}	
 }
