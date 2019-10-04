@@ -97,8 +97,6 @@ public class LobbyService {
 
 		gamers = this.gamerRepository.findByGame(game);
 
-		System.out.println("/lobby/game/" + gamersData.getGameId());
-
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + gamersData.getGameId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
@@ -113,18 +111,13 @@ public class LobbyService {
 
 		List<Gamer> gamers2 = this.gamerRepository.findByGame(game);
 		if (game.getAuthor().equals(gamer.getUser())) {
-			System.out.println("lobby controller 139, user był autorem, jego id: " + gamer.getUser().getId());
 			for (Gamer gameGamer : gamers2)
 				if (!game.getAuthor().getId().equals(gameGamer.getUser().getId())) {
-					System.out.println(
-							"lobby controller 141, ten user to nie autor, jego id: " + gameGamer.getUser().getId());
 					game.setAuthor(gameGamer.getUser());
 					break;
-				} else
-					System.out.println("lobby controller 147, ten gamer to autor");
+				}
 
-		} else
-			System.out.println("lobby controller 147, user nie był autorem");
+		} 
 
 		gamerRepository.delete(gamer);
 		game.setGamersCount(game.getGamersCount() - 1);
@@ -141,9 +134,6 @@ public class LobbyService {
 
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
-
-		System.out.println("lobby controller 135");
-		System.out.println(gamers.size());
 
 		GameMessage<Boolean> gameMessage = new GameMessage<Boolean>(MessageType.GAME_LEFT, true);
 		return gameMessage;

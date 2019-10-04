@@ -1,5 +1,6 @@
 package pl.mojrzeszow.server.service;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import pl.mojrzeszow.server.enums.MessageType;
+import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.messages.GameMessage;
@@ -54,9 +56,20 @@ public class GameService{
 		updatedGamer = this.gamerRepository.save(updatedGamer);
 
 		List<Gamer>	gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
-		System.out.println("/game/game/"+updatedGamer.getGame().getId());
-
-		simpMessagingTemplate.convertAndSend("/topic/gme/game/"+updatedGamer.getGame().getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+		simpMessagingTemplate.convertAndSend("/topic/game/game/"+updatedGamer.getGame().getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+		
+		System.out.println("Gracz dołącza do gry");
+		if(gamers.stream().filter(Gamer::isReady).count()==gamers.size()){
+			System.out.println("Wszyscy gracze dołączyli");
+			Collections.shuffle(gamers);
+			Long i = new Long(0);
+			for (Gamer gameGamer : gamers){
+				gameGamer.setOrdinalNumber(i++);
+			}
+			Gamer firstGamer = gamers.get(0);
+			TileType randomTileType = TileType.randomTileType();
+			simpMessagingTemplate.convertAndSendToUser(firstGamer.getSessionId(), "/reply", new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
+		}
 
 		List<Tile> tiles = tileRepository.findByGame(updatedGamer.getGame());
 

@@ -12,47 +12,45 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.isDragged = false;
         this.clicked = false;
 
+        this.x = x;
+        this.y = y;
+
         this.setInteractive();
         //scene.input.setDraggable(this)
 
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+
             scene.input.activePointer.isDown = false;
             let oldx = gameObject.x;
             let oldy = gameObject.y;
-            dragX = Math.floor((gameObject.scene.input.x - gameObject.scene.point0.x + gameObject.displayWidth / 2) / gameObject.displayWidth) * gameObject.displayWidth + gameObject.scene.point0.x - gameObject.displayWidth / 2;
-            dragY = Math.floor((gameObject.scene.input.y - gameObject.scene.point0.y + gameObject.displayHeight / 2) / gameObject.displayHeight) * gameObject.displayHeight + gameObject.scene.point0.y - gameObject.displayHeight / 2;
-            //dragY = gameObject.scene.input.y - gameObject.scene.y % gameObject.displayHeight;
-            oldx = gameObject.x;
-            oldy = gameObject.y;
+
+            dragX = Math.floor(
+                (
+                    gameObject.scene.input.x - gameObject.scene.tableCenterX + gameObject.displayWidth / 2
+                ) / gameObject.displayWidth
+            ) * gameObject.displayWidth + gameObject.scene.tableCenterX - gameObject.displayWidth / 2;
+
+            dragY = Math.floor(
+                (
+                    gameObject.scene.input.y - gameObject.scene.tableCenterY + gameObject.displayHeight / 2
+                ) / gameObject.displayHeight
+            ) * gameObject.displayHeight + gameObject.scene.tableCenterY - gameObject.displayHeight / 2;
+
+            //oldx = gameObject.x;
+            //oldy = gameObject.y;
             gameObject.x = dragX;
             gameObject.y = dragY;
-            //gameObject.x = Math.floor(dragX / gameObject.displayWidth) * gameObject.displayWidth  + scene.x % gameObject.displayWidth
-            //gameObject.y = Math.floor(dragY / gameObject.displayHeight) * gameObject.displayHeight  + scene.y % gameObject.displayHeight;
-
-            //dragX = gameObject.scene.input.x - gameObject.displayWidth / 4 - gameObject.scene.x % gameObject.displayWidth;
-            //dragY = gameObject.scene.input.y - gameObject.displayWidth / 4 - gameObject.scene.y % gameObject.displayHeight;
-
-            //dragX = Math.floor(pointer.x / gameObject.displayWidth)*
-
-
-            /* oldx = gameObject.x;
-             oldy = gameObject.y;
-             gameObject.x = Math.floor(dragX / gameObject.displayWidth) * gameObject.displayWidth + gameObject.displayWidth / 2 + scene.x % gameObject.displayWidth
-             gameObject.y = Math.floor(dragY / gameObject.displayHeight) * gameObject.displayHeight + gameObject.displayHeight / 2 + scene.y % gameObject.displayHeight;*/
 
             if (gameObject.x != oldx || gameObject.y != oldy) {
 
-                //console.log("koko",this.scene.children.list, this)
-                /*for(let i = this.scene.children.list.length; i > 0; i--){
-                    console.log("kurwa nie działam :{");
-                    if(this.scene.children.list[i]==this)console.log("kurwa działam o.o");
-                }*/
                 gameObject.dx = oldx - gameObject.x;
                 gameObject.dy = oldy - gameObject.y;
-                //console.log('6',gameObject)
-                let draggedTile = new CustomEvent('draggedTile', { detail: gameObject.getTileObj(gameObject) });
-                gameObject.isDragged = true;
-                dispatchEvent(draggedTile);
+
+                if(!gameObject.isDragged){
+                    gameObject.isDragged = true;
+                    let draggedTile = new CustomEvent('draggedTile', { detail: this});
+                    dispatchEvent(draggedTile);
+                }
             }
 
         });

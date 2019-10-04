@@ -1,31 +1,18 @@
 package pl.mojrzeszow.server.websocketControllers;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
-import pl.mojrzeszow.server.enums.MessageType;
-import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Tile;
-import pl.mojrzeszow.server.models.User;
-import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
-import pl.mojrzeszow.server.repositories.GameRepository;
-import pl.mojrzeszow.server.repositories.GamerRepository;
-import pl.mojrzeszow.server.repositories.TileRepository;
-import pl.mojrzeszow.server.repositories.UserRepository;
 import pl.mojrzeszow.server.service.GameService;
 
-import com.google.gson.Gson;
 
 @Controller
 

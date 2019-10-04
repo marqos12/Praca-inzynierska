@@ -26,6 +26,8 @@ export default class GameScene extends Scene {
     this.state = store.getState();
     this.gameConnected = false;
 
+    this.newTile = null;
+
     console.log("GameScene 26", this.state)
     this.unsubscribe = store.subscribe(() => {
       console.log("GameScene 47", this.state)
@@ -61,11 +63,12 @@ export default class GameScene extends Scene {
       console.log("GameScene 67")
       this.unsubscribe();
     })
-    /*
+    
     addEventListener('draggedTile', (x) => {
-      this.sendMove(x.detail);
+      this.newTile.makeScale(this.myScale);
+      this.tiles.push(this.newTile);
     })
-
+/*
     addEventListener('rotatedTile', (x) => {
       this.sendMove(x.detail);
     })
@@ -135,8 +138,8 @@ export default class GameScene extends Scene {
     if (this.state.actualGame.tilesToDisplay.length != 0) {
       this.state.actualGame.tilesToDisplay.forEach(tile => {
         let tile2 = new Tile(this,
-          this.tableCenterX + tile.posX * this.tileWidth -150,
-          this.tableCenterY + tile.posY * this.tileWidth -150 ,
+          this.tableCenterX + tile.posX * this.tileWidth - 150,
+          this.tableCenterY + tile.posY * this.tileWidth - 150,
           tile.type,
           tile.id);
         tile2.makeScale(this.myScale);
@@ -146,6 +149,21 @@ export default class GameScene extends Scene {
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
     }
+
+    if (this.state.actualGame.myNewTile && !this.newTile) {
+      this.newTile = new Tile(
+        this,
+        window.innerWidth+400,
+        window.innerHeight,
+        this.state.actualGame.myNewTile,
+        -1
+      )
+      this.newTile.makeScale(0.5)
+      this.input.setDraggable(this.newTile)
+      console.log("GameScene 160", this.newTile)
+      this.add.existing(this.newTile.setDepth(1))
+    }
+
   }
 
 

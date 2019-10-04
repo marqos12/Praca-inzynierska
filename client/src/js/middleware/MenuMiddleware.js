@@ -27,7 +27,7 @@ import {
   wsGameDisconnected,
   wsGameUpdated,
 } from "../actions/index";
-import { gameTileUpdate, gameNewTileToDisplay } from "../actions/gameActions";
+import { gameTileUpdate, gameNewTileToDisplay, gameMyNewTile } from "../actions/gameActions";
 
 export function menuMiddleware(getState, dispatch, action) {
 
@@ -45,7 +45,13 @@ export function menuMiddleware(getState, dispatch, action) {
 
       //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
       stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
-        console.log("ogólny", x);
+        let resp = JSON.parse(x.body)
+        console.log("ogólny", resp);
+        switch (resp.type) {
+          case "NEW_TILE":
+            dispatch(gameMyNewTile(resp.payload))
+            break;
+        }
       });
       //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
       stompClient.subscribe('/user/queue/reply', x => {
@@ -71,7 +77,7 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(wsGameDisconnected());
             break;
           case "GAME_JOINED":
-            console.log("menuMiddleware 74",resp)
+            console.log("menuMiddleware 74", resp)
             dispatch(gameNewTileToDisplay(resp.payload));
             break;
         }

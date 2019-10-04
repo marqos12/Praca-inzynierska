@@ -56,9 +56,9 @@ class MainGameComponent extends Component {
                             <img src="assets/null.png"></img>Józef S
                         </div>
                     </div>
-                    <div className="hud_card newTile">
+                    {/*<div className="hud_card newTile">
 
-                    </div>
+                     </div>*/}
                     <div className="hud_card resources">
                         <div >
                             <img src="assets/duck.png"></img>

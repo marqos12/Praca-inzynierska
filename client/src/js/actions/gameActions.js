@@ -4,7 +4,9 @@ import {
     GAME_TILE_UPDATE,
     GAME_NEW_TILE_TO_DISPLAY,
     GAME_NEW_TILE_DISPLAYED,
-    GAME_WS_GAME_JOIN
+    GAME_WS_GAME_JOIN,
+    GAME_MY_NEW_TILE,
+    GAME_MY_NEW_TILE_DISPLAYED
 } from "../constants/game-action-types";
 
 
@@ -30,4 +32,12 @@ export function gameNewTileToDisplay(payload) {
 
 export function gameNewTileDisplayed(payload) {
     return { type: GAME_NEW_TILE_DISPLAYED, payload };
+}
+
+export function gameMyNewTile(payload) {
+    return { type: GAME_MY_NEW_TILE, payload };
+}
+
+export function gameMyNewTileDisplayed(payload) {
+    return { type: GAME_MY_NEW_TILE_DISPLAYED, payload };
 }
