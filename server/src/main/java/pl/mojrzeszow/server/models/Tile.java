@@ -18,40 +18,26 @@ public class Tile {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
 	@ManyToOne
 	private Gamer gamer;
-	
-	@NotBlank
+
 	@ManyToOne
 	private Game game;
 
-	@NotBlank
 	private TileType type;
-	
 
-	@NotBlank
 	private int model;
-	
 
-	@NotBlank
 	private int angle;
-	
 
-	@NotBlank
 	private int lvl;
-	
 
-	@NotBlank
 	private Long posX;
-	
 
-	@NotBlank
 	private Long posY;
-	
-	public Tile() {}
 
-
+	public Tile() {
+	}
 
 	public Tile(Long id, @NotBlank Gamer gamer, @NotBlank Game game, @NotBlank TileType type, @NotBlank int model,
 			@NotBlank int angle, @NotBlank int lvl, @NotBlank Long posX, @NotBlank Long posY) {
@@ -66,8 +52,6 @@ public class Tile {
 		this.posX = posX;
 		this.posY = posY;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -125,21 +109,13 @@ public class Tile {
 		this.posY = posY;
 	}
 
-
-
 	public Game getGame() {
 		return game;
 	}
 
-
-
 	public void setGame(Game game) {
 		this.game = game;
 	}
-	
-	
-	
-
 
 	public TileType getType() {
 		return type;
@@ -149,7 +125,4 @@ public class Tile {
 		this.type = type;
 	}
 
-	
-	
-	
 }
