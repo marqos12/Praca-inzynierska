@@ -2,6 +2,7 @@ import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
 import { gameWsGameJoined, gameNewTileDisplayed } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
+import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale } from "../gameMechanics";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -28,13 +29,13 @@ export default class GameScene extends Phaser.Scene {
     this.newTileCard = null;
     this.newTileCardBorder = null;
 
+    this.possibleHihglights = [];
+
     console.log("GameScene 26", this.state)
     this.unsubscribe = store.subscribe(() => {
       console.log("GameScene 47", this.state)
       this.state = store.getState();
     });
-
-
   }
 
   create() {
@@ -50,8 +51,6 @@ export default class GameScene extends Phaser.Scene {
         this.add.existing(tile.setDepth(0))
       }
     }
-
-
 
     this.tableCenterX = Math.floor(window.innerWidth / 2)
     this.tableCenterY = Math.floor(window.innerHeight / 2)
@@ -72,12 +71,14 @@ export default class GameScene extends Phaser.Scene {
       this.newTileCard = null;
       this.newTileCardBorder.destroy();
       this.newTileCardBorder = null;
+
+      this.highlightPossiblePlaces();
     })
     /*
-        addEventListener('rotatedTile', (x) => {
-          this.sendMove(x.detail);
-        })
-        */
+      addEventListener('rotatedTile', (x) => {
+        this.sendMove(x.detail);
+      })
+    */
 
     addEventListener("wheel", x => {
       if (x.deltaY < 0)
@@ -97,11 +98,16 @@ export default class GameScene extends Phaser.Scene {
       this.fixedTiles.forEach(x => {
         x.makeScale(this.myScale);
       })
+      this.possibleHihglights.forEach(x => {
+        makeHighlightScale(x, this.myScale)
+      })
+
+      if (this.newTile && !this.newTileCard)
+        this.newTile.makeScale(this.myScale)
+
       this.tileWidth = this.fixedTiles[0].displayWidth
       console.log("GameScene 82", this.tileWidth)
     })
-
-
   }
 
   preload() {
@@ -123,6 +129,15 @@ export default class GameScene extends Phaser.Scene {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           x.y -= this.origDragPoint.y - this.input.activePointer.position.y;
         })
+        this.possibleHihglights.forEach(x => {
+          x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
+          x.y -= this.origDragPoint.y - this.input.activePointer.position.y;
+        })
+
+        if (this.newTile && !this.newTileCard) {
+          this.newTile.x -= this.origDragPoint.x - this.input.activePointer.position.x;
+          this.newTile.y -= this.origDragPoint.y - this.input.activePointer.position.y;
+        }
 
         this.tableCenterX -= this.origDragPoint.x - this.input.activePointer.position.x;
         this.tableCenterY -= this.origDragPoint.y - this.input.activePointer.position.y;
@@ -149,6 +164,8 @@ export default class GameScene extends Phaser.Scene {
           tile.id);
         tile2.makeScale(this.myScale);
         tile2.setAngle(tile.angle);
+        tile2.posX = tile.posX;
+        tile2.posY = tile.posY;
         this.tiles.push(tile2);
         this.add.existing(tile2.setDepth(0))
       })
@@ -182,15 +199,29 @@ export default class GameScene extends Phaser.Scene {
         this,
         window.innerWidth * 0.9,
         window.innerHeight * 0.85,
-        window.innerWidth * 0.2 ,
-        window.innerHeight* 0.3,
+        window.innerWidth * 0.2,
+        window.innerHeight * 0.3,
         0x5d8FBD,
         0.815);
       this.add.existing(this.newTileCard.setDepth(0))
 
     }
-
   }
 
+
+  highlightPossiblePlaces() {
+    let possiblePlaces = getPossiblePlaces(this.tiles);
+    possiblePlaces.forEach(pos => {
+      let highlight = new Phaser.GameObjects.Rectangle(
+        this,
+        pos.posX * this.tileWidth + this.tableCenterX,
+        pos.posY * this.tileWidth + this.tableCenterY,
+        300, 300,
+        0x5d8FBD, 0.815);
+      highlight.setScale(this.myScale)
+      this.possibleHihglights.push(highlight);
+      this.add.existing(highlight)
+    })
+  }
 
 }

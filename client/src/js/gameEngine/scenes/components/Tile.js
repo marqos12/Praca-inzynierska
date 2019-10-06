@@ -14,6 +14,9 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.x = x;
         this.y = y;
 
+        this.posX = null;
+        this.posY = null;
+
         this.setInteractive();
         //scene.input.setDraggable(this)
 
