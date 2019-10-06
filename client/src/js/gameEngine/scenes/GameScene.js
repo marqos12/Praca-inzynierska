@@ -29,7 +29,9 @@ export default class GameScene extends Phaser.Scene {
     this.newTileCard = null;
     this.newTileCardBorder = null;
 
+    this.possiblePlaces = [];
     this.possibleHihglights = [];
+
 
     console.log("GameScene 26", this.state)
     this.unsubscribe = store.subscribe(() => {
@@ -105,9 +107,22 @@ export default class GameScene extends Phaser.Scene {
       if (this.newTile && !this.newTileCard)
         this.newTile.makeScale(this.myScale)
 
+      let oldTileWidth = this.tileWidth;
       this.tileWidth = this.fixedTiles[0].displayWidth
-      console.log("GameScene 82", this.tileWidth)
+
+
+      this.tableCenterX -= window.innerWidth / 2;
+      this.tableCenterX = this.tableCenterX / oldTileWidth * this.tileWidth;
+      this.tableCenterX += window.innerWidth / 2;
+
+      this.tableCenterY -= window.innerHeight / 2;
+      this.tableCenterY = this.tableCenterY / oldTileWidth * this.tileWidth;
+      this.tableCenterY += window.innerHeight / 2;
+
+
     })
+
+
   }
 
   preload() {
@@ -141,6 +156,8 @@ export default class GameScene extends Phaser.Scene {
 
         this.tableCenterX -= this.origDragPoint.x - this.input.activePointer.position.x;
         this.tableCenterY -= this.origDragPoint.y - this.input.activePointer.position.y;
+
+
       }
 
       this.origDragPoint = this.input.activePointer.position.clone();
@@ -210,8 +227,8 @@ export default class GameScene extends Phaser.Scene {
 
 
   highlightPossiblePlaces() {
-    let possiblePlaces = getPossiblePlaces(this.tiles);
-    possiblePlaces.forEach(pos => {
+    this.possiblePlaces = getPossiblePlaces(this.tiles);
+    this.possiblePlaces.forEach(pos => {
       let highlight = new Phaser.GameObjects.Rectangle(
         this,
         pos.posX * this.tileWidth + this.tableCenterX,

@@ -48,7 +48,6 @@ export function getPossiblePlaces(tiles) {
 
     let initPossiblePos = [];
     let tilesPos = [];
-    console.log("gameMechanics 50", tiles)
     tiles.forEach(tile => {
         tilesPos.push({posX : tile.posX,posY:tile.posY});
 
@@ -56,9 +55,7 @@ export function getPossiblePlaces(tiles) {
         for (let i = 0; i < 4; i++) {
             let j = 0;
             tileEdges.forEach(edge => {
-                console.log("gameMechanics 55", newTileEdges[i], edge, newTileEdges[i] == edge)
                 if (newTileEdges[i] == edge) {
-                    console.log("gameMechanics 58", j, tile.posX, tile.posY)
                     initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
                 }
                 j++
@@ -100,4 +97,8 @@ export function makeHighlightScale(highlight,scale){
     highlight.y -= window.innerHeight / 2;
     highlight.y = highlight.y / oldWidth * newWidth;
     highlight.y += window.innerHeight / 2;
+}
+
+export function isThisPositionPossible(pos,possiblePositions){
+    return possiblePositions.filter(position=>position.posX==pos.posX&&position.posY==pos.posY).length>0;
 }

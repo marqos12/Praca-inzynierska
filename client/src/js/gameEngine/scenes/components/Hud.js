@@ -1,4 +1,5 @@
-import comunicationEngine from "../../comunicationEngine.js";
+
+import comunicationEngine from "../../gameMechanics.js/index.js";
 
 export class Hud {
 

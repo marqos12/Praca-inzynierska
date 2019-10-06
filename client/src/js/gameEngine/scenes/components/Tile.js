@@ -1,3 +1,4 @@
+import { isThisPositionPossible } from "../../gameMechanics";
 
 export class Tile extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, texture, id) {
@@ -26,20 +27,26 @@ export class Tile extends Phaser.GameObjects.Sprite {
             let oldx = gameObject.x;
             let oldy = gameObject.y;
 
-            dragX = Math.floor(
+            let posX = Math.floor(
                 (
                     gameObject.scene.input.x - gameObject.scene.tableCenterX + gameObject.displayWidth / 2
                 ) / gameObject.displayWidth
-            ) * gameObject.displayWidth + gameObject.scene.tableCenterX - gameObject.displayWidth / 2;
-
-            dragY = Math.floor(
+            );
+            
+            let posY = Math.floor(
                 (
                     gameObject.scene.input.y - gameObject.scene.tableCenterY + gameObject.displayHeight / 2
                 ) / gameObject.displayHeight
-            ) * gameObject.displayHeight + gameObject.scene.tableCenterY - gameObject.displayHeight / 2;
+            )
+            if(isThisPositionPossible({posX:posX,posY:posY},gameObject.scene.possiblePlaces)){
+                 dragX = posX * gameObject.displayWidth + gameObject.scene.tableCenterX - gameObject.displayWidth / 2;
+                 dragY = posY * gameObject.displayHeight + gameObject.scene.tableCenterY - gameObject.displayHeight / 2;
+            }
+            else {
+                dragX = gameObject.scene.input.x - gameObject.displayWidth / 2;
+                dragY = gameObject.scene.input.y - gameObject.displayHeight / 2;
+            }
 
-            //oldx = gameObject.x;
-            //oldy = gameObject.y;
             gameObject.x = dragX;
             gameObject.y = dragY;
 
