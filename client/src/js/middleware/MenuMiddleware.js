@@ -27,7 +27,7 @@ import {
   wsGameDisconnected,
   wsGameUpdated,
 } from "../actions/index";
-import { gameTileUpdate, gameNewTileToDisplay, gameMyNewTile } from "../actions/gameActions";
+import { gameNewTileToDisplay, gameMyNewTile } from "../actions/gameActions";
 
 export function menuMiddleware(getState, dispatch, action) {
 
@@ -40,7 +40,6 @@ export function menuMiddleware(getState, dispatch, action) {
 
       var url = stompClient.ws._transport.url;
       url = url.split("/")
-      console.log("Your current session is: " + url[url.length - 2]);
       let sessionId = url[url.length - 2];
 
       //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
@@ -56,8 +55,6 @@ export function menuMiddleware(getState, dispatch, action) {
       //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
       stompClient.subscribe('/user/queue/reply', x => {
 
-        console.log("menuMiddleware 39 ", x)
-        console.log("menuMiddleware 40 ", x.body)
         let resp = JSON.parse(x.body)
 
         console.log("moja zwrotka menuMiddleware 58 ", resp)
@@ -77,27 +74,11 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(wsGameDisconnected());
             break;
           case "GAME_JOINED":
-            console.log("menuMiddleware 74", resp)
             dispatch(gameNewTileToDisplay(resp.payload));
             break;
         }
-
       });
       return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
-    });
-  }
-
-  if (action.type === WS_OPEN_PRIVATE_CANALS) {
-    //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
-    let stompClient = getState().ws.client;
-    let sessionId = getState().ws.sessionId;
-    stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
-      //const subscription = stompClient.subscribe("/user/queue/msg", function (x) {    	
-      console.log("kierunkowy", x);
-    });
-    //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
-    stompClient.subscribe('/user/queue/reply', x => {
-      console.log("sami do siebie", x)
     });
   }
 
@@ -154,7 +135,6 @@ export function menuMiddleware(getState, dispatch, action) {
   }
 
   if (action.type === WS_CONNECT_TO_GAME) {
-    console.log("menuMiddleware 132")
     let stompClient = getState().ws.client;
     let subscription = stompClient.subscribe("/topic/lobby/game/" + action.payload.id, resp => {
       resp = JSON.parse(resp.body)
@@ -171,12 +151,10 @@ export function menuMiddleware(getState, dispatch, action) {
           break;
       }
     });
-    console.log("menuMiddleware 148", subscription)
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: subscription }))
   }
 
   if (action.type === WS_GAME_DISCONNECT) {
-    console.log("menuMiddleware 147")
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: null }));
     dispatch(wsSendMessage({
       channel: "/lobby/leaveGame", payload: {
@@ -186,7 +164,6 @@ export function menuMiddleware(getState, dispatch, action) {
   }
 
   if (action.type === WS_SUBSCRIBE_GAME_LIST_CHANNEL) {
-    console.log("menuMiddleware 165")
     let stompClient = getState().ws.client;
     let subscription = stompClient.subscribe("/topic/lobby/allGames", resp => {
       resp = JSON.parse(resp.body)
@@ -197,7 +174,6 @@ export function menuMiddleware(getState, dispatch, action) {
   }
 
   if (action.type === WS_UNSUBSCRIBE_GAME_LIST_CHANNEL) {
-    console.log("menuMiddleware 186")
     dispatch(wsChannelSubscription({ channel: "GAME_LIST_CHANNEL", subscription: null }));
   }
 

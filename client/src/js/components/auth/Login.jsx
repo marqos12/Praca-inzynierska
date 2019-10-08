@@ -24,7 +24,6 @@ class LoginComponent extends Component {
             password: ""
         };
         this.handleChange = this.handleChange.bind(this);
-        
         this.login = this.login.bind(this);
     }
     handleChange(event) {
@@ -32,16 +31,13 @@ class LoginComponent extends Component {
     }
    
     login(){
-        
         const { username, password } = this.state;
         this.props.login({ username: username, password: password })
     }
     componentDidUpdate(){
-        //console.log(this.props)
         if(this.props.auth.loginSuccess){
             this.props.cookies.set('auth', JSON.stringify(this.props.auth), { path: '/' });
             this.props.history.push("/panel")
-
         }
     }
     render() {
@@ -51,7 +47,6 @@ class LoginComponent extends Component {
             <div className="container">
                 <div className="menuContent">
                     <h1 className="gameTitle">Zaloguj się</h1>
-
                     <div className="buttonList">
                         <div className="field">
                             <label className="label">Login</label>

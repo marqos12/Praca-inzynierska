@@ -6,12 +6,11 @@ import {
     wsChannelSubscription,
     wsSendMessage
 } from "../actions";
-import { gameMyNewTile, gameNewTileToDisplay } from "../actions/gameActions";
+import {  gameNewTileToDisplay } from "../actions/gameActions";
 
 export function GameMiddleware(getState, dispatch, action) {
 
     if (action.type === GAME_WS_GAME_JOIN) {
-        console.log("gameMiddleware 13")
         let stompClient = getState().ws.client;
         let subscription = stompClient.subscribe("/topic/game/game/" + action.payload.id, resp => {
             resp = JSON.parse(resp.body)
@@ -22,7 +21,6 @@ export function GameMiddleware(getState, dispatch, action) {
                     break;
             }
         });
-        console.log("gameMiddleware 24", subscription)
         dispatch(wsChannelSubscription({ channel: "GAME_GAME_CHANNEL", subscription: subscription }))
 
         dispatch(wsSendMessage({
@@ -33,7 +31,6 @@ export function GameMiddleware(getState, dispatch, action) {
     }
 
     if (action.type === GAME_WS_GAME_DISCONNECT) {
-        console.log("gameMiddleware 29")
         dispatch(wsChannelSubscription({ channel: "GAME_GAME_CHANNEL", subscription: null }));
     }
 }

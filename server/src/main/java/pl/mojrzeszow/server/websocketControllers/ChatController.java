@@ -29,17 +29,14 @@ public class ChatController {
 	@MessageMapping("/message")
 	@SendToUser("/queue/reply")
 	public String processMessageFromClient(@Payload String message) throws Exception {
-		System.out.println("asdasdasdasd");
 		return message;
 	}
 
 	// przekazuje wiadomość do konkretnego usera
 	@MessageMapping("/message3")
 	public String processMessageFromClient3(@Payload String message) {
-		System.out.println("a1654asd");
-		System.out.println(message);
+
 		String name = new Gson().fromJson(message, Map.class).get("to").toString();
-		System.out.println(name);
 
 		SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
 		headerAccessor.setSessionId(name);
@@ -52,9 +49,6 @@ public class ChatController {
 	@MessageMapping("/message2")
 	// @SendToUser("/queue/reply")
 	public Message processMessageFromClient2(@Payload Message message) throws Exception {
-		System.out.println("asd");
-		// String name = new Gson().fromJson(message, Map.class).get("name").toString();
-		System.out.println(message.getTo());
 		simpMessagingTemplate.convertAndSendToUser(message.getTo(), "/reply", message);
 		return message;
 	}

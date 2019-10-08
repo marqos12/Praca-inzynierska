@@ -20,77 +20,55 @@ class App extends Component {
     this.state = {
       gameStarted: false,
     }
-
-    console.log("App 19", props)
   }
 
   componentWillMount() {
-    console.log("app 23", this.props.cookies.getAll())
     this.props.setCookiesService(this.props.cookies)
     this.props.setHistory(this.props.history)
-
-    console.log("app 29", this.props.cookies.getAll())
-    if (this.props.ws.client) {
-      //this.props.wsOpenPrivateCanals();
-    }
-    else {
+    if (!this.props.ws.client)
       this.props.wsConnect();
-    }
+
     let auth = this.props.cookies.get('auth');
-    console.log("app 36", this.props, auth)
 
-    if (!auth && this.props.auth.loginSuccess) {
+    if (!auth && this.props.auth.loginSuccess)
       this.props.cookies.set('auth', JSON.stringify(this.props.auth), { path: '/' });
-
-    }
-    else if (auth && this.props.auth.token == "") {
-      console.log("app 44", auth)
+    else if (auth && this.props.auth.token == "")
       this.props.setAuthFromCookies(auth);
-    }
   }
-
-componentWillUpdate(){
-  console.log("app 53")
-}
-
   componentDidMount() {
-
-    console.log("app 49", window.location.href)
-
     this.props.setOrigin(window.location.href.split("/#")[0])
   }
 
-  componentDidUpdate(){
+  componentDidUpdate() {
     let actualGame = this.props.actualGame;
-    if((actualGame&&actualGame.game!=null&&actualGame.game.started)!=this.state.gameStarted){
-    console.log("app 60",actualGame&&actualGame.game!=null&&actualGame.game.started);
+    if ((actualGame && actualGame.game != null && actualGame.game.started) != this.state.gameStarted) {
       this.forceUpdate();
       this.setState({
-        gameStarted: actualGame&&actualGame.game!=null&&actualGame.game.started,
-      })  
+        gameStarted: actualGame && actualGame.game != null && actualGame.game.started,
+      })
     }
-   
   }
+
   render() {
     const { gameStarted } = this.state;
     return (
       <div className="app">
-        {!gameStarted?
-        <div>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/registration" component={Registration} />
-          <Route exact path="/panel" component={UserPanel} />
-          <Route exact path="/newGame" component={NewGame} />
-          <Route exact path="/searchGames" component={SearchGame} />
-          <Route exact path="/game/:id" component={Game} />
-          <Route exact path="/newGame/:id" component={NewGame} />
-        </div>
-        :
-        <div>
-         <MainGame />
-        </div>
-      }
+        {!gameStarted ?
+          <div>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/registration" component={Registration} />
+            <Route exact path="/panel" component={UserPanel} />
+            <Route exact path="/newGame" component={NewGame} />
+            <Route exact path="/searchGames" component={SearchGame} />
+            <Route exact path="/game/:id" component={Game} />
+            <Route exact path="/newGame/:id" component={NewGame} />
+          </div>
+          :
+          <div>
+            <MainGame />
+          </div>
+        }
       </div>
     )
   }
@@ -112,9 +90,9 @@ const mapStateToProps = (state, ownProps) => {
     auth: state.auth,
     cookies: ownProps.cookies,
     ws: state.ws,
-    actualGame:state.actualGame
+    actualGame: state.actualGame
   };
 };
 
 const componentApp = connect(mapStateToProps, mapDispatchToProps)(App);
-export default withCookies(componentApp); //withRouter());  
+export default withCookies(componentApp); 

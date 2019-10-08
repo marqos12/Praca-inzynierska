@@ -16,40 +16,24 @@ const mapStateToProps = (state) => {
     };
 };
 
-
 class HomeComponent extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-
-        };  
     }
-    
 
     componentDidMount() {
-    console.log("home 30",this.props.auth)   
-    console.log("home 30/1",this.props.auth.token==""?1:0)   
-    console.log("home 31",this.props.cookies.getAll())    
-    
-    let auth = this.props.cookies.get('auth');
-    
-    if (!auth && this.props.auth.loginSuccess) {
-        this.props.cookies.set('auth', JSON.stringify(this.props.auth), { path: '/' });
-       
-      }
-      else if (auth&&this.props.auth.token=="") {
-        console.log("home 40",auth)
-        this.props.setAuthFromCookies(auth);
-      }
-    
-        if(this.props.auth.token){
+        let auth = this.props.cookies.get('auth');
+        if (!auth && this.props.auth.loginSuccess)
+            this.props.cookies.set('auth', JSON.stringify(this.props.auth), { path: '/' });
+
+        else if (auth && this.props.auth.token == "")
+            this.props.setAuthFromCookies(auth);
+
+        if (this.props.auth.token)
             this.props.history.push("/panel")
-        }
-
-        
     }
+    
     render() {
-
         return (
             <div className="container">
                 <div className="menuContent">

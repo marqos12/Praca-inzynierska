@@ -1,9 +1,6 @@
-
-
 export const GREEN = "GREEN";
 export const ACCESS = "ACCESS";
 export const ROAD = "ROAD";
-
 
 export function getTileEdges(tileType) {
     switch (tileType) {
@@ -40,11 +37,9 @@ export function getTileSortedEdges(tileType, angle) {
     let tileEdges = getTileEdges(tileType)
     let sortedEdges = [];
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) 
         sortedEdges.push(tileEdges[j-- % 4])
-
-    }
-    console.log("Game mechanics sorted edges ", angle, sortedEdges)
+    
     return sortedEdges;
 }
 
@@ -110,7 +105,6 @@ export function isThisPositionPossible(pos, possiblePositions) {
 }
 
 export function isThisPossibleRotation(newTile, tiles, posX, posY) {
-    console.log("gameMechanics 107", newTile.angle, newTile, tiles)
 
     let neighbourLeft = tiles.filter(t =>
         t.posX == posX - 1 &&
@@ -131,8 +125,6 @@ export function isThisPossibleRotation(newTile, tiles, posX, posY) {
 
     let newTileEdges = getTileSortedEdges(newTile.name, newTile.angle)
 
-    console.log("gameMechanics 127", neighbourLeft, neighbourTop, neighbourRight, neighbourBottom)
-
     if (neighbourLeft.length > 0)
         if (newTileEdges[0] != GREEN && newTileEdges[0] == getTileSortedEdges(neighbourLeft[0].name, neighbourLeft[0].angle)[2])
             return true
@@ -148,8 +140,6 @@ export function isThisPossibleRotation(newTile, tiles, posX, posY) {
     if (neighbourBottom.length > 0)
         if (newTileEdges[3] != GREEN && newTileEdges[3] == getTileSortedEdges(neighbourBottom[0].name, neighbourBottom[0].angle)[1])
             return true
-
-
 
     return false;
 }

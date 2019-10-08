@@ -1,24 +1,24 @@
 import {
-    WS_CONNECTED_TO_SERVER,
-    REGISTERED,
-    REGISTRATION_FAILED,
-    LOGGED,
-    LOGIN_FAILED,
-    AUTH_FROM_COOKIES,
-    SET_COOKIES_SERVICE,
-    WS_GOT_GAMES_LIST,
-    SET_HISTORY,
-    WS_CANNEL_SUBSCRIPTION,
-    WS_GAME_CREATED,
-    WS_GAME_UPDATED,
-    WS_GAMERS_STATUS_UPDATE,  
-    WS_GAME_JOINED,
-    WS_GAME_DISCONNECTED,
-    LOGOUT,
-    SET_ORIGIN
-  } from "../constants/action-types";
+  WS_CONNECTED_TO_SERVER,
+  REGISTERED,
+  REGISTRATION_FAILED,
+  LOGGED,
+  LOGIN_FAILED,
+  AUTH_FROM_COOKIES,
+  SET_COOKIES_SERVICE,
+  WS_GOT_GAMES_LIST,
+  SET_HISTORY,
+  WS_CANNEL_SUBSCRIPTION,
+  WS_GAME_CREATED,
+  WS_GAME_UPDATED,
+  WS_GAMERS_STATUS_UPDATE,
+  WS_GAME_JOINED,
+  WS_GAME_DISCONNECTED,
+  LOGOUT,
+  SET_ORIGIN
+} from "../constants/action-types";
 
-export function menuReducer(state, action){
+export function menuReducer(state, action) {
 
   if (action.type === WS_CONNECTED_TO_SERVER) {
     return Object.assign({}, state, {
@@ -72,7 +72,6 @@ export function menuReducer(state, action){
   }
 
   if (action.type === AUTH_FROM_COOKIES) {
-    console.log(AUTH_FROM_COOKIES, state)
     return Object.assign({}, state, {
       auth: Object.assign({}, state.auth, action.payload)
     });
@@ -91,16 +90,12 @@ export function menuReducer(state, action){
   }
 
   if (action.type == WS_GOT_GAMES_LIST) {
-    console.log(action.payload);
     return Object.assign({}, state, {
       gamesList: action.payload
     });
   }
 
   if (action.type === WS_CANNEL_SUBSCRIPTION) {
-    console.log("menuReducer 95", state)
-    console.log("menuReducer 96", action.payload)
-    console.log("reduced 111", state.ws)
     if (state.ws.subscriptions && state.ws.subscriptions[action.payload.channel]) state.ws.subscriptions[action.payload.channel].unsubscribe();
     return Object.assign({}, state, {
       ws: Object.assign({}, state.ws, {
@@ -109,11 +104,10 @@ export function menuReducer(state, action){
         })
       })
     });
-    
+
   }
 
   if (action.type === WS_GAME_CREATED) {
-    console.log("menuReducer 107", action.payload)
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload,
@@ -139,7 +133,6 @@ export function menuReducer(state, action){
   }
 
   if (action.type === WS_GAME_JOINED) {
-    console.log("menuReducer 145", action.payload.game.author.id == action.payload.user.id)
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload.game,
@@ -150,7 +143,6 @@ export function menuReducer(state, action){
   }
 
   if (action.type === WS_GAME_DISCONNECTED) {
-    console.log("menuReducer 151", action.payload)
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: null,
@@ -162,7 +154,6 @@ export function menuReducer(state, action){
   }
 
   if (action.type === SET_ORIGIN) {
-    console.log("menuReducer 187", action.payload)
     return Object.assign({}, state, {
       origin: action.payload
     });
