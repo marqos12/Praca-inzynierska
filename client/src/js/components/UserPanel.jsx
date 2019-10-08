@@ -8,7 +8,7 @@ function mapDispatchToProps(dispatch) {
         wsConnect: () => dispatch(wsConnect()),
         wsSendMessage: payload => dispatch(wsSendMessage(payload)),
         setHistory: payload => dispatch(setHistory(payload)),
-        logout:payload => dispatch(logout(payload))
+        logout: payload => dispatch(logout(payload))
     };
 }
 
@@ -27,54 +27,42 @@ const mapStateToProps = state => {
 class HomeComponent extends Component {
     constructor() {
         super();
-        this.state = {
-
-        };
-
         this.createNewGame = this.createNewGame.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.logout = this.logout.bind(this);
     }
 
     createNewGame() {
-
-        console.log("test userPanel 30", { id: this.props.auth.user.id })
-        console.log(this.props)
         this.props.wsSendMessage({ channel: "/lobby/createGame", payload: { id: this.props.auth.user.id } })
     }
 
     componentDidMount() {
-        if (this.props.ws.client) {
-            // this.props.wsOpenPrivateCanals();
-        }
-        else {
+        if (!this.props.ws.client)
             this.props.wsConnect();
-        }
+
     }
-    logout(){
+
+    logout() {
         this.props.cookies.set('auth', JSON.stringify({}), { path: '/' });
         this.props.logout();
         this.props.history.push("/");
     }
 
-componentDidUpdate(){
-    
-    console.log("user panel linia 54", this.props.actualGame)
-    if (this.props.actualGame.game != null)
-        this.props.history.push("/newGame/" + this.props.actualGame.game.id)
-}
+    componentDidUpdate() {
+        if (this.props.actualGame.game != null)
+            this.props.history.push("/newGame/" + this.props.actualGame.game.id)
+    }
 
     componentWillMount() {
-        console.log("userPanel 60",this.props.auth.token)
         if (this.props.auth.token == "")
             this.props.history.push("/")
     }
+
     handleChange(event) {
         this.setState({ [event.target.id]: event.target.value });
     }
-    render() {
 
-        const { username, password } = this.state;
+    render() {
         return (
             <div className="container">
                 <div className="menuContent">

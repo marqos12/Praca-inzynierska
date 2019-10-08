@@ -25,46 +25,37 @@ const mapStateToProps = state => {
 class SearchGamesComponent extends Component {
     constructor() {
         super();
-
         this.state = {
             initialized: false
         }
-
         this.handleChange = this.handleChange.bind(this);
         this.joinGame = this.joinGame.bind(this);
     }
 
-
-
-    joinGame(id){
-        this.props.history.push("/newGame/"+id)
+    joinGame(id) {
+        this.props.history.push("/newGame/" + id)
     }
 
-
     componentDidMount() {
-        console.log("search game 45 ",this.props, this.state)
         if (!this.state.initialized) {
-            if(this.props.ws.client){
-            this.props.wsSubscribeGameListChannel(); 
-            this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });  
-            this.setState({ initialized: true })
+            if (this.props.ws.client) {
+                this.props.wsSubscribeGameListChannel();
+                this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });
+                this.setState({ initialized: true })
             }
         }
     }
 
     componentDidUpdate() {
-        console.log("search game 54 ",this.props)
-        if (!this.state.initialized) {
-            if(this.props.ws.client){
-            this.props.wsSubscribeGameListChannel(); 
-            this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });  
+        if (!this.state.initialized && this.props.ws.client) {
+            this.props.wsSubscribeGameListChannel();
+            this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });
             this.setState({ initialized: true })
-            }
         }
+
     }
 
-    componentWillUnmount(){
-        console.log("search game 76",this.props.location)
+    componentWillUnmount() {
         this.props.wsUnsubscribeGameListChannel();
     }
 
@@ -72,17 +63,13 @@ class SearchGamesComponent extends Component {
         this.setState({ [event.target.id]: event.target.value });
     }
     render() {
-
         const { gamesList } = this.props;
         return (
             <div className="container">
                 <div className="menuContent">
                     <h1 className="gameTitle">Lista otwartych gier </h1>
-
                     <div className="buttonList">
-
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.joinGame(1)}>Podaj kod gry</a>
-
 
                         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                             <thead>
@@ -96,7 +83,7 @@ class SearchGamesComponent extends Component {
                             <tbody>
                                 {gamesList.map((game, index) => {
                                     return <tr key={index} onClick={() => this.joinGame(game.id)}>
-                                        <td>{game.rts?"RTS":"Turowa"}</td>
+                                        <td>{game.rts ? "RTS" : "Turowa"}</td>
                                         <td>{game.gamersCount}/{game.gamersCountLimit}</td>
                                         <td>{game.gameLimit}</td>
                                         <td>{game.author.username}</td>
@@ -104,10 +91,7 @@ class SearchGamesComponent extends Component {
                                 })}
                             </tbody>
                         </table>
-
-
                     </div>
-
                 </div>
             </div>
         );

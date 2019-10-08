@@ -33,15 +33,13 @@ export default class GameScene extends Phaser.Scene {
     this.possibleHihglights = [];
 
     this.initialized = false;
-    
+
     this.stateChanged = this.stateChanged.bind(this);
 
-    console.log("GameScene 26", this.state)
     this.unsubscribe = store.subscribe(() => {
-      console.log("GameScene 47", this.state,this.initialized)
       this.state = store.getState();
-      if(this.initialized)
-      this.stateChanged();  
+      if (this.initialized)
+        this.stateChanged();
     });
   }
 
@@ -67,7 +65,6 @@ export default class GameScene extends Phaser.Scene {
     this.stateChanged();
 
     this.events.on('destroy', () => {
-      console.log("GameScene 67")
       this.unsubscribe();
     })
 
@@ -84,7 +81,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
     addEventListener('tileInGoodPlace', (x) => {
-      store.dispatch(gameTileInGoodPlace({status:x.detail, tile:this.newTile}));
+      store.dispatch(gameTileInGoodPlace({ status: x.detail, tile: this.newTile }));
     })
 
 
@@ -124,10 +121,7 @@ export default class GameScene extends Phaser.Scene {
       this.tableCenterY -= window.innerHeight / 2;
       this.tableCenterY = this.tableCenterY / oldTileWidth * this.tileWidth;
       this.tableCenterY += window.innerHeight / 2;
-
-
     })
-
 
     this.initialized = true;
   }
@@ -186,7 +180,7 @@ export default class GameScene extends Phaser.Scene {
           tile.id);
         tile2.setAngle_My(tile.angle);
         tile2.makeScale(this.myScale);
-        tile2.move(tile.posX,tile.posY);
+        tile2.move(tile.posX, tile.posY);
         this.tiles.push(tile2);
         this.add.existing(tile2.setDepth(0));
       })
@@ -227,15 +221,15 @@ export default class GameScene extends Phaser.Scene {
         0.815);
       this.add.existing(this.newTileCard.setDepth(0))
 
-    } else if(!this.state.actualGame.myNewTile && this.newTile){
+    } else if (!this.state.actualGame.myNewTile && this.newTile) {
       this.newTile.destroy();
       this.newTile = null;
-  
+
       this.possiblePlaces = [];
-      
-      this.possibleHihglights.forEach(highlight=>highlight.destroy())
+
+      this.possibleHihglights.forEach(highlight => highlight.destroy())
       this.possibleHihglights = [];
-      store.dispatch(gameTileInGoodPlace({status:false, tile:null}));
+      store.dispatch(gameTileInGoodPlace({ status: false, tile: null }));
     }
   }
 

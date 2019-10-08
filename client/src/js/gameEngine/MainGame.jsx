@@ -9,7 +9,7 @@ function mapDispatchToProps(dispatch) {
     return {
         gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload)),
         wsSendMessage: payload => dispatch(wsSendMessage(payload)),
-        gameMyNewTile:payload=> dispatch(gameMyNewTile(payload))
+        gameMyNewTile: payload => dispatch(gameMyNewTile(payload))
     };
 }
 
@@ -30,10 +30,8 @@ class MainGameComponent extends Component {
         this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
     }
 
-    componentDidMount(){
-        console.log("MainGame 33 - componentDidMount")
+    componentDidMount() {
         if (!this.state.gameJoined && this.props.ws.client) {
-            console.log("MainGame 31")
             this.props.gameWsGameJoin(this.props.actualGame.game)
             this.setState({
                 gameJoined: true,
@@ -42,9 +40,7 @@ class MainGameComponent extends Component {
     }
 
     componentDidUpdate() {
-        console.log("MainGame 33 - componentDidUpdate")
         if (!this.state.gameJoined && this.props.ws.client) {
-            console.log("MainGame 31")
             this.props.gameWsGameJoin(this.props.actualGame.game)
             this.setState({
                 gameJoined: true,
@@ -55,12 +51,8 @@ class MainGameComponent extends Component {
     commitNewTilePosiotion() {
         let dataExchange = this.props.actualGame.myNewTile.getTileObj();
         dataExchange.gamerId = this.props.actualGame.meGamer.id;
-        console.log("MainGame 47 ",dataExchange)
         this.props.gameMyNewTile(null)
         this.props.wsSendMessage({ channel: "/game/saveTile", payload: dataExchange });
-    }
-    componentDidUpdate(){
-        console.log("mainGame 63",this.props.actualGame)
     }
 
     render() {
@@ -74,12 +66,12 @@ class MainGameComponent extends Component {
                         Upłynęło czasu: 15:11
                         <br />
                         <img src="assets/left.png"></img>
-                        Upłynęło rund: {actualGame.game.elapsed+"/"+actualGame.game.gameLimit}
+                        Upłynęło rund: {actualGame.game.elapsed + "/" + actualGame.game.gameLimit}
                     </div>
                     <div className="hud_card gamersList">
-                    {actualGame.gamers.map((value,index)=>{
+                        {actualGame.gamers.map((value, index) => {
                             return <div key={index}>
-                                {value.withTile? <img src="assets/arrow.png"></img>:<img src="assets/null.png"></img>}{value.user.username}
+                                {value.withTile ? <img src="assets/arrow.png"></img> : <img src="assets/null.png"></img>}{value.user.username}
                             </div>
                         })}
                     </div>
@@ -97,9 +89,9 @@ class MainGameComponent extends Component {
                         </div>
                     </div>
                     <div className="hud_card rank">
-                        {actualGame.gamers.sort((x,y)=>{return x.posints - y.points}).map((value,index)=>{
+                        {actualGame.gamers.sort((x, y) => { return x.posints - y.points }).map((value, index) => {
                             return <div key={index}>
-                                <img src={"assets/"+(index+1)+".png"}></img>{value.user.username}
+                                <img src={"assets/" + (index + 1) + ".png"}></img>{value.user.username}
                             </div>
                         })}
                     </div>

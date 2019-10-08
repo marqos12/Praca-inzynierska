@@ -18,8 +18,6 @@ const mapStateToProps = state => {
     };
 };
 
-
-
 class NewGameComponent extends Component {
     constructor() {
         super();
@@ -31,25 +29,20 @@ class NewGameComponent extends Component {
             gameLimit: 45,
             ready: false,
             canStart: false,
-            loopPrevent:false
+            loopPrevent: false
         };
 
-        this.loopPrevent=false;
+        this.loopPrevent = false;
         this.checkboxHandleChange = this.checkboxHandleChange.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.leaveGame = this.leaveGame.bind(this);
         this.updateGame = this.updateGame.bind(this);
     }
 
-
     componentDidMount() {
         const { id } = this.props.match.params;
-        console.log("newGame 34", id)
-        if (id) {
-
-        } else {
+        if (!id)
             this.props.history.push("/panel")
-        }
     }
 
     leaveGame() {
@@ -60,14 +53,13 @@ class NewGameComponent extends Component {
         let gamer = this.props.actualGame.meGamer;
         gamer.ready = !this.state.ready
         this.setState({ ready: !this.state.ready })
-        console.log("new game 62", gamer, this.state)
         this.props.wsSendMessage({
             channel: "/lobby/statusUpdate", payload: gamer
         })
     }
 
     startGame() {
-        this.props.actualGame.game.started=true;
+        this.props.actualGame.game.started = true;
         this.props.wsSendMessage({
             channel: "/lobby/startGame", payload: this.props.actualGame.game
         })
@@ -79,7 +71,6 @@ class NewGameComponent extends Component {
         game.privateGame = privateGame;
         game.rts = isRts;
         game.gameLimit = gameLimit;
-
         this.props.wsSendMessage({
             channel: "/lobby/updateGame", payload: game
         })
@@ -87,7 +78,6 @@ class NewGameComponent extends Component {
 
     componentDidUpdate() {
         const { id } = this.props.match.params;
-        console.log("newGame 43", this.state, this.props)
         if (!this.state.initialized) {
             if (this.props.ws.client) {
                 this.setState({ initialized: true })
@@ -110,36 +100,29 @@ class NewGameComponent extends Component {
                 })
             }
             let i = 0;
-                console.log("newgame 108", i, this.props.actualGame.gamers.length,this.loopPrevent, this.state)
             if (this.props.actualGame.gamers.length > 0 && !this.loopPrevent) {
-                this.loopPrevent=true
-                for(const gamer of this.props.actualGame.gamers)if (gamer.ready) i++
-                /*this.props.actualGame.gamers.foreach(function(gamer) {
-                    
-                })*/
+                this.loopPrevent = true
+                for (const gamer of this.props.actualGame.gamers) if (gamer.ready) i++
                 this.setState({ canStart: (i == this.props.actualGame.gamers.length) })
             }
-            else if (this.loopPrevent) this.loopPrevent=false;
+            else if (this.loopPrevent) this.loopPrevent = false;
         }
         if (this.state.initialized && !this.props.actualGame.meGamer) {
             this.props.history.push("/panel")
-
         }
-
     }
 
     handleChange(event) {
-        console.log("new game 96", event.target.id, event.target.value)
         this.setState({ [event.target.id]: event.target.value });
     }
+    
     checkboxHandleChange(event) {
-        console.log("new game 96", event.target.id, event.target.checked)
         this.setState({ [event.target.id]: event.target.checked });
     }
 
     render() {
 
-        const { privateGame, isRts, gameLimit, ready,canStart } = this.state;
+        const { privateGame, isRts, gameLimit, ready, canStart } = this.state;
 
         return (
             <div className="container">
@@ -217,7 +200,7 @@ class NewGameComponent extends Component {
                                 </tbody>
                             </table>
                             <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.setReady()}>{ready ? "Nie gotowy" : "Gotowy"}</a>
-                            {(this.props.actualGame.amIAuthor) ? <a className="button is-large  is-link is-rounded is-fullwidth " disabled={(canStart) ?  "":"disabled" } onClick={() => this.startGame()}>Rozpocznij grę</a> : <span></span>}
+                            {(this.props.actualGame.amIAuthor) ? <a className="button is-large  is-link is-rounded is-fullwidth " disabled={(canStart) ? "" : "disabled"} onClick={() => this.startGame()}>Rozpocznij grę</a> : <span></span>}
                             <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.leaveGame()}>Wyjdź z gry</a>
                         </div>
                         : <div></div>}

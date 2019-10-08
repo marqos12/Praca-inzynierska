@@ -15,7 +15,6 @@ import pl.mojrzeszow.server.models.messages.GameMessage;
 import pl.mojrzeszow.server.repositories.GamerRepository;
 import pl.mojrzeszow.server.service.GameService;
 
-
 @Controller
 
 @MessageMapping("/game")
@@ -34,16 +33,11 @@ public class GameController {
 	@SendToUser("/queue/reply")
 	public GameMessage<List<Tile>> joinGame(@Payload Gamer gamer) {
 		return gameService.joinGame(gamer);
-	}	
+	}
 
 	@MessageMapping("/saveTile")
-	//@SendToUser("/queue/reply")
+	// @SendToUser("/queue/reply")
 	public void saveTile(@Payload DataExchange dataExchange) {
-		System.out.println("GameController 40 "+dataExchange.getType().name());
-
 		gameService.saveTile(dataExchange);
-		
-
-		//return gameService.joinGame(gamer);
 	}
 }

@@ -60,17 +60,13 @@ public class GameService {
 		Gamer updatedGamer = this.gamerRepository.findById(gamer.getId()).orElse(null);
 		updatedGamer.setReady(true);
 		updatedGamer = this.gamerRepository.save(updatedGamer);
-				
+
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
 
 		Game game = updatedGamer.getGame();
-		System.out.println("Gracz " + updatedGamer.getSessionId() + " dołącza do gry " + game.getId());
-		System.out.println("test game in progress " + game.getInProgress());
-		System.out.println("test gamer with tile " + updatedGamer.getWithTile());
 		if (!game.getInProgress() && gamers.stream().filter(Gamer::isReady).count() == gamers.size()) {
 			game.setInProgress(true);
 			gameRepository.save(game);
-			System.out.println("Wszyscy gracze dołączyli");
 			Collections.shuffle(gamers);
 			Long i = new Long(1);
 			for (Gamer gameGamer : gamers) {
@@ -90,7 +86,7 @@ public class GameService {
 		}
 
 		List<Tile> tiles = tileRepository.findByGame(updatedGamer.getGame());
-		
+
 		gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + updatedGamer.getGame().getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
@@ -113,16 +109,15 @@ public class GameService {
 				new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
 
 		Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), gamer.getOrdinalNumber() + 1L);
-		if (nextGamer == null)
-		{
+		if (nextGamer == null) {
 			Game game = gamer.getGame();
-			game.setElapsed(game.getElapsed()+1);
+			game.setElapsed(game.getElapsed() + 1);
 			gameRepository.save(game);
 			simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 					new GameMessage<Game>(MessageType.GAME_UPDATE, game));
 			nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), 1L);
 		}
-		
+
 		TileType randomTileType = getRandomTileTypeForGame(nextGamer.getGame());
 
 		nextGamer.setWithTile(true);
@@ -131,7 +126,6 @@ public class GameService {
 		simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
 				new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
 
-				
 		List<Gamer> gamers = this.gamerRepository.findByGame(nextGamer.getGame());
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + nextGamer.getGame().getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
@@ -148,19 +142,19 @@ public class GameService {
 			if (!tiles.stream().filter(t -> tile.getPosX() - 1 == t.getPosX() && tile.getPosY() == t.getPosY())
 					.findFirst().isPresent())
 				possibleEdgeTypes.add(sortedEdges.get(0));
-				
+
 			if (!tiles.stream().filter(t -> tile.getPosX() == t.getPosX() && tile.getPosY() - 1 == t.getPosY())
 					.findFirst().isPresent())
 				possibleEdgeTypes.add(sortedEdges.get(1));
-				
+
 			if (!tiles.stream().filter(t -> tile.getPosX() + 1 == t.getPosX() && tile.getPosY() == t.getPosY())
 					.findFirst().isPresent())
 				possibleEdgeTypes.add(sortedEdges.get(2));
-				
+
 			if (!tiles.stream().filter(t -> tile.getPosX() == t.getPosX() && tile.getPosY() + 1 == t.getPosY())
 					.findFirst().isPresent())
 				possibleEdgeTypes.add(sortedEdges.get(3));
-				
+
 		}
 
 		Long countRoad = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ROAD)).count();
@@ -172,21 +166,22 @@ public class GameService {
 			do {
 				randomTileType = TileType.randomTileType();
 			} while (randomTileType != TileType.ROAD_ACCESS_SINGLE && randomTileType != TileType.ROAD_ACCESS_DOUBLE);
-		} 
-		/*else if (countAccess > countRoad) {
-			do {
-				randomTileType = TileType.randomTileType();
-			} while (randomTileType != TileType.HOUSE && randomTileType != TileType.SHOPPING_CENTER
-			&& randomTileType != TileType.GROCERY_STORE && randomTileType != TileType.CHURCH);
-		} else if (countAccess < countRoad * 2) {
-			
-			do {
-				randomTileType = TileType.randomTileType();
-			} while (randomTileType != TileType.HOUSE && randomTileType != TileType.SHOPPING_CENTER
-			&& randomTileType != TileType.GROCERY_STORE && randomTileType != TileType.CHURCH
-			&& randomTileType != TileType.ROAD_ACCESS_SINGLE && randomTileType != TileType.ROAD_ACCESS_DOUBLE);
-		}*/
-		else randomTileType = TileType.randomTileType();
+		}
+		/*
+		 * else if (countAccess > countRoad) { do { randomTileType =
+		 * TileType.randomTileType(); } while (randomTileType != TileType.HOUSE &&
+		 * randomTileType != TileType.SHOPPING_CENTER && randomTileType !=
+		 * TileType.GROCERY_STORE && randomTileType != TileType.CHURCH); } else if
+		 * (countAccess < countRoad * 2) {
+		 * 
+		 * do { randomTileType = TileType.randomTileType(); } while (randomTileType !=
+		 * TileType.HOUSE && randomTileType != TileType.SHOPPING_CENTER &&
+		 * randomTileType != TileType.GROCERY_STORE && randomTileType != TileType.CHURCH
+		 * && randomTileType != TileType.ROAD_ACCESS_SINGLE && randomTileType !=
+		 * TileType.ROAD_ACCESS_DOUBLE); }
+		 */
+		else
+			randomTileType = TileType.randomTileType();
 
 		return randomTileType;
 	}
