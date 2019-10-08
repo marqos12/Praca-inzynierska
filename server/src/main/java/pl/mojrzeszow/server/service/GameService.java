@@ -60,10 +60,8 @@ public class GameService {
 		Gamer updatedGamer = this.gamerRepository.findById(gamer.getId()).orElse(null);
 		updatedGamer.setReady(true);
 		updatedGamer = this.gamerRepository.save(updatedGamer);
-
+				
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
-		simpMessagingTemplate.convertAndSend("/topic/game/game/" + updatedGamer.getGame().getId(),
-				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
 		Game game = updatedGamer.getGame();
 		System.out.println("Gracz " + updatedGamer.getSessionId() + " dołącza do gry " + game.getId());
@@ -92,6 +90,10 @@ public class GameService {
 		}
 
 		List<Tile> tiles = tileRepository.findByGame(updatedGamer.getGame());
+		
+		gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + updatedGamer.getGame().getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
 		GameMessage<List<Tile>> gameMessage = new GameMessage<List<Tile>>(MessageType.GAME_JOINED, tiles);
 		return gameMessage;
@@ -112,9 +114,15 @@ public class GameService {
 
 		Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), gamer.getOrdinalNumber() + 1L);
 		if (nextGamer == null)
+		{
+			Game game = gamer.getGame();
+			game.setElapsed(game.getElapsed()+1);
+			gameRepository.save(game);
+			simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+					new GameMessage<Game>(MessageType.GAME_UPDATE, game));
 			nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), 1L);
-		else
-			System.out.println("niby gracz jest");
+		}
+		
 		TileType randomTileType = getRandomTileTypeForGame(nextGamer.getGame());
 
 		nextGamer.setWithTile(true);
@@ -123,6 +131,10 @@ public class GameService {
 		simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
 				new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
 
+				
+		List<Gamer> gamers = this.gamerRepository.findByGame(nextGamer.getGame());
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + nextGamer.getGame().getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 	}
 
 	private TileType getRandomTileTypeForGame(Game game) {

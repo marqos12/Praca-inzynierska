@@ -122,9 +122,6 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.x = this.posX * this.displayWidth + this.scene.tableCenterX - this.displayWidth / 2;
         this.y = this.posY * this.displayHeight + this.scene.tableCenterY - this.displayHeight / 2;
 
-        
-        console.log("tile 126",this)
-
     }
 
     setAngle_My(angle) {
