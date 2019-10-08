@@ -32,11 +32,16 @@ export default class GameScene extends Phaser.Scene {
     this.possiblePlaces = [];
     this.possibleHihglights = [];
 
+    this.initialized = false;
+    
+    this.stateChanged = this.stateChanged.bind(this);
 
     console.log("GameScene 26", this.state)
     this.unsubscribe = store.subscribe(() => {
-      console.log("GameScene 47", this.state)
+      console.log("GameScene 47", this.state,this.initialized)
       this.state = store.getState();
+      if(this.initialized)
+      this.stateChanged();  
     });
   }
 
@@ -60,6 +65,7 @@ export default class GameScene extends Phaser.Scene {
     this.tileWidth = this.fixedTiles[0].displayWidth
 
     this.stateChanged();
+
     this.events.on('destroy', () => {
       console.log("GameScene 67")
       this.unsubscribe();
@@ -123,6 +129,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
 
+    this.initialized = true;
   }
 
   preload() {

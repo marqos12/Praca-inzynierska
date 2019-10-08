@@ -1,31 +1,36 @@
 
 
+export const GREEN = "GREEN";
+export const ACCESS = "ACCESS";
+export const ROAD = "ROAD";
+
+
 export function getTileEdges(tileType) {
     switch (tileType) {
         case "HOUSE":
-            return ["GREEN", "GREEN", "GREEN", "ACCESS"]
+            return [GREEN, GREEN, GREEN, ACCESS]
         case "SHOPPING_CENTER":
-            return ["GREEN", "GREEN", "GREEN", "ACCESS"]
+            return [GREEN, GREEN, GREEN, ACCESS]
         case "GROCERY_STORE":
-            return ["GREEN", "GREEN", "GREEN", "ACCESS"]
+            return [GREEN, GREEN, GREEN, ACCESS]
         case "CHURCH":
-            return ["GREEN", "GREEN", "GREEN", "ACCESS"]
+            return [GREEN, GREEN, GREEN, ACCESS]
         case "ROAD_STRAIGHT":
-            return ["ROAD", "GREEN", "ROAD", "GREEN"]
+            return [ROAD, GREEN, ROAD, GREEN]
         case "ROAD_ACCESS_SINGLE":
-            return ["ROAD", "ACCESS", "ROAD", "GREEN"]
+            return [ROAD, ACCESS, ROAD, GREEN]
         case "ROAD_ACCESS_DOUBLE":
-            return ["ROAD", "ACCESS", "ROAD", "ACCESS"]
+            return [ROAD, ACCESS, ROAD, ACCESS]
         case "ROAD_CROSS_SINGLE":
-            return ["ROAD", "ROAD", "ROAD", "GREEN"]
+            return [ROAD, ROAD, ROAD, GREEN]
         case "ROAD_CROSS_DOUBLE":
-            return ["ROAD", "ROAD", "ROAD", "ROAD"]
+            return [ROAD, ROAD, ROAD, ROAD]
         case "ROAD_CURVE":
-            return ["ROAD", "ROAD", "GREEN", "GREEN"]
+            return [ROAD, ROAD, GREEN, GREEN]
         case "GREEN_1":
-            return ["GREEN", "GREEN", "GREEN", "GREEN"]
+            return [GREEN, GREEN, GREEN, GREEN]
         case "GREEN_2":
-            return ["GREEN", "GREEN", "GREEN", "GREEN"]
+            return [GREEN, GREEN, GREEN, GREEN]
     }
 }
 
@@ -55,7 +60,7 @@ export function getPossiblePlaces(tiles) {
         for (let i = 0; i < 4; i++) {
             let j = 0;
             tileEdges.forEach(edge => {
-                if (newTileEdges[i] == edge) {
+                if (newTileEdges[i] == edge && edge!=GREEN) {
                     initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
                 }
                 j++
@@ -128,19 +133,19 @@ console.log("gameMechanics 107",newTile,tiles)
 console.log("gameMechanics 127",neighbourLeft,neighbourTop,neighbourRight,neighbourBottom)
 
     if (neighbourLeft.length>0)
-        if (newTileEdges[0] == getTileSortedEdges(neighbourLeft[0].name, neighbourLeft[0].angle)[2])
+        if (newTileEdges[0]!=GREEN&&newTileEdges[0] == getTileSortedEdges(neighbourLeft[0].name, neighbourLeft[0].angle)[2])
             return true
 
     if (neighbourTop.length>0)
-        if (newTileEdges[1] == getTileSortedEdges(neighbourTop[0].name, neighbourTop[0].angle)[3])
+        if (newTileEdges[1]!=GREEN&&newTileEdges[1] == getTileSortedEdges(neighbourTop[0].name, neighbourTop[0].angle)[3])
             return true
 
     if (neighbourRight.length>0)
-        if (newTileEdges[2] == getTileSortedEdges(neighbourRight[0].name, neighbourRight[0].angle)[0])
+        if (newTileEdges[2]!=GREEN&&newTileEdges[2] == getTileSortedEdges(neighbourRight[0].name, neighbourRight[0].angle)[0])
             return true
 
     if (neighbourBottom.length>0)
-        if (newTileEdges[3] == getTileSortedEdges(neighbourBottom[0].name, neighbourBottom[0].angle)[1])
+        if (newTileEdges[3]!=GREEN&&newTileEdges[3] == getTileSortedEdges(neighbourBottom[0].name, neighbourBottom[0].angle)[1])
             return true
 
 

@@ -29,7 +29,19 @@ class MainGameComponent extends Component {
         this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
     }
 
+    componentDidMount(){
+        console.log("MainGame 33 - componentDidMount")
+        if (!this.state.gameJoined && this.props.ws.client) {
+            console.log("MainGame 31")
+            this.props.gameWsGameJoin(this.props.actualGame.game)
+            this.setState({
+                gameJoined: true,
+            })
+        }
+    }
+
     componentDidUpdate() {
+        console.log("MainGame 33 - componentDidUpdate")
         if (!this.state.gameJoined && this.props.ws.client) {
             console.log("MainGame 31")
             this.props.gameWsGameJoin(this.props.actualGame.game)
