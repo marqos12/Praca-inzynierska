@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import pl.mojrzeszow.server.enums.MessageType;
 import pl.mojrzeszow.server.enums.TileType;
+import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.messages.DataExchange;
@@ -20,7 +21,7 @@ import pl.mojrzeszow.server.repositories.TileRepository;
 import pl.mojrzeszow.server.repositories.UserRepository;
 
 @Service
-public class GameService{
+public class GameService {
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
 
@@ -34,18 +35,17 @@ public class GameService{
 	UserRepository userRepository;
 
 	@Autowired
-    private TileRepository tileRepository;
-    
+	private TileRepository tileRepository;
+
 	public GameMessage<Gamer> getAllgames(Gamer gamer) throws Exception {
 
 		Gamer updatedGamer = this.gamerRepository.findById(gamer.getId()).orElse(null);
 		updatedGamer.setReady(true);
 		updatedGamer = this.gamerRepository.save(updatedGamer);
 
-		
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
-		simpMessagingTemplate.convertAndSend("/topic/game/game/"+gamer.getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
-
+		simpMessagingTemplate.convertAndSend("/topic/game/game/" + gamer.getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
 		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, updatedGamer);
 		return gameMessage;
@@ -57,20 +57,34 @@ public class GameService{
 		updatedGamer.setReady(true);
 		updatedGamer = this.gamerRepository.save(updatedGamer);
 
-		List<Gamer>	gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
-		simpMessagingTemplate.convertAndSend("/topic/game/game/"+updatedGamer.getGame().getId(), new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
-		
-		System.out.println("Gracz dołącza do gry");
-		if(gamers.stream().filter(Gamer::isReady).count()==gamers.size()){
+		List<Gamer> gamers = this.gamerRepository.findByGame(updatedGamer.getGame());
+		simpMessagingTemplate.convertAndSend("/topic/game/game/" + updatedGamer.getGame().getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+
+		Game game = updatedGamer.getGame();
+		System.out.println("Gracz " + updatedGamer.getSessionId() + " dołącza do gry " + game.getId());
+		System.out.println("test game in progress " + game.getInProgress());
+		System.out.println("test gamer with tile " + updatedGamer.getWithTile());
+		if (!game.getInProgress() && gamers.stream().filter(Gamer::isReady).count() == gamers.size()) {
+			game.setInProgress(true);
+			gameRepository.save(game);
 			System.out.println("Wszyscy gracze dołączyli");
 			Collections.shuffle(gamers);
-			Long i = new Long(0);
-			for (Gamer gameGamer : gamers){
+			Long i = new Long(1);
+			for (Gamer gameGamer : gamers) {
 				gameGamer.setOrdinalNumber(i++);
+				gamerRepository.save(gameGamer);
 			}
 			Gamer firstGamer = gamers.get(0);
 			TileType randomTileType = TileType.randomTileType();
-			simpMessagingTemplate.convertAndSendToUser(firstGamer.getSessionId(), "/reply", new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
+			firstGamer.setWithTile(true);
+			firstGamer.setNewTileType(randomTileType);
+			firstGamer = gamerRepository.save(firstGamer);
+			simpMessagingTemplate.convertAndSendToUser(firstGamer.getSessionId(), "/reply",
+					new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
+		} else if (game.getInProgress() && updatedGamer.getWithTile()) {
+			simpMessagingTemplate.convertAndSendToUser(updatedGamer.getSessionId(), "/reply",
+					new GameMessage<TileType>(MessageType.NEW_TILE, updatedGamer.getNewTileType()));
 		}
 
 		List<Tile> tiles = tileRepository.findByGame(updatedGamer.getGame());
@@ -79,13 +93,30 @@ public class GameService{
 		return gameMessage;
 	}
 
-	public void saveTile(DataExchange data){
+	public void saveTile(DataExchange data) {
 		Gamer gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
-		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle(), 1, data.getPosX(), data.getPosY());
+		gamer.setWithTile(false);
+		gamerRepository.save(gamer);
+		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle(), 1, data.getPosX(),
+				data.getPosY());
 		tile = tileRepository.save(tile);
-		List<Tile>newTiles = new ArrayList<Tile>();
+		List<Tile> newTiles = new ArrayList<Tile>();
 		newTiles.add(tile);
-		simpMessagingTemplate.convertAndSend("/topic/game/game/"+gamer.getGame().getId(), new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
-		
+
+		simpMessagingTemplate.convertAndSend("/topic/game/game/" + gamer.getGame().getId(),
+				new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
+
+		Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), gamer.getOrdinalNumber() + 1L);
+		if (nextGamer == null)
+			nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), 1L);
+		else System.out.println("niby gracz jest");
+		TileType randomTileType = TileType.randomTileType();
+
+		nextGamer.setWithTile(true);
+		nextGamer.setNewTileType(randomTileType);
+		nextGamer = gamerRepository.save(nextGamer);
+		simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
+				new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
+
 	}
 }

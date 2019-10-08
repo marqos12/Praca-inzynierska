@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import GameComponent from "./GameComponent.jsx";
-import { gameWsGameJoin } from "../actions/gameActions.js";
+import { gameWsGameJoin, gameMyNewTile } from "../actions/gameActions.js";
 import { wsSendMessage } from "../actions/index.js";
 
 function mapDispatchToProps(dispatch) {
     return {
         gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload)),
-        wsSendMessage: payload => dispatch(wsSendMessage(payload))
+        wsSendMessage: payload => dispatch(wsSendMessage(payload)),
+        gameMyNewTile:payload=> dispatch(gameMyNewTile(payload))
     };
 }
 
@@ -55,7 +56,7 @@ class MainGameComponent extends Component {
         let dataExchange = this.props.actualGame.myNewTile.getTileObj();
         dataExchange.gamerId = this.props.actualGame.meGamer.id;
         console.log("MainGame 47 ",dataExchange)
-        
+        this.props.gameMyNewTile(null)
         this.props.wsSendMessage({ channel: "/game/saveTile", payload: dataExchange });
     }
 

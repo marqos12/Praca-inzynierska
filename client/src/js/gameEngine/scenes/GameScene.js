@@ -163,8 +163,6 @@ export default class GameScene extends Phaser.Scene {
 
         this.tableCenterX -= this.origDragPoint.x - this.input.activePointer.position.x;
         this.tableCenterY -= this.origDragPoint.y - this.input.activePointer.position.y;
-
-
       }
 
       this.origDragPoint = this.input.activePointer.position.clone();
@@ -229,6 +227,15 @@ export default class GameScene extends Phaser.Scene {
         0.815);
       this.add.existing(this.newTileCard.setDepth(0))
 
+    } else if(!this.state.actualGame.myNewTile && this.newTile){
+      this.newTile.destroy();
+      this.newTile = null;
+  
+      this.possiblePlaces = [];
+      
+      this.possibleHihglights.forEach(highlight=>highlight.destroy())
+      this.possibleHihglights = [];
+      store.dispatch(gameTileInGoodPlace({status:false, tile:null}));
     }
   }
 
