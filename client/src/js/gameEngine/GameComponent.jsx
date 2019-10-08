@@ -36,7 +36,7 @@ class GameComponentComponent extends Component {
                     debug: false
                 }
             },
-            backgroundColor: "#3131ff",
+            backgroundColor: "#235a15",
             scene: [GameScene]
         }
 

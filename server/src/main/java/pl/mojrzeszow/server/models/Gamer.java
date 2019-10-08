@@ -11,6 +11,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import pl.mojrzeszow.server.enums.TileType;
+
 @Entity
 @Table(name = "gamers")
 
@@ -28,7 +30,6 @@ public class Gamer {
 	@ManyToOne
 	private Game game;
 
-
 	private String sessionId;
 	
 	@NotNull
@@ -36,21 +37,21 @@ public class Gamer {
 	
 	@NotNull
 	private boolean status;
-	
-	
+		
 	private boolean ready;
 	
-
 	@NotNull
 	private Long ordinalNumber;
 	
-
 	@NotNull
 	private Long points;
 	
-
 	@NotNull
 	private Long ducklings;
+
+	private Boolean withTile;
+
+	private TileType newTileType;
 
 	
 	public Gamer () {}
@@ -65,16 +66,17 @@ public class Gamer {
 		this.notification = new Date();
 		this.status = true;
 		this.ready = false;
-		this.ordinalNumber = 0L;//do poprawienia
+		this.ordinalNumber = 0L;
 		this.points = 0L;
 		this.ducklings = 0L;
+		this.withTile = false;
 	}
 
 
-	public Gamer(Long id, @NotBlank User user, @NotBlank Game game, String sessionId, @NotBlank Date notification,
-			@NotBlank boolean status, @NotBlank boolean ready, @NotBlank Long ordinalNumber, @NotBlank Long points,
-			@NotBlank Long ducklings) {
-		super();
+
+	public Gamer(Long id, @NotNull User user, @NotNull Game game, String sessionId, @NotNull Date notification,
+			@NotNull boolean status, boolean ready, @NotNull Long ordinalNumber, @NotNull Long points,
+			@NotNull Long ducklings, Boolean withTile, TileType newTileType) {
 		this.id = id;
 		this.user = user;
 		this.game = game;
@@ -85,7 +87,10 @@ public class Gamer {
 		this.ordinalNumber = ordinalNumber;
 		this.points = points;
 		this.ducklings = ducklings;
+		this.withTile = withTile;
+		this.newTileType = newTileType;
 	}
+	
 
 	public Long getId() {
 		return id;
@@ -165,7 +170,23 @@ public class Gamer {
 
 	public void setDucklings(Long ducklings) {
 		this.ducklings = ducklings;
-	}	
+	}
+
+	public Boolean getWithTile() {
+		return withTile;
+	}
+
+	public void setWithTile(Boolean withTile) {
+		this.withTile = withTile;
+	}
+
+	public TileType getNewTileType() {
+		return newTileType;
+	}
+
+	public void setNewTileType(TileType newTileType) {
+		this.newTileType = newTileType;
+	}
 	
 	
 }

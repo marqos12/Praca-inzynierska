@@ -26,7 +26,8 @@ const initialState = {
     meGamer: null,
     tilesDisplayed:[],
     tilesToDisplay:[],
-    myNewTile:null
+    myNewTile:null,
+    newTileInGoodlPlace:false
   },
   origin: ""
 };

@@ -2,11 +2,14 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import GameComponent from "./GameComponent.jsx";
-import { gameWsGameJoin } from "../actions/gameActions.js";
+import { gameWsGameJoin, gameMyNewTile } from "../actions/gameActions.js";
+import { wsSendMessage } from "../actions/index.js";
 
 function mapDispatchToProps(dispatch) {
     return {
-        gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload))
+        gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload)),
+        wsSendMessage: payload => dispatch(wsSendMessage(payload)),
+        gameMyNewTile:payload=> dispatch(gameMyNewTile(payload))
     };
 }
 
@@ -14,7 +17,7 @@ const mapStateToProps = state => {
     return {
         auth: state.auth,
         actualGame: state.actualGame,
-        ws:state.ws
+        ws: state.ws
     };
 };
 
@@ -24,10 +27,12 @@ class MainGameComponent extends Component {
         this.state = {
             gameJoined: false,
         }
+        this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
     }
 
-    componentDidUpdate() {
-        if(!this.state.gameJoined&&this.props.ws.client){
+    componentDidMount(){
+        console.log("MainGame 33 - componentDidMount")
+        if (!this.state.gameJoined && this.props.ws.client) {
             console.log("MainGame 31")
             this.props.gameWsGameJoin(this.props.actualGame.game)
             this.setState({
@@ -36,7 +41,30 @@ class MainGameComponent extends Component {
         }
     }
 
+    componentDidUpdate() {
+        console.log("MainGame 33 - componentDidUpdate")
+        if (!this.state.gameJoined && this.props.ws.client) {
+            console.log("MainGame 31")
+            this.props.gameWsGameJoin(this.props.actualGame.game)
+            this.setState({
+                gameJoined: true,
+            })
+        }
+    }
+
+    commitNewTilePosiotion() {
+        let dataExchange = this.props.actualGame.myNewTile.getTileObj();
+        dataExchange.gamerId = this.props.actualGame.meGamer.id;
+        console.log("MainGame 47 ",dataExchange)
+        this.props.gameMyNewTile(null)
+        this.props.wsSendMessage({ channel: "/game/saveTile", payload: dataExchange });
+    }
+    componentDidUpdate(){
+        console.log("mainGame 63",this.props.actualGame)
+    }
+
     render() {
+        const { actualGame } = this.props;
         return (
             <div>
                 <GameComponent />
@@ -46,36 +74,34 @@ class MainGameComponent extends Component {
                         Upłynęło czasu: 15:11
                         <br />
                         <img src="assets/left.png"></img>
-                        Upłynęło rund: 15/45
+                        Upłynęło rund: {actualGame.game.elapsed+"/"+actualGame.game.gameLimit}
                     </div>
                     <div className="hud_card gamersList">
-                        <div>
-                            <img src="assets/arrow.png"></img>Stefan
-                        </div>
-                        <div>
-                            <img src="assets/null.png"></img>Józef S
-                        </div>
+                    {actualGame.gamers.map((value,index)=>{
+                            return <div key={index}>
+                                {value.withTile? <img src="assets/arrow.png"></img>:<img src="assets/null.png"></img>}{value.user.username}
+                            </div>
+                        })}
                     </div>
-                    {/*<div className="hud_card newTile">
-
-                     </div>*/}
+                    {actualGame.newTileInGoodlPlace ? <div className="hud_card newTile">
+                        <a className="button is-large  is-link is-rounded newTileButton" onClick={this.commitNewTilePosiotion}>Zatwierdź</a>
+                    </div> : <div />}
                     <div className="hud_card resources">
                         <div >
                             <img src="assets/duck.png"></img>
-                            1000
+                            {actualGame.meGamer.ducklings}
                         </div>
                         <div>
                             <img src="assets/P.png"></img>
-                            99
+                            {actualGame.meGamer.points}
                         </div>
                     </div>
                     <div className="hud_card rank">
-                        <div>
-                            <img src="assets/1.png"></img>Stefan 100P
-                        </div>
-                        <div>
-                            <img src="assets/2.png"></img>Józef 99P
-                        </div>
+                        {actualGame.gamers.sort((x,y)=>{return x.posints - y.points}).map((value,index)=>{
+                            return <div key={index}>
+                                <img src={"assets/"+(index+1)+".png"}></img>{value.user.username}
+                            </div>
+                        })}
                     </div>
                 </div>
             </div>
