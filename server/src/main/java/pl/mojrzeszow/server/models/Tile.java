@@ -1,5 +1,8 @@
 package pl.mojrzeszow.server.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import pl.mojrzeszow.server.enums.TileEdgeType;
 import pl.mojrzeszow.server.enums.TileType;
 
 @Entity
@@ -51,6 +55,19 @@ public class Tile {
 		this.lvl = lvl;
 		this.posX = posX;
 		this.posY = posY;
+	}
+
+	public List<TileEdgeType> getSortedEdgeTypes(){
+		int angle = this.angle / 90;
+		int j = (angle + 4) % 4;
+		List<TileEdgeType> tileEdgeTypes = this.type.getTileEdgeTypes();
+		List<TileEdgeType>  sortedEdges = new ArrayList<>();
+	
+		for (int i = 0; i < 4; i++) {
+			sortedEdges.add(tileEdgeTypes.get(j));
+			if (++j > 3) j = 0;
+		}
+		return sortedEdges;
 	}
 
 	public Long getId() {

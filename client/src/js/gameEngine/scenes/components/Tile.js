@@ -50,13 +50,13 @@ export class Tile extends Phaser.GameObjects.Sprite {
                     this.inGoodPlace = true;
                    
                     let tileInGoodPlace = new CustomEvent('tileInGoodPlace', { detail: true });
-                    dispatchEvent(tileInGoodPlace);
-                     let tile = this.scene.newTile
+                     let tile = gameObject.scene.newTile
                      for (let i = 0; i < 4; i++) {
-                        if (isThisPossibleRotation(tile, this.scene.tiles, this.dummyPosX, this.dummyPosY))
+                        if (isThisPossibleRotation(tile, gameObject.scene.tiles, gameObject.dummyPosX, gameObject.dummyPosY))
                             break;
                         else tile.rotate()
                     }
+                    dispatchEvent(tileInGoodPlace);
                     
                 }
             }

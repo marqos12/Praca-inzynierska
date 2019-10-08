@@ -1,5 +1,6 @@
 package pl.mojrzeszow.server.enums;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -66,4 +67,12 @@ public enum TileType {
 		return random;
 	}
 
+	public List<TileEdgeType> getTileEdgeTypes(){
+		List<TileEdgeType> list = new ArrayList<>();
+		list.add(this.left);
+		list.add(this.top);
+		list.add(this.right);
+		list.add(this.down);
+		return list;
+	}
 }

@@ -2,13 +2,17 @@ package pl.mojrzeszow.server.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import pl.mojrzeszow.server.enums.MessageType;
+import pl.mojrzeszow.server.enums.TileEdgeType;
 import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
@@ -109,8 +113,9 @@ public class GameService {
 		Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), gamer.getOrdinalNumber() + 1L);
 		if (nextGamer == null)
 			nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), 1L);
-		else System.out.println("niby gracz jest");
-		TileType randomTileType = TileType.randomTileType();
+		else
+			System.out.println("niby gracz jest");
+		TileType randomTileType = getRandomTileTypeForGame(nextGamer.getGame());
 
 		nextGamer.setWithTile(true);
 		nextGamer.setNewTileType(randomTileType);
@@ -118,5 +123,59 @@ public class GameService {
 		simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
 				new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
 
+	}
+
+	private TileType getRandomTileTypeForGame(Game game) {
+
+		List<Tile> tiles = tileRepository.findByGame(game);
+
+		List<TileEdgeType> possibleEdgeTypes = new ArrayList<>();
+
+		for (Tile tile : tiles) {
+			List<TileEdgeType> sortedEdges = tile.getSortedEdgeTypes();
+			if (!tiles.stream().filter(t -> tile.getPosX() - 1 == t.getPosX() && tile.getPosY() == t.getPosY())
+					.findFirst().isPresent())
+				possibleEdgeTypes.add(sortedEdges.get(0));
+				
+			if (!tiles.stream().filter(t -> tile.getPosX() == t.getPosX() && tile.getPosY() - 1 == t.getPosY())
+					.findFirst().isPresent())
+				possibleEdgeTypes.add(sortedEdges.get(1));
+				
+			if (!tiles.stream().filter(t -> tile.getPosX() + 1 == t.getPosX() && tile.getPosY() == t.getPosY())
+					.findFirst().isPresent())
+				possibleEdgeTypes.add(sortedEdges.get(2));
+				
+			if (!tiles.stream().filter(t -> tile.getPosX() == t.getPosX() && tile.getPosY() + 1 == t.getPosY())
+					.findFirst().isPresent())
+				possibleEdgeTypes.add(sortedEdges.get(3));
+				
+		}
+
+		Long countRoad = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ROAD)).count();
+		Long countAccess = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ACCESS)).count();
+
+		TileType randomTileType = null;
+
+		if (countAccess == 0) {
+			do {
+				randomTileType = TileType.randomTileType();
+			} while (randomTileType != TileType.ROAD_ACCESS_SINGLE && randomTileType != TileType.ROAD_ACCESS_DOUBLE);
+		} 
+		/*else if (countAccess > countRoad) {
+			do {
+				randomTileType = TileType.randomTileType();
+			} while (randomTileType != TileType.HOUSE && randomTileType != TileType.SHOPPING_CENTER
+			&& randomTileType != TileType.GROCERY_STORE && randomTileType != TileType.CHURCH);
+		} else if (countAccess < countRoad * 2) {
+			
+			do {
+				randomTileType = TileType.randomTileType();
+			} while (randomTileType != TileType.HOUSE && randomTileType != TileType.SHOPPING_CENTER
+			&& randomTileType != TileType.GROCERY_STORE && randomTileType != TileType.CHURCH
+			&& randomTileType != TileType.ROAD_ACCESS_SINGLE && randomTileType != TileType.ROAD_ACCESS_DOUBLE);
+		}*/
+		else randomTileType = TileType.randomTileType();
+
+		return randomTileType;
 	}
 }
