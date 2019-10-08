@@ -1,5 +1,6 @@
 package pl.mojrzeszow.server.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import pl.mojrzeszow.server.enums.MessageType;
 import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Tile;
+import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
 import pl.mojrzeszow.server.repositories.GameRepository;
 import pl.mojrzeszow.server.repositories.GamerRepository;
@@ -75,5 +77,15 @@ public class GameService{
 
 		GameMessage<List<Tile>> gameMessage = new GameMessage<List<Tile>>(MessageType.GAME_JOINED, tiles);
 		return gameMessage;
+	}
+
+	public void saveTile(DataExchange data){
+		Gamer gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
+		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle(), 1, data.getPosX(), data.getPosY());
+		tile = tileRepository.save(tile);
+		List<Tile>newTiles = new ArrayList<Tile>();
+		newTiles.add(tile);
+		simpMessagingTemplate.convertAndSend("/topic/game/game/"+gamer.getGame().getId(), new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
+		
 	}
 }

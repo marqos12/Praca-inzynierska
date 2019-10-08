@@ -6,7 +6,9 @@ import {
     GAME_NEW_TILE_DISPLAYED,
     GAME_WS_GAME_JOIN,
     GAME_MY_NEW_TILE,
-    GAME_MY_NEW_TILE_DISPLAYED
+    GAME_MY_NEW_TILE_DISPLAYED,
+    GAME_TILE_IN_GOOD_PLACE,
+    GAME_SEND_NEW_TILE_POSITION
 } from "../constants/game-action-types";
 
 
@@ -40,4 +42,8 @@ export function gameMyNewTile(payload) {
 
 export function gameMyNewTileDisplayed(payload) {
     return { type: GAME_MY_NEW_TILE_DISPLAYED, payload };
+}
+
+export function gameTileInGoodPlace(payload) {
+    return { type: GAME_TILE_IN_GOOD_PLACE, payload };
 }

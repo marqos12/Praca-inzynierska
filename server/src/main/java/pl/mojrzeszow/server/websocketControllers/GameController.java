@@ -10,7 +10,9 @@ import org.springframework.stereotype.Controller;
 
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Tile;
+import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
+import pl.mojrzeszow.server.repositories.GamerRepository;
 import pl.mojrzeszow.server.service.GameService;
 
 
@@ -33,4 +35,15 @@ public class GameController {
 	public GameMessage<List<Tile>> joinGame(@Payload Gamer gamer) {
 		return gameService.joinGame(gamer);
 	}	
+
+	@MessageMapping("/saveTile")
+	//@SendToUser("/queue/reply")
+	public void saveTile(@Payload DataExchange dataExchange) {
+		System.out.println("GameController 40 "+dataExchange.getType().name());
+
+		gameService.saveTile(dataExchange);
+		
+
+		//return gameService.joinGame(gamer);
+	}
 }

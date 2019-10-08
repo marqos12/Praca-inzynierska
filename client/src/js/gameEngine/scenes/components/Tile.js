@@ -1,4 +1,4 @@
-import { isThisPositionPossible } from "../../gameMechanics";
+import { isThisPositionPossible, isThisPossibleRotation } from "../../gameMechanics";
 
 export class Tile extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y, texture, id) {
@@ -11,6 +11,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.dy = 0;
         this.isDragged = false;
         this.clicked = false;
+        this.inGoodPlace = false;
 
         this.x = x;
         this.y = y;
@@ -18,7 +19,10 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.posX = null;
         this.posY = null;
 
-        this.setInteractive();
+        this.dummyPosX = null;
+        this.dummyPosY = null;
+
+        //this.setInteractive();
         //scene.input.setDraggable(this)
 
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
@@ -27,24 +31,45 @@ export class Tile extends Phaser.GameObjects.Sprite {
             let oldx = gameObject.x;
             let oldy = gameObject.y;
 
-            let posX = Math.floor(
+            this.dummyPosX = Math.floor(
                 (
                     gameObject.scene.input.x - gameObject.scene.tableCenterX + gameObject.displayWidth / 2
                 ) / gameObject.displayWidth
             );
-            
-            let posY = Math.floor(
+
+            this.dummyPosY = Math.floor(
                 (
                     gameObject.scene.input.y - gameObject.scene.tableCenterY + gameObject.displayHeight / 2
                 ) / gameObject.displayHeight
             )
-            if(isThisPositionPossible({posX:posX,posY:posY},gameObject.scene.possiblePlaces)){
-                 dragX = posX * gameObject.displayWidth + gameObject.scene.tableCenterX - gameObject.displayWidth / 2;
-                 dragY = posY * gameObject.displayHeight + gameObject.scene.tableCenterY - gameObject.displayHeight / 2;
+            if (isThisPositionPossible({ posX: this.dummyPosX, posY: this.dummyPosY }, gameObject.scene.possiblePlaces)) {
+                dragX = this.dummyPosX * gameObject.displayWidth + gameObject.scene.tableCenterX - gameObject.displayWidth / 2;
+                dragY = this.dummyPosY * gameObject.displayHeight + gameObject.scene.tableCenterY - gameObject.displayHeight / 2;
+
+                if (!this.inGoodPlace) {
+                    this.inGoodPlace = true;
+                   
+                    let tileInGoodPlace = new CustomEvent('tileInGoodPlace', { detail: true });
+                    dispatchEvent(tileInGoodPlace);
+                     let tile = this.scene.newTile
+                     for (let i = 0; i < 4; i++) {
+                        if (isThisPossibleRotation(tile, this.scene.tiles, this.dummyPosX, this.dummyPosY))
+                            break;
+                        else tile.rotate()
+                    }
+                    
+                }
             }
             else {
                 dragX = gameObject.scene.input.x - gameObject.displayWidth / 2;
                 dragY = gameObject.scene.input.y - gameObject.displayHeight / 2;
+
+
+                if (this.inGoodPlace) {
+                    this.inGoodPlace = false;
+                    let tileInGoodPlace = new CustomEvent('tileInGoodPlace', { detail: false });
+                    dispatchEvent(tileInGoodPlace);
+                }
             }
 
             gameObject.x = dragX;
@@ -55,9 +80,9 @@ export class Tile extends Phaser.GameObjects.Sprite {
                 gameObject.dx = oldx - gameObject.x;
                 gameObject.dy = oldy - gameObject.y;
 
-                if(!gameObject.isDragged){
+                if (!gameObject.isDragged) {
                     gameObject.isDragged = true;
-                    let draggedTile = new CustomEvent('draggedTile', { detail: this});
+                    let draggedTile = new CustomEvent('draggedTile', { detail: this });
                     dispatchEvent(draggedTile);
                 }
             }
@@ -67,19 +92,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown(0)) {
                 if (this.clicked) {
-                    this.angle += 90;
-                    if (this.angle == 0)
-                        this.setOrigin(0, 0);
-                    if (this.angle == 90)
-                        this.setOrigin(0, 1);
-                    if (this.angle == -180)
-                        this.setOrigin(1, 1);
-                    if (this.angle == -90)
-                        this.setOrigin(1, 0);
-                    this.dx = 0;
-                    this.dy = 0;
-                    let rotatedTile = new CustomEvent('rotatedTile', { detail: this.getTileObj(this) });
-                    dispatchEvent(rotatedTile);
+                    this.rotate()
                 }
                 else {
                     this.clicked = true;
@@ -87,20 +100,15 @@ export class Tile extends Phaser.GameObjects.Sprite {
                 }
             }
             if (pointer.rightButtonDown()) {
-                this.angle += 90;
-                if (this.angle == 0)
-                    this.setOrigin(0, 0);
-                if (this.angle == 90)
-                    this.setOrigin(0, 1);
-                if (this.angle == -180)
-                    this.setOrigin(1, 1);
-                if (this.angle == -90)
-                    this.setOrigin(1, 0);
-                this.dx = 0;
-                this.dy = 0;
-                let rotatedTile = new CustomEvent('rotatedTile', { detail: this.getTileObj(this) });
-                dispatchEvent(rotatedTile);
+                this.rotate()
+
+                for (let i = 0; i < 4; i++) {
+                    if (isThisPossibleRotation(this, this.scene.tiles, this.dummyPosX, this.dummyPosY))
+                        break;
+                    else this.rotate()
+                }
             }
+
         })
     }
 
@@ -108,14 +116,15 @@ export class Tile extends Phaser.GameObjects.Sprite {
 
     }
 
-    move(dx, dy) {
-        if (this.isDragged) {
-            this.isDragged = false;
-        }
-        else {
-            this.x -= dx;
-            this.y -= dy;
-        }
+    move(posX, posY) {
+        this.posX = posX;
+        this.posY = posY;
+        this.x = this.posX * this.displayWidth + this.scene.tableCenterX - this.displayWidth / 2;
+        this.y = this.posY * this.displayHeight + this.scene.tableCenterY - this.displayHeight / 2;
+
+        
+        console.log("tile 126",this)
+
     }
 
     setAngle_My(angle) {
@@ -130,8 +139,8 @@ export class Tile extends Phaser.GameObjects.Sprite {
             this.setOrigin(1, 0);
     }
 
-    getTileObj(gameObject) {
-        return { id: gameObject.id, name: gameObject.name, posx: gameObject.dx, posy: gameObject.dy, angle: gameObject.angle };
+    getTileObj() {
+        return { type: this.name, posX: this.dummyPosX, posY: this.dummyPosY, angle: this.angle };
     }
 
     getTileMove() {
@@ -148,5 +157,21 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.y -= window.innerHeight / 2;
         this.y = this.y / oldWidth * newWidth;
         this.y += window.innerHeight / 2;
+    }
+
+    rotate() {
+        this.angle += 90;
+        if (this.angle == 0)
+            this.setOrigin(0, 0);
+        if (this.angle == 90)
+            this.setOrigin(0, 1);
+        if (this.angle == -180)
+            this.setOrigin(1, 1);
+        if (this.angle == -90)
+            this.setOrigin(1, 0);
+        this.dx = 0;
+        this.dy = 0;
+        let rotatedTile = new CustomEvent('rotatedTile', { detail: this.getTileObj(this) });
+        dispatchEvent(rotatedTile);
     }
 }

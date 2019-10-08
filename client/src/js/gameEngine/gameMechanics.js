@@ -49,7 +49,7 @@ export function getPossiblePlaces(tiles) {
     let initPossiblePos = [];
     let tilesPos = [];
     tiles.forEach(tile => {
-        tilesPos.push({posX : tile.posX,posY:tile.posY});
+        tilesPos.push({ posX: tile.posX, posY: tile.posY });
 
         let tileEdges = getTileSortedEdges(tile.name, tile.angle);
         for (let i = 0; i < 4; i++) {
@@ -65,10 +65,10 @@ export function getPossiblePlaces(tiles) {
 
     let possiblePos = [];
 
-    initPossiblePos.forEach(pos=>{
-        let sameTilesPos = tilesPos.filter(tpos=>tpos.posX==pos.posX && tpos.posY==pos.posY);
-        let samePossiblePos = possiblePos.filter(ppos=>ppos.posX==pos.posX && ppos.posY==pos.posY);
-        if(samePossiblePos.length==0&&sameTilesPos.length==0)possiblePos.push(pos)
+    initPossiblePos.forEach(pos => {
+        let sameTilesPos = tilesPos.filter(tpos => tpos.posX == pos.posX && tpos.posY == pos.posY);
+        let samePossiblePos = possiblePos.filter(ppos => ppos.posX == pos.posX && ppos.posY == pos.posY);
+        if (samePossiblePos.length == 0 && sameTilesPos.length == 0) possiblePos.push(pos)
     })
 
     return possiblePos;
@@ -87,7 +87,7 @@ export function getPossiblePos(i, posX, posY) {
     }
 }
 
-export function makeHighlightScale(highlight,scale){
+export function makeHighlightScale(highlight, scale) {
     let oldWidth = highlight.displayWidth;
     highlight.setScale(scale);
     let newWidth = highlight.displayWidth;
@@ -99,6 +99,51 @@ export function makeHighlightScale(highlight,scale){
     highlight.y += window.innerHeight / 2;
 }
 
-export function isThisPositionPossible(pos,possiblePositions){
-    return possiblePositions.filter(position=>position.posX==pos.posX&&position.posY==pos.posY).length>0;
+export function isThisPositionPossible(pos, possiblePositions) {
+    return possiblePositions.filter(position => position.posX == pos.posX && position.posY == pos.posY).length > 0;
+}
+
+export function isThisPossibleRotation(newTile, tiles, posX, posY) {
+console.log("gameMechanics 107",newTile,tiles)
+
+    let neighbourLeft = tiles.filter(t =>
+        t.posX == posX - 1 &&
+        t.posY == posY
+    )
+    let neighbourTop = tiles.filter(t =>
+        t.posX == posX &&
+        t.posY == posY - 1
+    )
+    let neighbourRight = tiles.filter(t =>
+        t.posX == posX + 1 &&
+        t.posY == posY
+    )
+    let neighbourBottom = tiles.filter(t =>
+        t.posX == posX &&
+        t.posY == posY + 1
+    )
+
+    let newTileEdges = getTileSortedEdges(newTile.name, newTile.angle)
+
+console.log("gameMechanics 127",neighbourLeft,neighbourTop,neighbourRight,neighbourBottom)
+
+    if (neighbourLeft.length>0)
+        if (newTileEdges[0] == getTileSortedEdges(neighbourLeft[0].name, neighbourLeft[0].angle)[2])
+            return true
+
+    if (neighbourTop.length>0)
+        if (newTileEdges[1] == getTileSortedEdges(neighbourTop[0].name, neighbourTop[0].angle)[3])
+            return true
+
+    if (neighbourRight.length>0)
+        if (newTileEdges[2] == getTileSortedEdges(neighbourRight[0].name, neighbourRight[0].angle)[0])
+            return true
+
+    if (neighbourBottom.length>0)
+        if (newTileEdges[3] == getTileSortedEdges(neighbourBottom[0].name, neighbourBottom[0].angle)[1])
+            return true
+
+
+
+    return false;
 }

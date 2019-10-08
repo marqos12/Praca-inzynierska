@@ -47,6 +47,10 @@ $resources-tab-height:7vh;
         width:$tile-tab-width;
         height:30vh;
         border-top-left-radius: 15px;
+
+        .newTileButton{
+            display: block
+        }
     }
 
     .rank{

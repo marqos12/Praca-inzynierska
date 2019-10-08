@@ -3,10 +3,12 @@ import { connect } from "react-redux";
 
 import GameComponent from "./GameComponent.jsx";
 import { gameWsGameJoin } from "../actions/gameActions.js";
+import { wsSendMessage } from "../actions/index.js";
 
 function mapDispatchToProps(dispatch) {
     return {
-        gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload))
+        gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload)),
+        wsSendMessage: payload => dispatch(wsSendMessage(payload))
     };
 }
 
@@ -14,7 +16,7 @@ const mapStateToProps = state => {
     return {
         auth: state.auth,
         actualGame: state.actualGame,
-        ws:state.ws
+        ws: state.ws
     };
 };
 
@@ -24,10 +26,11 @@ class MainGameComponent extends Component {
         this.state = {
             gameJoined: false,
         }
+        this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
     }
 
     componentDidUpdate() {
-        if(!this.state.gameJoined&&this.props.ws.client){
+        if (!this.state.gameJoined && this.props.ws.client) {
             console.log("MainGame 31")
             this.props.gameWsGameJoin(this.props.actualGame.game)
             this.setState({
@@ -36,7 +39,16 @@ class MainGameComponent extends Component {
         }
     }
 
+    commitNewTilePosiotion() {
+        let dataExchange = this.props.actualGame.myNewTile.getTileObj();
+        dataExchange.gamerId = this.props.actualGame.meGamer.id;
+        console.log("MainGame 47 ",dataExchange)
+        
+        this.props.wsSendMessage({ channel: "/game/saveTile", payload: dataExchange });
+    }
+
     render() {
+        const { actualGame } = this.props;
         return (
             <div>
                 <GameComponent />
@@ -56,9 +68,9 @@ class MainGameComponent extends Component {
                             <img src="assets/null.png"></img>Józef S
                         </div>
                     </div>
-                    {/*<div className="hud_card newTile">
-
-                     </div>*/}
+                    {actualGame.newTileInGoodlPlace ? <div className="hud_card newTile">
+                        <a className="button is-large  is-link is-rounded newTileButton" onClick={this.commitNewTilePosiotion}>Zatwierdź</a>
+                    </div> : <div />}
                     <div className="hud_card resources">
                         <div >
                             <img src="assets/duck.png"></img>

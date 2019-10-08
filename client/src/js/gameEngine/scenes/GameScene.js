@@ -1,6 +1,6 @@
 import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
-import { gameWsGameJoined, gameNewTileDisplayed } from "../../actions/gameActions.js";
+import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
 import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale } from "../gameMechanics";
 
@@ -76,11 +76,11 @@ export default class GameScene extends Phaser.Scene {
 
       this.highlightPossiblePlaces();
     })
-    /*
-      addEventListener('rotatedTile', (x) => {
-        this.sendMove(x.detail);
-      })
-    */
+
+    addEventListener('tileInGoodPlace', (x) => {
+      store.dispatch(gameTileInGoodPlace({status:x.detail, tile:this.newTile}));
+    })
+
 
     addEventListener("wheel", x => {
       if (x.deltaY < 0)
@@ -175,16 +175,15 @@ export default class GameScene extends Phaser.Scene {
     if (this.state.actualGame.tilesToDisplay.length != 0) {
       this.state.actualGame.tilesToDisplay.forEach(tile => {
         let tile2 = new Tile(this,
-          this.tableCenterX + tile.posX * this.tileWidth - 150,
-          this.tableCenterY + tile.posY * this.tileWidth - 150,
+          0,
+          0,
           tile.type,
           tile.id);
+        tile2.setAngle_My(tile.angle);
         tile2.makeScale(this.myScale);
-        tile2.setAngle(tile.angle);
-        tile2.posX = tile.posX;
-        tile2.posY = tile.posY;
+        tile2.move(tile.posX,tile.posY);
         this.tiles.push(tile2);
-        this.add.existing(tile2.setDepth(0))
+        this.add.existing(tile2.setDepth(0));
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
     }
@@ -198,6 +197,7 @@ export default class GameScene extends Phaser.Scene {
         -1
       )
       this.newTile.makeScale(0.5)
+      this.newTile.setInteractive()
       this.input.setDraggable(this.newTile)
 
       this.add.existing(this.newTile.setDepth(1))

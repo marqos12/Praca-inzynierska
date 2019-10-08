@@ -6,6 +6,7 @@ import {
     wsChannelSubscription,
     wsSendMessage
 } from "../actions";
+import { gameMyNewTile, gameNewTileToDisplay } from "../actions/gameActions";
 
 export function GameMiddleware(getState, dispatch, action) {
 
@@ -16,17 +17,19 @@ export function GameMiddleware(getState, dispatch, action) {
             resp = JSON.parse(resp.body)
             console.log("gameMiddleware 17", resp)
             switch (resp.type) {
-                
+                case "NEW_TILE":
+                        dispatch(gameNewTileToDisplay(resp.payload));
+                    break;
             }
         });
         console.log("gameMiddleware 24", subscription)
         dispatch(wsChannelSubscription({ channel: "GAME_GAME_CHANNEL", subscription: subscription }))
 
         dispatch(wsSendMessage({
-            channel: "/game/joinGame", payload: 
-              getState().actualGame.meGamer
-            
-          }));
+            channel: "/game/joinGame", payload:
+                getState().actualGame.meGamer
+
+        }));
     }
 
     if (action.type === GAME_WS_GAME_DISCONNECT) {
