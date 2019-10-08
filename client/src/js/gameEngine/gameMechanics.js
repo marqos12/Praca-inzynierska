@@ -26,7 +26,7 @@ export function getTileEdges(tileType) {
         case "ROAD_CROSS_DOUBLE":
             return [ROAD, ROAD, ROAD, ROAD]
         case "ROAD_CURVE":
-            return [ROAD, ROAD, GREEN, GREEN]
+            return [GREEN, ROAD, ROAD, GREEN]
         case "GREEN_1":
             return [GREEN, GREEN, GREEN, GREEN]
         case "GREEN_2":
@@ -35,15 +35,16 @@ export function getTileEdges(tileType) {
 }
 
 export function getTileSortedEdges(tileType, angle) {
-    angle = angle / 90;
-    let j = (angle + 4) % 4;
+    angle = Math.round(angle / 90);
+    let j = (angle + 6);
     let tileEdges = getTileEdges(tileType)
     let sortedEdges = [];
 
     for (let i = 0; i < 4; i++) {
-        sortedEdges.push(tileEdges[j])
-        if (++j > 3) j = 0;
+        sortedEdges.push(tileEdges[j-- % 4])
+
     }
+    console.log("Game mechanics sorted edges ", angle, sortedEdges)
     return sortedEdges;
 }
 
@@ -60,7 +61,7 @@ export function getPossiblePlaces(tiles) {
         for (let i = 0; i < 4; i++) {
             let j = 0;
             tileEdges.forEach(edge => {
-                if (newTileEdges[i] == edge && edge!=GREEN) {
+                if (newTileEdges[i] == edge && edge != GREEN) {
                     initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
                 }
                 j++
@@ -109,7 +110,7 @@ export function isThisPositionPossible(pos, possiblePositions) {
 }
 
 export function isThisPossibleRotation(newTile, tiles, posX, posY) {
-console.log("gameMechanics 107",newTile,tiles)
+    console.log("gameMechanics 107", newTile.angle, newTile, tiles)
 
     let neighbourLeft = tiles.filter(t =>
         t.posX == posX - 1 &&
@@ -130,22 +131,22 @@ console.log("gameMechanics 107",newTile,tiles)
 
     let newTileEdges = getTileSortedEdges(newTile.name, newTile.angle)
 
-console.log("gameMechanics 127",neighbourLeft,neighbourTop,neighbourRight,neighbourBottom)
+    console.log("gameMechanics 127", neighbourLeft, neighbourTop, neighbourRight, neighbourBottom)
 
-    if (neighbourLeft.length>0)
-        if (newTileEdges[0]!=GREEN&&newTileEdges[0] == getTileSortedEdges(neighbourLeft[0].name, neighbourLeft[0].angle)[2])
+    if (neighbourLeft.length > 0)
+        if (newTileEdges[0] != GREEN && newTileEdges[0] == getTileSortedEdges(neighbourLeft[0].name, neighbourLeft[0].angle)[2])
             return true
 
-    if (neighbourTop.length>0)
-        if (newTileEdges[1]!=GREEN&&newTileEdges[1] == getTileSortedEdges(neighbourTop[0].name, neighbourTop[0].angle)[3])
+    if (neighbourTop.length > 0)
+        if (newTileEdges[1] != GREEN && newTileEdges[1] == getTileSortedEdges(neighbourTop[0].name, neighbourTop[0].angle)[3])
             return true
 
-    if (neighbourRight.length>0)
-        if (newTileEdges[2]!=GREEN&&newTileEdges[2] == getTileSortedEdges(neighbourRight[0].name, neighbourRight[0].angle)[0])
+    if (neighbourRight.length > 0)
+        if (newTileEdges[2] != GREEN && newTileEdges[2] == getTileSortedEdges(neighbourRight[0].name, neighbourRight[0].angle)[0])
             return true
 
-    if (neighbourBottom.length>0)
-        if (newTileEdges[3]!=GREEN&&newTileEdges[3] == getTileSortedEdges(neighbourBottom[0].name, neighbourBottom[0].angle)[1])
+    if (neighbourBottom.length > 0)
+        if (newTileEdges[3] != GREEN && newTileEdges[3] == getTileSortedEdges(neighbourBottom[0].name, neighbourBottom[0].angle)[1])
             return true
 
 
