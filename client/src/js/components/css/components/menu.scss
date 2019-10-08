@@ -3,9 +3,9 @@
 .container{padding-top: 50px;}
 
 .menuContent{
-    background-color: rgba(93, 143, 189, 0.815);
+    background-color: $card-background-color;
     border-radius: 30px;
-    border:2px solid rgb(65, 227, 255);
+    border:2px solid $card-border-color;
       
     padding-bottom: 50px;
     height:80vh;

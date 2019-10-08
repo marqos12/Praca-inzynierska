@@ -67,7 +67,10 @@ class NewGameComponent extends Component {
     }
 
     startGame() {
-
+        this.props.actualGame.game.started=true;
+        this.props.wsSendMessage({
+            channel: "/lobby/startGame", payload: this.props.actualGame.game
+        })
     }
 
     updateGame() {

@@ -13,5 +13,6 @@ import pl.mojrzeszow.server.models.Gamer;
 public interface GamerRepository extends JpaRepository<Gamer, Long> {
 	Optional<Gamer> findById(Long id);
 	List<Gamer> findByGame(Game game);
+	Gamer findByGameAndOrdinalNumber(Game game,Long ordinalNumber);
 }
 

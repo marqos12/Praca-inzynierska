@@ -1,5 +1,8 @@
 package pl.mojrzeszow.server.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import pl.mojrzeszow.server.enums.TileEdgeType;
 import pl.mojrzeszow.server.enums.TileType;
 
 @Entity
@@ -18,40 +22,26 @@ public class Tile {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotBlank
 	@ManyToOne
 	private Gamer gamer;
-	
-	@NotBlank
+
 	@ManyToOne
 	private Game game;
 
-	@NotBlank
 	private TileType type;
-	
 
-	@NotBlank
 	private int model;
-	
 
-	@NotBlank
 	private int angle;
-	
 
-	@NotBlank
 	private int lvl;
-	
 
-	@NotBlank
 	private Long posX;
-	
 
-	@NotBlank
 	private Long posY;
-	
-	public Tile() {}
 
-
+	public Tile() {
+	}
 
 	public Tile(Long id, @NotBlank Gamer gamer, @NotBlank Game game, @NotBlank TileType type, @NotBlank int model,
 			@NotBlank int angle, @NotBlank int lvl, @NotBlank Long posX, @NotBlank Long posY) {
@@ -67,7 +57,18 @@ public class Tile {
 		this.posY = posY;
 	}
 
-
+	public List<TileEdgeType> getSortedEdgeTypes(){
+		int angle = this.angle / 90;
+		int j = (angle + 4) % 4;
+		List<TileEdgeType> tileEdgeTypes = this.type.getTileEdgeTypes();
+		List<TileEdgeType>  sortedEdges = new ArrayList<>();
+	
+		for (int i = 0; i < 4; i++) {
+			sortedEdges.add(tileEdgeTypes.get(j));
+			if (++j > 3) j = 0;
+		}
+		return sortedEdges;
+	}
 
 	public Long getId() {
 		return id;
@@ -125,21 +126,13 @@ public class Tile {
 		this.posY = posY;
 	}
 
-
-
 	public Game getGame() {
 		return game;
 	}
 
-
-
 	public void setGame(Game game) {
 		this.game = game;
 	}
-	
-	
-	
-
 
 	public TileType getType() {
 		return type;
@@ -149,7 +142,4 @@ public class Tile {
 		this.type = type;
 	}
 
-	
-	
-	
 }
