@@ -3,18 +3,26 @@ package pl.mojrzeszow.server.models.messages;
 import javax.validation.constraints.NotBlank;
 
 import pl.mojrzeszow.server.enums.TileType;
+import pl.mojrzeszow.server.models.Gamer;
+import pl.mojrzeszow.server.models.Influence;
 
 public class DataExchange {
 
-	private Long id;
-	private Long userId;
-	private Long gameId;
-	private String sessionId;
-	private Long gamerId;
-	private Long posX;
-	private Long posY;
-	private int angle;
-	private TileType type;
+	public Long id;
+	public Long userId;
+	public Long gameId;
+	public String sessionId;
+	public Long gamerId;
+	public Long posX;
+	public Long posY;
+	public int angle;
+	public TileType type;
+	public Gamer gamer;
+	public long lvl;
+	public Influence incomeInfluence;
+	public Influence outcomeInfluence;
+	public Influence needToUppgrade;
+	public Long points;
 
 	public DataExchange() {
 	}

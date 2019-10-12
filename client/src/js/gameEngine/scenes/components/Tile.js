@@ -14,7 +14,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.inGoodPlace = false;
 
         this.influence = null;
-        this.generalType="";
+        this.generalType = "";
 
         this.x = x;
         this.y = y;
@@ -25,7 +25,8 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.dummyPosX = null;
         this.dummyPosY = null;
 
-        //this.setInteractive();
+        this.fixed = true;
+        this.setInteractive();
         //scene.input.setDraggable(this)
 
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
@@ -51,16 +52,16 @@ export class Tile extends Phaser.GameObjects.Sprite {
 
                 if (!this.inGoodPlace) {
                     this.inGoodPlace = true;
-                   
+
                     let tileInGoodPlace = new CustomEvent('tileInGoodPlace', { detail: true });
-                     let tile = gameObject.scene.newTile
-                     for (let i = 0; i < 4; i++) {
+                    let tile = gameObject.scene.newTile
+                    for (let i = 0; i < 4; i++) {
                         if (isThisPossibleRotation(tile, gameObject.scene.tiles, gameObject.dummyPosX, gameObject.dummyPosY))
                             break;
                         else tile.rotate()
                     }
                     dispatchEvent(tileInGoodPlace);
-                    
+
                 }
             }
             else {
@@ -90,12 +91,20 @@ export class Tile extends Phaser.GameObjects.Sprite {
                 }
             }
 
+            let draggingNewTile = new CustomEvent('draggingNewTile', { detail: this });
+            dispatchEvent(draggingNewTile);
         });
 
         this.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown(0)) {
                 if (this.clicked) {
-                    this.rotate()
+                    if (!this.fixed) {
+                        this.rotate()
+                    }
+                    else {
+                        let draggedTile = new CustomEvent('showDetails', { detail: this });
+                        dispatchEvent(draggedTile);
+                    }
                 }
                 else {
                     this.clicked = true;
@@ -103,13 +112,16 @@ export class Tile extends Phaser.GameObjects.Sprite {
                 }
             }
             if (pointer.rightButtonDown()) {
-                this.rotate()
+                if (!this.fixed) {
+                    this.rotate()
 
-                for (let i = 0; i < 4; i++) {
-                    if (isThisPossibleRotation(this, this.scene.tiles, this.dummyPosX, this.dummyPosY))
-                        break;
-                    else this.rotate()
+                    for (let i = 0; i < 4; i++) {
+                        if (isThisPossibleRotation(this, this.scene.tiles, this.dummyPosX, this.dummyPosY))
+                            break;
+                        else this.rotate()
+                    }
                 }
+
             }
 
         })
@@ -140,7 +152,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
     }
 
     getTileObj() {
-        return { type: this.name.slice(0,-2), posX: this.dummyPosX, posY: this.dummyPosY, angle: this.angle };
+        return { type: this.name.slice(0, -2), posX: this.dummyPosX, posY: this.dummyPosY, angle: this.angle };
     }
 
     getTileMove() {

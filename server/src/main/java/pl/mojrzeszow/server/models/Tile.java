@@ -118,7 +118,7 @@ public class Tile {
 				influence.shopsRange = 6L;
 			}
 			break;
-		case HOSPPITAL:
+		case HOSPITAL:
 			influence.ducklings = -200L;
 			influence.medicalCare = 1L;
 			influence.medicalCareRange = 10L;
@@ -264,7 +264,7 @@ public class Tile {
 				influence = null;
 			}
 			break;
-		case HOSPPITAL:
+		case HOSPITAL:
 			influence = null;
 			break;
 		case FIRE_HOUSE:

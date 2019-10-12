@@ -3,6 +3,7 @@ import store from "../../store";
 import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
 import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale, getTileGeneralType } from "../gameMechanics";
+import { TileDetails } from "./components/TileDetails";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -31,6 +32,8 @@ export default class GameScene extends Phaser.Scene {
 
     this.possiblePlaces = [];
     this.possibleHihglights = [];
+
+    this.tileDetails = null;
 
     this.initialized = false;
 
@@ -69,6 +72,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
     addEventListener('draggedTile', (x) => {
+      console.log("GameScene 75")
       this.newTile.makeScale(this.myScale);
       this.tiles.push(this.newTile);
 
@@ -80,10 +84,21 @@ export default class GameScene extends Phaser.Scene {
       this.highlightPossiblePlaces();
     })
 
+    addEventListener('draggingNewTile', (x) => {
+      if (this.tileDetails) {
+        this.tileDetails.destroy();
+        this.tileDetails=null;
+      }
+    })
+
     addEventListener('tileInGoodPlace', (x) => {
       store.dispatch(gameTileInGoodPlace({ status: x.detail, tile: this.newTile }));
     })
 
+    addEventListener('showDetails', (x) => {
+      if (this.tileDetails) this.tileDetails.destroy();
+      this.tileDetails = new TileDetails(this, x.detail);
+    })
 
     addEventListener("wheel", x => {
       if (x.deltaY < 0)
@@ -121,6 +136,8 @@ export default class GameScene extends Phaser.Scene {
       this.tableCenterY -= window.innerHeight / 2;
       this.tableCenterY = this.tableCenterY / oldTileWidth * this.tileWidth;
       this.tableCenterY += window.innerHeight / 2;
+
+      if (this.tileDetails) this.tileDetails.move();
     })
 
     this.initialized = true;
@@ -129,6 +146,7 @@ export default class GameScene extends Phaser.Scene {
   preload() {
     this.load.image("arrow-back", 'assets/arrow-left.png');
     this.load.image("newTileBackground", 'assets/newTileBackground.png');
+    this.load.image("tileDetailsBackground", 'assets/tileInfo.png');
     this.load.atlas('tiles',
       './assets/plates/plates.png',
       './assets/plates/plates.json')
@@ -161,6 +179,8 @@ export default class GameScene extends Phaser.Scene {
       }
 
       this.origDragPoint = this.input.activePointer.position.clone();
+
+      if (this.tileDetails) this.tileDetails.move();
     }
     else {
       this.origDragPoint = null;
@@ -177,7 +197,7 @@ export default class GameScene extends Phaser.Scene {
         let tile2 = new Tile(this,
           0,
           0,
-          tile.type+"_"+tile.lvl,
+          tile.type + "_" + tile.lvl,
           tile.id);
         tile2.generalType = tile.generalType;
         tile2.setAngle_My(tile.angle);
@@ -194,42 +214,43 @@ export default class GameScene extends Phaser.Scene {
         this,
         window.innerWidth + 400,
         window.innerHeight,
-        this.state.actualGame.myNewTile+"_1",
+        this.state.actualGame.myNewTile + "_1",
         -1
       )
+      this.newTile.fixed = false;
       this.newTile.generalType = getTileGeneralType(this.state.actualGame.myNewTile);
       this.newTile.makeScale(0.5)
-      this.newTile.setInteractive()
+      //this.newTile.setInteractive()
       this.input.setDraggable(this.newTile)
 
       this.add.existing(this.newTile.setDepth(101))
 
-/*
-      this.newTileCardBorder = new Phaser.GameObjects.Rectangle(
-        this,
-        window.innerWidth * 0.9 - 2,
-        window.innerHeight * 0.85 - 2,
-        window.innerWidth * 0.2 + 4,
-        window.innerHeight * 0.3 + 4,
-        0x41E3FF);
-      this.add.existing(this.newTileCardBorder.setDepth(0))
-
-      this.newTileCard = new Phaser.GameObjects.Rectangle(
+      /*
+            this.newTileCardBorder = new Phaser.GameObjects.Rectangle(
+              this,
+              window.innerWidth * 0.9 - 2,
+              window.innerHeight * 0.85 - 2,
+              window.innerWidth * 0.2 + 4,
+              window.innerHeight * 0.3 + 4,
+              0x41E3FF);
+            this.add.existing(this.newTileCardBorder.setDepth(0))
+      
+            this.newTileCard = new Phaser.GameObjects.Rectangle(
+              this,
+              window.innerWidth * 0.9,
+              window.innerHeight * 0.85,
+              window.innerWidth * 0.2,
+              window.innerHeight * 0.3,
+              0x5d8FBD,
+              0.815);
+            this.add.existing(this.newTileCard.setDepth(0))
+      */
+      this.newTileCard = new Phaser.GameObjects.Sprite(
         this,
         window.innerWidth * 0.9,
         window.innerHeight * 0.85,
-        window.innerWidth * 0.2,
-        window.innerHeight * 0.3,
-        0x5d8FBD,
-        0.815);
-      this.add.existing(this.newTileCard.setDepth(0))
-*/
-this.newTileCard = new Phaser.GameObjects.Sprite(
-  this,
-  window.innerWidth * 0.9,
-  window.innerHeight * 0.85,
-  "newTileBackground");
-this.add.existing(this.newTileCard.setDepth(100))
+        "newTileBackground");
+      this.add.existing(this.newTileCard.setDepth(100))
     } else if (!this.state.actualGame.myNewTile && this.newTile) {
       this.newTile.destroy();
       this.newTile = null;
