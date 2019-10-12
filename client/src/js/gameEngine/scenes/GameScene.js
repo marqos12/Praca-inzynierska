@@ -2,7 +2,7 @@ import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
 import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
-import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale } from "../gameMechanics";
+import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale, getTileGeneralType } from "../gameMechanics";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -27,7 +27,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.newTile = null;
     this.newTileCard = null;
-    this.newTileCardBorder = null;
+    //this.newTileCardBorder = null;
 
     this.possiblePlaces = [];
     this.possibleHihglights = [];
@@ -74,8 +74,8 @@ export default class GameScene extends Phaser.Scene {
 
       this.newTileCard.destroy();
       this.newTileCard = null;
-      this.newTileCardBorder.destroy();
-      this.newTileCardBorder = null;
+      //this.newTileCardBorder.destroy();
+      //this.newTileCardBorder = null;
 
       this.highlightPossiblePlaces();
     })
@@ -128,6 +128,7 @@ export default class GameScene extends Phaser.Scene {
 
   preload() {
     this.load.image("arrow-back", 'assets/arrow-left.png');
+    this.load.image("newTileBackground", 'assets/newTileBackground.png');
     this.load.atlas('tiles',
       './assets/plates/plates.png',
       './assets/plates/plates.json')
@@ -178,6 +179,7 @@ export default class GameScene extends Phaser.Scene {
           0,
           tile.type+"_"+tile.lvl,
           tile.id);
+        tile2.generalType = tile.generalType;
         tile2.setAngle_My(tile.angle);
         tile2.makeScale(this.myScale);
         tile2.move(tile.posX, tile.posY);
@@ -195,13 +197,14 @@ export default class GameScene extends Phaser.Scene {
         this.state.actualGame.myNewTile+"_1",
         -1
       )
+      this.newTile.generalType = getTileGeneralType(this.state.actualGame.myNewTile);
       this.newTile.makeScale(0.5)
       this.newTile.setInteractive()
       this.input.setDraggable(this.newTile)
 
-      this.add.existing(this.newTile.setDepth(1))
+      this.add.existing(this.newTile.setDepth(101))
 
-
+/*
       this.newTileCardBorder = new Phaser.GameObjects.Rectangle(
         this,
         window.innerWidth * 0.9 - 2,
@@ -220,7 +223,13 @@ export default class GameScene extends Phaser.Scene {
         0x5d8FBD,
         0.815);
       this.add.existing(this.newTileCard.setDepth(0))
-
+*/
+this.newTileCard = new Phaser.GameObjects.Sprite(
+  this,
+  window.innerWidth * 0.9,
+  window.innerHeight * 0.85,
+  "newTileBackground");
+this.add.existing(this.newTileCard.setDepth(100))
     } else if (!this.state.actualGame.myNewTile && this.newTile) {
       this.newTile.destroy();
       this.newTile = null;

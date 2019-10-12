@@ -4,13 +4,7 @@ export const ROAD = "ROAD";
 
 export function getTileEdges(tileType) {
     switch (tileType) {
-        case "HOUSE":
-            return [GREEN, GREEN, GREEN, ACCESS]
-        case "SHOPPING_CENTER":
-            return [GREEN, GREEN, GREEN, ACCESS]
-        case "GROCERY_STORE":
-            return [GREEN, GREEN, GREEN, ACCESS]
-        case "CHURCH":
+        case "END_TILE":
             return [GREEN, GREEN, GREEN, ACCESS]
         case "ROAD_STRAIGHT":
             return [ROAD, GREEN, ROAD, GREEN]
@@ -24,9 +18,7 @@ export function getTileEdges(tileType) {
             return [ROAD, ROAD, ROAD, ROAD]
         case "ROAD_CURVE":
             return [GREEN, ROAD, ROAD, GREEN]
-        case "GREEN_1":
-            return [GREEN, GREEN, GREEN, GREEN]
-        case "GREEN_2":
+        case "GREEN":
             return [GREEN, GREEN, GREEN, GREEN]
     }
 }
@@ -45,14 +37,14 @@ export function getTileSortedEdges(tileType, angle) {
 
 export function getPossiblePlaces(tiles) {
     let newTile = tiles.pop();
-    let newTileEdges = getTileSortedEdges(newTile.name, 0);
+    let newTileEdges = getTileSortedEdges(newTile.generalType, 0);
 
     let initPossiblePos = [];
     let tilesPos = [];
     tiles.forEach(tile => {
         tilesPos.push({ posX: tile.posX, posY: tile.posY });
 
-        let tileEdges = getTileSortedEdges(tile.name, tile.angle);
+        let tileEdges = getTileSortedEdges(tile.generalType, tile.angle);
         for (let i = 0; i < 4; i++) {
             let j = 0;
             tileEdges.forEach(edge => {
@@ -123,23 +115,53 @@ export function isThisPossibleRotation(newTile, tiles, posX, posY) {
         t.posY == posY + 1
     )
 
-    let newTileEdges = getTileSortedEdges(newTile.name, newTile.angle)
+    let newTileEdges = getTileSortedEdges(newTile.generalType, newTile.angle)
 
     if (neighbourLeft.length > 0)
-        if (newTileEdges[0] != GREEN && newTileEdges[0] == getTileSortedEdges(neighbourLeft[0].name, neighbourLeft[0].angle)[2])
+        if (newTileEdges[0] != GREEN && newTileEdges[0] == getTileSortedEdges(neighbourLeft[0].generalType, neighbourLeft[0].angle)[2])
             return true
 
     if (neighbourTop.length > 0)
-        if (newTileEdges[1] != GREEN && newTileEdges[1] == getTileSortedEdges(neighbourTop[0].name, neighbourTop[0].angle)[3])
+        if (newTileEdges[1] != GREEN && newTileEdges[1] == getTileSortedEdges(neighbourTop[0].generalType, neighbourTop[0].angle)[3])
             return true
 
     if (neighbourRight.length > 0)
-        if (newTileEdges[2] != GREEN && newTileEdges[2] == getTileSortedEdges(neighbourRight[0].name, neighbourRight[0].angle)[0])
+        if (newTileEdges[2] != GREEN && newTileEdges[2] == getTileSortedEdges(neighbourRight[0].generalType, neighbourRight[0].angle)[0])
             return true
 
     if (neighbourBottom.length > 0)
-        if (newTileEdges[3] != GREEN && newTileEdges[3] == getTileSortedEdges(neighbourBottom[0].name, neighbourBottom[0].angle)[1])
+        if (newTileEdges[3] != GREEN && newTileEdges[3] == getTileSortedEdges(neighbourBottom[0].generalType, neighbourBottom[0].angle)[1])
             return true
 
     return false;
+}
+
+export function getTileGeneralType(tileType){
+    switch(tileType){
+        case "HOUSE":
+        case "SHOP":
+        case "HOSPPITAL":
+        case "FIRE_HOUSE":
+        case "POLICE_STATION":
+        case "SCHOOL":
+        case "GARBAGE_DUMP":
+        case "SEWAGE_FARM":
+        case "FACTORY":
+        case "OFFICE_BUILDING":
+        case "POWER_STATION":
+        case "RESTAURANT":
+        case "PARK":
+        case "CHURCH":return "END_TILE";
+
+        case "ROAD_STRAIGHT":return "ROAD_STRAIGHT";
+        case "ROAD_ACCESS_SINGLE":return "ROAD_ACCESS_SINGLE";
+        case "ROAD_ACCESS_DOUBLE":return "ROAD_ACCESS_DOUBLE";
+        case "ROAD_CROSS_SINGLE":return "ROAD_CROSS_SINGLE";
+        case "ROAD_CROSS_DOUBLE":return "ROAD_CROSS_DOUBLE";
+        case "ROAD_CURVE":return "ROAD_CURVE";
+        
+        case "GREEN_1":return "GREEN";
+        case "GREEN_2":return "GREEN";
+
+    }
 }

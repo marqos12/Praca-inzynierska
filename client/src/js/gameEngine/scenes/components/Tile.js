@@ -14,6 +14,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.inGoodPlace = false;
 
         this.influence = null;
+        this.generalType="";
 
         this.x = x;
         this.y = y;
@@ -139,7 +140,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
     }
 
     getTileObj() {
-        return { type: this.name, posX: this.dummyPosX, posY: this.dummyPosY, angle: this.angle };
+        return { type: this.name.slice(0,-2), posX: this.dummyPosX, posY: this.dummyPosY, angle: this.angle };
     }
 
     getTileMove() {

@@ -2,10 +2,7 @@ package pl.mojrzeszow.server.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -41,6 +38,9 @@ public class GameService {
 
 	@Autowired
 	private TileRepository tileRepository;
+
+	@Autowired
+	private TileTypeService tileTypeService;
 
 	public GameMessage<Gamer> getAllgames(Gamer gamer) throws Exception {
 
@@ -161,28 +161,29 @@ public class GameService {
 		Long countRoad = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ROAD)).count();
 		Long countAccess = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ACCESS)).count();
 
+		System.out.println("W grze jest "+countAccess+" wolnych dojazdów oraz "+countRoad+" wolnych drog");
+
 		TileType randomTileType = null;
 
-		if (countAccess == 0) {
-			do {
-				randomTileType = TileType.randomTileType();
-			} while (randomTileType != TileType.ROAD_ACCESS_SINGLE && randomTileType != TileType.ROAD_ACCESS_DOUBLE);
+		if (countAccess <= 2) {
+				randomTileType =tileTypeService.getRandomRoadAccessTileType();
+		}/*
+		else if(countRoad>=8){
+			if(Math.random()>=0.5){
+				randomTileType =tileTypeService.getRandomRoadAccessTileType();
+			}
+			else {
+				randomTileType =tileTypeService.getRandomEndTileType();
+			}
+		}*/
+		else{
+			if(Math.random()>=0.5){
+				randomTileType =tileTypeService.getRandomEndTileType();
+			}
+			else {
+				randomTileType =tileTypeService.getRandomRoadTileType();
+			}
 		}
-		/*
-		 * else if (countAccess > countRoad) { do { randomTileType =
-		 * TileType.randomTileType(); } while (randomTileType != TileType.HOUSE &&
-		 * randomTileType != TileType.SHOPPING_CENTER && randomTileType !=
-		 * TileType.GROCERY_STORE && randomTileType != TileType.CHURCH); } else if
-		 * (countAccess < countRoad * 2) {
-		 * 
-		 * do { randomTileType = TileType.randomTileType(); } while (randomTileType !=
-		 * TileType.HOUSE && randomTileType != TileType.SHOPPING_CENTER &&
-		 * randomTileType != TileType.GROCERY_STORE && randomTileType != TileType.CHURCH
-		 * && randomTileType != TileType.ROAD_ACCESS_SINGLE && randomTileType !=
-		 * TileType.ROAD_ACCESS_DOUBLE); }
-		 */
-		else
-			randomTileType = TileType.randomTileType();
 
 		return randomTileType;
 	}

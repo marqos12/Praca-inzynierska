@@ -69,16 +69,17 @@ public class Tile {
 	}
 
 	public List<TileEdgeType> getSortedEdgeTypes() {
+
+	
+
 		int angle = this.angle / 90;
-		int j = (angle + 4) % 4;
+		int j = (angle + 6) ;
 		List<TileEdgeType> tileEdgeTypes = this.type.getTileEdgeTypes();
 		List<TileEdgeType> sortedEdges = new ArrayList<>();
 
-		for (int i = 0; i < 4; i++) {
-			sortedEdges.add(tileEdgeTypes.get(j));
-			if (++j > 3)
-				j = 0;
-		}
+		for (int i = 0; i < 4; i++) 
+			sortedEdges.add(tileEdgeTypes.get(j--%4));
+		
 		return sortedEdges;
 	}
 
@@ -200,14 +201,6 @@ public class Tile {
 			influence.entertainmentRange = 5L;
 			break;
 
-		case GREEN_1:
-			influence = null;
-			break;
-
-		case GREEN_2:
-			influence = null;
-			break;
-
 		case ROAD_ACCESS_DOUBLE:
 			influence = null;
 			break;
@@ -320,14 +313,6 @@ public class Tile {
 			break;
 
 		case CHURCH:
-			influence = null;
-			break;
-
-		case GREEN_1:
-			influence = null;
-			break;
-
-		case GREEN_2:
 			influence = null;
 			break;
 
