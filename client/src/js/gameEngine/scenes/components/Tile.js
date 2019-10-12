@@ -13,6 +13,8 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.clicked = false;
         this.inGoodPlace = false;
 
+        this.influence = null;
+
         this.x = x;
         this.y = y;
 

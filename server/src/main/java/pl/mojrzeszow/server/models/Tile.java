@@ -3,11 +3,14 @@ package pl.mojrzeszow.server.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
@@ -30,6 +33,8 @@ public class Tile {
 
 	private TileType type;
 
+	private String generalType;
+
 	private int model;
 
 	private int angle;
@@ -40,11 +45,15 @@ public class Tile {
 
 	private Long posY;
 
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Influence influence;
+
 	public Tile() {
+		this.influence = new Influence();
 	}
 
 	public Tile(Long id, @NotBlank Gamer gamer, @NotBlank Game game, @NotBlank TileType type, @NotBlank int model,
-			@NotBlank int angle, @NotBlank int lvl, @NotBlank Long posX, @NotBlank Long posY) {
+			@NotBlank int angle, @NotBlank int lvl, @NotBlank Long posX, @NotBlank Long posY, Influence influence) {
 		super();
 		this.id = id;
 		this.gamer = gamer;
@@ -55,19 +64,299 @@ public class Tile {
 		this.lvl = lvl;
 		this.posX = posX;
 		this.posY = posY;
+		this.influence = influence;
+		this.generalType = type.getGeneralType();
 	}
 
-	public List<TileEdgeType> getSortedEdgeTypes(){
+	public List<TileEdgeType> getSortedEdgeTypes() {
 		int angle = this.angle / 90;
 		int j = (angle + 4) % 4;
 		List<TileEdgeType> tileEdgeTypes = this.type.getTileEdgeTypes();
-		List<TileEdgeType>  sortedEdges = new ArrayList<>();
-	
+		List<TileEdgeType> sortedEdges = new ArrayList<>();
+
 		for (int i = 0; i < 4; i++) {
 			sortedEdges.add(tileEdgeTypes.get(j));
-			if (++j > 3) j = 0;
+			if (++j > 3)
+				j = 0;
 		}
 		return sortedEdges;
+	}
+
+	public Influence getTileGeneratedInfluence() {
+
+		Influence influence = new Influence();
+
+		switch (this.type) {
+		case HOUSE:
+			if (lvl == 1) {
+				influence.ducklings = 100L;
+				influence.people = 4L;
+				influence.peopleRange = 5L;
+			} else if (lvl == 2) {
+				influence.ducklings = 400L;
+				influence.people = 20L;
+				influence.peopleRange = 7L;
+			} else {
+				influence.ducklings = 2000L;
+				influence.people = 100L;
+				influence.peopleRange = 9L;
+			}
+			break;
+		case SHOP:
+			if (lvl == 1) {
+				influence.ducklings = 400L;
+				influence.shops = 1L;
+				influence.shopsRange = 3L;
+			} else if (lvl == 2) {
+				influence.ducklings = 800L;
+				influence.shops = 2L;
+				influence.shopsRange = 5L;
+			} else {
+				influence.ducklings = 5000L;
+				influence.shops = 10L;
+				influence.shopsRange = 6L;
+			}
+			break;
+		case HOSPPITAL:
+			influence.ducklings = -200L;
+			influence.medicalCare = 1L;
+			influence.medicalCareRange = 10L;
+			break;
+		case FIRE_HOUSE:
+			influence.ducklings = -200L;
+			influence.fireSafety = 1L;
+			influence.fireSafetyRange = 15L;
+			break;
+
+		case POLICE_STATION:
+			influence.ducklings = -200L;
+			influence.crimePrevention = 1L;
+			influence.crimePreventionRange = 10L;
+			break;
+
+		case SCHOOL:
+			if (lvl == 1) {
+				influence.ducklings = -200L;
+				influence.science = 1L;
+				influence.scienceRange = 10L;
+			} else {
+				influence.ducklings = -10000L;
+				influence.science = 10L;
+				influence.scienceRange = 100L;
+			}
+			break;
+
+		case GARBAGE_DUMP:
+			influence.ducklings = -100L;
+			influence.cleanness = 1L;
+			influence.cleannessRange = 10L;
+			break;
+
+		case SEWAGE_FARM:
+			influence.ducklings = -200L;
+			influence.cleanness = 1L;
+			influence.cleannessRange = 15L;
+			break;
+
+		case FACTORY:
+			influence.ducklings = 1000L;
+			influence.work = 20L;
+			influence.workRange = 15L;
+			influence.services = 10L;
+			influence.servicesRange = 15L;
+			break;
+
+		case OFFICE_BUILDING:
+			influence.ducklings = 1000L;
+			influence.work = 20L;
+			influence.workRange = 15L;
+			influence.services = 10L;
+			influence.servicesRange = 15L;
+			break;
+
+		case POWER_STATION:
+			influence.ducklings = -400L;
+			influence.energy = 10L;
+			influence.energyRange = 20L;
+			break;
+
+		case RESTAURANT:
+			influence.ducklings = 300L;
+			influence.entertainment = 1L;
+			influence.entertainmentRange = 5L;
+			influence.services = 1L;
+			influence.servicesRange = 5L;
+			break;
+
+		case PARK:
+			influence.ducklings = -300L;
+			influence.entertainment = 1L;
+			influence.entertainmentRange = 10L;
+			break;
+
+		case CHURCH:
+			influence.ducklings = -200L;
+			influence.entertainment = 1L;
+			influence.entertainmentRange = 5L;
+			break;
+
+		case GREEN_1:
+			influence = null;
+			break;
+
+		case GREEN_2:
+			influence = null;
+			break;
+
+		case ROAD_ACCESS_DOUBLE:
+			influence = null;
+			break;
+
+		case ROAD_ACCESS_SINGLE:
+			influence = null;
+			break;
+
+		case ROAD_CROSS_DOUBLE:
+			influence = null;
+			break;
+
+		case ROAD_CROSS_SINGLE:
+			influence = null;
+			break;
+
+		case ROAD_CURVE:
+			influence = null;
+			break;
+
+		case ROAD_STRAIGHT:
+			influence = null;
+			break;
+		}
+
+		return influence;
+	}
+
+	public Influence getTileInfluenceNeedToUpgrade() {
+
+		Influence influence = new Influence();
+
+		switch (this.type) {
+		case HOUSE:
+			if (lvl == 1) {
+				influence.ducklings = 250L;
+				influence.shops = 1L;
+				influence.entertainment = 2L;
+				influence.work = 2L;
+			} else if (lvl == 2) {
+				influence.ducklings = 1000L;
+				influence.shops = 2L;
+				influence.entertainment = 3L;
+				influence.medicalCare = 1L;
+				influence.services = 10L;
+			} else {
+				influence = null;
+			}
+			break;
+		case SHOP:
+			if (lvl == 1) {
+				influence.ducklings = 1000L;
+				influence.people = 10L;
+				influence.goods = 1L;
+			} else if (lvl == 2) {
+				influence.ducklings = 4000L;
+				influence.people = 30L;
+				influence.fireSafety = 1L;
+				influence.goods = 5L;
+			} else {
+				influence = null;
+			}
+			break;
+		case HOSPPITAL:
+			influence = null;
+			break;
+		case FIRE_HOUSE:
+			influence = null;
+			break;
+
+		case POLICE_STATION:
+			influence = null;
+			break;
+
+		case SCHOOL:
+			if (lvl == 1) {
+				influence.ducklings = 20000L;
+				influence.people = 200L;
+			} else {
+				influence = null;
+			}
+			break;
+
+		case GARBAGE_DUMP:
+			influence = null;
+			break;
+
+		case SEWAGE_FARM:
+			influence = null;
+			break;
+
+		case FACTORY:
+			influence = null;
+			break;
+
+		case OFFICE_BUILDING:
+			influence = null;
+			break;
+
+		case POWER_STATION:
+			influence = null;
+			break;
+
+		case RESTAURANT:
+			influence = null;
+			break;
+
+		case PARK:
+			influence = null;
+			break;
+
+		case CHURCH:
+			influence = null;
+			break;
+
+		case GREEN_1:
+			influence = null;
+			break;
+
+		case GREEN_2:
+			influence = null;
+			break;
+
+		case ROAD_ACCESS_DOUBLE:
+			influence = null;
+			break;
+
+		case ROAD_ACCESS_SINGLE:
+			influence = null;
+			break;
+
+		case ROAD_CROSS_DOUBLE:
+			influence = null;
+			break;
+
+		case ROAD_CROSS_SINGLE:
+			influence = null;
+			break;
+
+		case ROAD_CURVE:
+			influence = null;
+			break;
+
+		case ROAD_STRAIGHT:
+			influence = null;
+			break;
+		}
+
+		return influence;
 	}
 
 	public Long getId() {
@@ -140,6 +429,22 @@ public class Tile {
 
 	public void setType(TileType type) {
 		this.type = type;
+	}
+
+	public Influence getInfluence() {
+		return influence;
+	}
+
+	public void setInfluence(Influence influence) {
+		this.influence = influence;
+	}
+
+	public String getGeneralType() {
+		return generalType;
+	}
+
+	public void setGeneralType(String generalType) {
+		this.generalType = generalType;
 	}
 
 }

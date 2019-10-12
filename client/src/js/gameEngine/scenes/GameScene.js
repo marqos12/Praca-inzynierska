@@ -176,7 +176,7 @@ export default class GameScene extends Phaser.Scene {
         let tile2 = new Tile(this,
           0,
           0,
-          tile.type,
+          tile.type+"_"+tile.lvl,
           tile.id);
         tile2.setAngle_My(tile.angle);
         tile2.makeScale(this.myScale);
@@ -192,7 +192,7 @@ export default class GameScene extends Phaser.Scene {
         this,
         window.innerWidth + 400,
         window.innerHeight,
-        this.state.actualGame.myNewTile,
+        this.state.actualGame.myNewTile+"_1",
         -1
       )
       this.newTile.makeScale(0.5)

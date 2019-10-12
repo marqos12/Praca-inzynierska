@@ -1,6 +1,5 @@
 package pl.mojrzeszow.server.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;

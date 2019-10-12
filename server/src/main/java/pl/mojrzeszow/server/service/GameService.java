@@ -16,6 +16,7 @@ import pl.mojrzeszow.server.enums.TileEdgeType;
 import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
+import pl.mojrzeszow.server.models.Influence;
 import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
@@ -100,7 +101,7 @@ public class GameService {
 		gamer.setWithTile(false);
 		gamerRepository.save(gamer);
 		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle(), 1, data.getPosX(),
-				data.getPosY());
+				data.getPosY(), new Influence());
 		tile = tileRepository.save(tile);
 		List<Tile> newTiles = new ArrayList<Tile>();
 		newTiles.add(tile);
