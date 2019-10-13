@@ -144,7 +144,7 @@ public class GameService {
 		tiles.stream().filter(t -> t.getTileGeneratedInfluence() != null).forEach(tile -> {
 			Influence tileInfluence = tile.getTileGeneratedInfluence();
 			Double d = Math
-					.sqrt(Math.pow(tile.getPosX(), newTile.getPosX()) + Math.pow(tile.getPosY(), newTile.getPosY()));
+					.sqrt(Math.pow(tile.getPosX(), 2) + Math.pow(tile.getPosY(), 2));
 			newTile.getInfluence().setPeople(addInfluence(tileInfluence.getPeople(),newTile.getInfluence().getPeople(),d,tileInfluence.getPeopleRange()));
 			newTile.getInfluence().setShops(addInfluence(tileInfluence.getShops(),newTile.getInfluence().getShops(),d,tileInfluence.getShopsRange()));
 			newTile.getInfluence().setEntertainment(addInfluence(tileInfluence.getEntertainment(),newTile.getInfluence().getEntertainment(),d,tileInfluence.getEntertainmentRange()));
@@ -180,7 +180,7 @@ public class GameService {
 	}
 
 	private Long addInfluence(Long tileInfluence, Long newTileInfluence, Double radious, Long tileInfluenceRange) {
-		if (tileInfluence != null && radious >= tileInfluenceRange) {
+		if (tileInfluence != null && radious <= tileInfluenceRange) {
 			if (newTileInfluence == null)
 				newTileInfluence = 0L;
 			return newTileInfluence += tileInfluence;

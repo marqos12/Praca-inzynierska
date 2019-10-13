@@ -12,7 +12,9 @@ export class TileDetails {
         this.background.setDepth(110);
         scene.add.existing(this.background);
 
-        this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + this.translateTileName(tile.name))
+        let fontConf =  { fontFamily: '"Roboto"',fontSize:"20px" };
+
+        this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + this.translateTileName(tile.name),fontConf)
         this.tileName.setDepth(111);
         this.tileName.setOrigin(0, 0);
         scene.add.existing(this.tileName);
@@ -42,11 +44,7 @@ export class TileDetails {
             this.tileName.text += `\n\nPoziom: ${response.lvl} \t Punkty: ${response.points}` +
                 `\n\nKorzyści: ${this.getOutcomes(response.outcomeInfluence)}`;
                 if(this.scene.state.actualGame.amIAuthor){
-                    this.needToUpgrade = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30,`Wymagane do awansu: ${this.getNeedToUpgrade(response.incomeInfluence,response.needToUppgrade,this.scene.state.actualGame.meGamer.ducklings)}`)
-                    this.needToUpgrade.setDepth(111);
-                    this.needToUpgrade.setOrigin(0, 0);
-                    scene.add.existing(this.needToUpgrade);
-                    this.move();
+                    this.tileName.text +=`\n\nWymagane do awansu: ${this.getNeedToUpgrade(response.incomeInfluence,response.needToUppgrade,this.scene.state.actualGame.meGamer.ducklings)}`;
                 }
         })
     }
@@ -60,7 +58,7 @@ export class TileDetails {
         this.background.setPosition(this.tile.x + this.tile.displayWidth / 2, this.tile.y + this.tile.displayWidth / 4)
         this.tileName.setPosition(this.background.x - 180, this.background.y - 280);
         this.closeButton.setPosition(this.background.x + 180, this.background.y - 280);
-        if(this.needToUpgrade) this.needToUpgrade.setPosition(this.background.x - 180, this.background.y - 180);
+        
     }
 
 
@@ -125,7 +123,7 @@ export class TileDetails {
     getOutcomes(influence) {
         let incomes = "";
         let incomesCounter = 1;
-        if (influence.ducklings) { incomes += `ducklingsy: ${influence.ducklings}d;`; incomesCounter++; }
+        if (influence.ducklings) { incomes += ` ducklingsy: ${influence.ducklings}d;`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.people) { incomes += ` ludzie: ${influence.people}/ ${influence.peopleRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
@@ -155,8 +153,8 @@ export class TileDetails {
 
     getNeedToUpgrade(incomeInfluence, needToUpgrade,ducklings){
         let incomes = "";
-        let incomesCounter = 1;
-        if (needToUpgrade.ducklings) { incomes += `ducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++; }
+        let incomesCounter = 0;
+        if (needToUpgrade.ducklings) { incomes += `\nducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
         if (needToUpgrade.people) { incomes += ` ludzie: ${needToUpgrade.people} (${incomeInfluence.people!=null?incomeInfluence.people:0});`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
