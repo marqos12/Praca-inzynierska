@@ -98,6 +98,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown(0)) {
                 if (this.clicked) {
+                        scene.input.activePointer.isDown = false;
                     if (!this.fixed) {
                         this.rotate()
                     }

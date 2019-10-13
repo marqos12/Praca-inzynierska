@@ -17,14 +17,7 @@ export class TileDetails {
         this.tileName.setOrigin(0, 0);
         scene.add.existing(this.tileName);
         this.details = null;
-        console.log(window.location.href)
-        fetch(window.location.href.split("#")[0] + "api/game/tile/" + tile.id).then(response =>
-            response.json()
-        ).then(response => {
-            console.log(response);
-            this.tileName.text += `\n\nPoziom: ${response.lvl} \t Punkty: ${response.points}` +
-                `\n\nKorzyści: ${this.getOutcomes(response.outcomeInfluence)}`
-        })
+
 
         this.closeButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "closeButton");
         this.closeButton.setDepth(111);
@@ -38,17 +31,36 @@ export class TileDetails {
         });
         scene.add.existing(this.closeButton);
 
+        this.needToUpgrade = null;
+
         this.move();
+
+        fetch(window.location.href.split("#")[0] + "api/game/tile/" + tile.id).then(response =>
+            response.json()
+        ).then(response => {
+            console.log(response);
+            this.tileName.text += `\n\nPoziom: ${response.lvl} \t Punkty: ${response.points}` +
+                `\n\nKorzyści: ${this.getOutcomes(response.outcomeInfluence)}`;
+                if(this.scene.state.actualGame.amIAuthor){
+                    this.needToUpgrade = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30,`Wymagane do awansu: ${this.getNeedToUpgrade(response.incomeInfluence,response.needToUppgrade,this.scene.state.actualGame.meGamer.ducklings)}`)
+                    this.needToUpgrade.setDepth(111);
+                    this.needToUpgrade.setOrigin(0, 0);
+                    scene.add.existing(this.needToUpgrade);
+                    this.move();
+                }
+        })
     }
     destroy() {
         this.background.destroy();
         this.tileName.destroy();
         this.closeButton.destroy();
+        if(this.needToUpgrade) this.needToUpgrade.destroy();
     }
     move() {
         this.background.setPosition(this.tile.x + this.tile.displayWidth / 2, this.tile.y + this.tile.displayWidth / 4)
         this.tileName.setPosition(this.background.x - 180, this.background.y - 280);
         this.closeButton.setPosition(this.background.x + 180, this.background.y - 280);
+        if(this.needToUpgrade) this.needToUpgrade.setPosition(this.background.x - 180, this.background.y - 180);
     }
 
 
@@ -138,6 +150,37 @@ export class TileDetails {
         if (influence.energy) { incomes += ` energia elektryczna: ${influence.energy}/ ${influence.energyRange};` ; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.science) { incomes += ` nauka: ${influence.science}/ ${influence.scienceRange};` ; }
+        return incomes;
+    }
+
+    getNeedToUpgrade(incomeInfluence, needToUpgrade,ducklings){
+        let incomes = "";
+        let incomesCounter = 1;
+        if (needToUpgrade.ducklings) { incomes += `ducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.people) { incomes += ` ludzie: ${needToUpgrade.people} (${incomeInfluence.people!=null?incomeInfluence.people:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.shops) { incomes += ` sklep: ${needToUpgrade.shops} (${incomeInfluence.shops!=null?incomeInfluence.shops:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.work) { incomes += ` praca: ${needToUpgrade.work} (${incomeInfluence.work!=null?incomeInfluence.work:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.services) { incomes += ` usługi: ${needToUpgrade.services} (${incomeInfluence.services!=null?incomeInfluence.services:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.goods) { incomes += ` dobra: ${needToUpgrade.goods} (${incomeInfluence.goods!=null?incomeInfluence.goods:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.entertainment) { incomes += ` rozrywka: ${needToUpgrade.entertainment} (${incomeInfluence.entertainment!=null?incomeInfluence.entertainment:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.cleanness) { incomes += ` czystość: ${needToUpgrade.cleanness} (${incomeInfluence.cleanness!=null?incomeInfluence.cleanness:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.crimePrevention) { incomes += ` bezpieczeństwo: ${needToUpgrade.crimePrevention} (${incomeInfluence.crimePrevention!=null?incomeInfluence.crimePrevention:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.fireSafety) { incomes += ` PPOŻ: ${needToUpgrade.fireSafety} (${incomeInfluence.fireSafety!=null?incomeInfluence.fireSafety:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.medicalCare) { incomes += ` ochrona zdrowia: ${needToUpgrade.medicalCare} (${incomeInfluence.medicalCare!=null?incomeInfluence.medicalCare:0});`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.energy) { incomes += ` energia elektryczna: ${needToUpgrade.energy} (${incomeInfluence.energy!=null?incomeInfluence.energy:0});` ; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.science) { incomes += ` nauka: ${needToUpgrade.science} (${incomeInfluence.science!=null?incomeInfluence.science:0});` ; }
         return incomes;
     }
 }
