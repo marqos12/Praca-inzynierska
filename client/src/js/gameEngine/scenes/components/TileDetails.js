@@ -26,15 +26,29 @@ export class TileDetails {
                 `\n\nKorzyści: ${this.getOutcomes(response.outcomeInfluence)}`
         })
 
+        this.closeButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "closeButton");
+        this.closeButton.setDepth(111);
+        this.closeButton.setScale(0.5);
+        this.closeButton.setInteractive();
+        this.closeButton.on('pointerdown', (pointer) => {
+            if (pointer.leftButtonDown()) {
+                let closeTileDetails = new CustomEvent('closeTileDetails', { detail: this });
+                dispatchEvent(closeTileDetails);
+            }
+        });
+        scene.add.existing(this.closeButton);
+
         this.move();
     }
     destroy() {
         this.background.destroy();
         this.tileName.destroy();
+        this.closeButton.destroy();
     }
     move() {
         this.background.setPosition(this.tile.x + this.tile.displayWidth / 2, this.tile.y + this.tile.displayWidth / 4)
         this.tileName.setPosition(this.background.x - 180, this.background.y - 280);
+        this.closeButton.setPosition(this.background.x + 180, this.background.y - 280);
     }
 
 

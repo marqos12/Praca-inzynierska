@@ -87,7 +87,7 @@ export default class GameScene extends Phaser.Scene {
     addEventListener('draggingNewTile', (x) => {
       if (this.tileDetails) {
         this.tileDetails.destroy();
-        this.tileDetails=null;
+        this.tileDetails = null;
       }
     })
 
@@ -98,6 +98,12 @@ export default class GameScene extends Phaser.Scene {
     addEventListener('showDetails', (x) => {
       if (this.tileDetails) this.tileDetails.destroy();
       this.tileDetails = new TileDetails(this, x.detail);
+    })
+    addEventListener('closeTileDetails', (x) => {
+      if (this.tileDetails) {
+        this.tileDetails.destroy();
+        this.tileDetails = null;
+      }
     })
 
     addEventListener("wheel", x => {
@@ -146,6 +152,7 @@ export default class GameScene extends Phaser.Scene {
   preload() {
     this.load.image("arrow-back", 'assets/arrow-left.png');
     this.load.image("newTileBackground", 'assets/newTileBackground.png');
+    this.load.image("closeButton", 'assets/closeB.png');
     this.load.image("tileDetailsBackground", 'assets/tileInfo.png');
     this.load.atlas('tiles',
       './assets/plates/plates.png',
