@@ -70,16 +70,14 @@ public class Tile {
 
 	public List<TileEdgeType> getSortedEdgeTypes() {
 
-	
-
 		int angle = this.angle / 90;
-		int j = (angle + 6) ;
+		int j = (angle + 6);
 		List<TileEdgeType> tileEdgeTypes = this.type.getTileEdgeTypes();
 		List<TileEdgeType> sortedEdges = new ArrayList<>();
 
-		for (int i = 0; i < 4; i++) 
-			sortedEdges.add(tileEdgeTypes.get(j--%4));
-		
+		for (int i = 0; i < 4; i++)
+			sortedEdges.add(tileEdgeTypes.get(j-- % 4));
+
 		return sortedEdges;
 	}
 
@@ -91,14 +89,17 @@ public class Tile {
 		case HOUSE:
 			if (lvl == 1) {
 				influence.ducklings = 100L;
+				influence.points = 10L;
 				influence.people = 4L;
 				influence.peopleRange = 5L;
 			} else if (lvl == 2) {
 				influence.ducklings = 400L;
+				influence.points = 40L;
 				influence.people = 20L;
 				influence.peopleRange = 7L;
 			} else {
 				influence.ducklings = 2000L;
+				influence.points = 100L;
 				influence.people = 100L;
 				influence.peopleRange = 9L;
 			}
@@ -106,31 +107,37 @@ public class Tile {
 		case SHOP:
 			if (lvl == 1) {
 				influence.ducklings = 400L;
+				influence.points = 20L;
 				influence.shops = 1L;
 				influence.shopsRange = 3L;
 			} else if (lvl == 2) {
 				influence.ducklings = 800L;
+				influence.points = 50L;
 				influence.shops = 2L;
 				influence.shopsRange = 5L;
 			} else {
 				influence.ducklings = 5000L;
+				influence.points = 100L;
 				influence.shops = 10L;
 				influence.shopsRange = 6L;
 			}
 			break;
 		case HOSPITAL:
 			influence.ducklings = -200L;
+			influence.points = 30L;
 			influence.medicalCare = 1L;
 			influence.medicalCareRange = 10L;
 			break;
 		case FIRE_HOUSE:
 			influence.ducklings = -200L;
+			influence.points = 30L;
 			influence.fireSafety = 1L;
 			influence.fireSafetyRange = 15L;
 			break;
 
 		case POLICE_STATION:
 			influence.ducklings = -200L;
+			influence.points = 30L;
 			influence.crimePrevention = 1L;
 			influence.crimePreventionRange = 10L;
 			break;
@@ -138,10 +145,12 @@ public class Tile {
 		case SCHOOL:
 			if (lvl == 1) {
 				influence.ducklings = -200L;
+				influence.points = 30L;
 				influence.science = 1L;
 				influence.scienceRange = 10L;
 			} else {
 				influence.ducklings = -10000L;
+				influence.points = 300L;
 				influence.science = 10L;
 				influence.scienceRange = 100L;
 			}
@@ -149,18 +158,21 @@ public class Tile {
 
 		case GARBAGE_DUMP:
 			influence.ducklings = -100L;
+			influence.points = 30L;
 			influence.cleanness = 1L;
 			influence.cleannessRange = 10L;
 			break;
 
 		case SEWAGE_FARM:
 			influence.ducklings = -200L;
+			influence.points = 30L;
 			influence.cleanness = 1L;
 			influence.cleannessRange = 15L;
 			break;
 
 		case FACTORY:
 			influence.ducklings = 1000L;
+			influence.points = 30L;
 			influence.work = 20L;
 			influence.workRange = 15L;
 			influence.services = 10L;
@@ -169,6 +181,7 @@ public class Tile {
 
 		case OFFICE_BUILDING:
 			influence.ducklings = 1000L;
+			influence.points = 30L;
 			influence.work = 20L;
 			influence.workRange = 15L;
 			influence.services = 10L;
@@ -177,12 +190,14 @@ public class Tile {
 
 		case POWER_STATION:
 			influence.ducklings = -400L;
+			influence.points = 30L;
 			influence.energy = 10L;
 			influence.energyRange = 20L;
 			break;
 
 		case RESTAURANT:
 			influence.ducklings = 300L;
+			influence.points = 30L;
 			influence.entertainment = 1L;
 			influence.entertainmentRange = 5L;
 			influence.services = 1L;
@@ -191,12 +206,14 @@ public class Tile {
 
 		case PARK:
 			influence.ducklings = -300L;
+			influence.points = 30L;
 			influence.entertainment = 1L;
 			influence.entertainmentRange = 10L;
 			break;
 
 		case CHURCH:
 			influence.ducklings = -200L;
+			influence.points = 30L;
 			influence.entertainment = 1L;
 			influence.entertainmentRange = 5L;
 			break;

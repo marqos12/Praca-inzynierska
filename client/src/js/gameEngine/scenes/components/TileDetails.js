@@ -6,13 +6,12 @@ export class TileDetails {
         this.tile = tile;
         this.x = tile.x;
         this.y = tile.y;
-        console.log(tile)
         this.background = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "tileDetailsBackground");
         this.background.setOrigin(0.5, 1);
         this.background.setDepth(110);
         scene.add.existing(this.background);
 
-        let fontConf =  { fontFamily: '"Roboto"',fontSize:"20px" };
+        let fontConf =  { fontFamily: '"Roboto"',fontSize:"16px" };
 
         this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + this.translateTileName(tile.name),fontConf)
         this.tileName.setDepth(111);
@@ -32,8 +31,8 @@ export class TileDetails {
             }
         });
         scene.add.existing(this.closeButton);
-
-        this.needToUpgrade = null;
+        
+        this.influenceField = [];
 
         this.move();
 
@@ -41,6 +40,7 @@ export class TileDetails {
             response.json()
         ).then(response => {
             console.log(response);
+            this.details = response;
             this.tileName.text += `\n\nPoziom: ${response.lvl} \t Punkty: ${response.points}` +
                 `\n\nKorzyści: ${this.getOutcomes(response.outcomeInfluence)}`;
                 if(this.scene.state.actualGame.amIAuthor){
@@ -52,13 +52,13 @@ export class TileDetails {
         this.background.destroy();
         this.tileName.destroy();
         this.closeButton.destroy();
-        if(this.needToUpgrade) this.needToUpgrade.destroy();
+        this.influenceField.forEach(x=>x.destroy());
     }
     move() {
         this.background.setPosition(this.tile.x + this.tile.displayWidth / 2, this.tile.y + this.tile.displayWidth / 4)
         this.tileName.setPosition(this.background.x - 180, this.background.y - 280);
         this.closeButton.setPosition(this.background.x + 180, this.background.y - 280);
-        
+        this.influenceField.forEach(x=>x.setPosition(this.tile.x + this.tile.displayWidth / 2, this.tile.y + this.tile.displayWidth / 2));
     }
 
 
@@ -123,9 +123,10 @@ export class TileDetails {
     getOutcomes(influence) {
         let incomes = "";
         let incomesCounter = 1;
-        if (influence.ducklings) { incomes += ` ducklingsy: ${influence.ducklings}d;`; incomesCounter++; }
+        if (influence.ducklings) { incomes += `ducklingsy: ${influence.ducklings}d;`; incomesCounter++;}
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.people) { incomes += ` ludzie: ${influence.people}/ ${influence.peopleRange};`; incomesCounter++; }
+        if (influence.people) { incomes += ` ludzie: ${influence.people}/ ${influence.peopleRange};`; incomesCounter++;  
+            /*let circle = new Phaser.GameObjects.Ellipse(this.scene,0,0,influence.peopleRange*this.tile.displayWidth,influence.peopleRange*this.tile.displayWidth,0xff0000,0.2);this.influenceField.push(circle)*/}
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.shops) { incomes += ` sklep: ${influence.shops}/ ${influence.shopsRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
@@ -148,13 +149,20 @@ export class TileDetails {
         if (influence.energy) { incomes += ` energia elektryczna: ${influence.energy}/ ${influence.energyRange};` ; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.science) { incomes += ` nauka: ${influence.science}/ ${influence.scienceRange};` ; }
+
+        this.influenceField.forEach(x=>this.scene.add.existing(x));
+        this.move();
         return incomes;
+    }
+
+    setRangeScale(){
+
     }
 
     getNeedToUpgrade(incomeInfluence, needToUpgrade,ducklings){
         let incomes = "";
         let incomesCounter = 0;
-        if (needToUpgrade.ducklings) { incomes += `\nducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++; }
+        if (needToUpgrade.ducklings) { incomes += `\n ducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
         if (needToUpgrade.people) { incomes += ` ludzie: ${needToUpgrade.people} (${incomeInfluence.people!=null?incomeInfluence.people:0});`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }

@@ -99,7 +99,6 @@ public class GameService {
 	public void saveTile(DataExchange data) {
 		Gamer gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
 		gamer.setWithTile(false);
-		gamerRepository.save(gamer);
 
 		List<Tile> gameTiles = tileRepository.findByGame(gamer.getGame());
 
@@ -110,17 +109,20 @@ public class GameService {
 
 		tile = tileRepository.save(tile);
 		tileRepository.saveAll(gameTiles);
+		Influence tileInfluence = tile.getTileGeneratedInfluence();
+		if (tileInfluence != null) {
+			gamer.setPoints(gamer.getPoints() + tileInfluence.getPoints());
+			gamer = gamerRepository.save(gamer);
+		}
 		List<Tile> newTiles = new ArrayList<Tile>();
 		newTiles.add(tile);
-
-		simpMessagingTemplate.convertAndSend("/topic/game/game/" + gamer.getGame().getId(),
-				new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
 
 		Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), gamer.getOrdinalNumber() + 1L);
 		if (nextGamer == null) {
 			Game game = gamer.getGame();
 			game.setElapsed(game.getElapsed() + 1);
 			gameRepository.save(game);
+			this.newRound(game);
 			simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 					new GameMessage<Game>(MessageType.GAME_UPDATE, game));
 			nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), 1L);
@@ -134,6 +136,14 @@ public class GameService {
 		simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
 				new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
 
+				
+		gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
+		simpMessagingTemplate.convertAndSendToUser(gamer.getSessionId(), "/reply",
+				new GameMessage<Gamer>(MessageType.ME_GAMER, gamer));
+
+		simpMessagingTemplate.convertAndSend("/topic/game/game/" + gamer.getGame().getId(),
+				new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
+
 		List<Gamer> gamers = this.gamerRepository.findByGame(nextGamer.getGame());
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + nextGamer.getGame().getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
@@ -143,38 +153,59 @@ public class GameService {
 
 		tiles.stream().filter(t -> t.getTileGeneratedInfluence() != null).forEach(tile -> {
 			Influence tileInfluence = tile.getTileGeneratedInfluence();
-			Double d = Math
-					.sqrt(Math.pow(tile.getPosX(), 2) + Math.pow(tile.getPosY(), 2));
-			newTile.getInfluence().setPeople(addInfluence(tileInfluence.getPeople(),newTile.getInfluence().getPeople(),d,tileInfluence.getPeopleRange()));
-			newTile.getInfluence().setShops(addInfluence(tileInfluence.getShops(),newTile.getInfluence().getShops(),d,tileInfluence.getShopsRange()));
-			newTile.getInfluence().setEntertainment(addInfluence(tileInfluence.getEntertainment(),newTile.getInfluence().getEntertainment(),d,tileInfluence.getEntertainmentRange()));
-			newTile.getInfluence().setWork(addInfluence(tileInfluence.getWork(),newTile.getInfluence().getWork(),d,tileInfluence.getWorkRange()));
-			newTile.getInfluence().setMedicalCare(addInfluence(tileInfluence.getMedicalCare(),newTile.getInfluence().getMedicalCare(),d,tileInfluence.getMedicalCareRange()));
-			newTile.getInfluence().setServices(addInfluence(tileInfluence.getServices(),newTile.getInfluence().getServices(),d,tileInfluence.getServicesRange()));
-			newTile.getInfluence().setGoods(addInfluence(tileInfluence.getGoods(),newTile.getInfluence().getGoods(),d,tileInfluence.getGoodsRange()));
-			newTile.getInfluence().setFireSafety(addInfluence(tileInfluence.getFireSafety(),newTile.getInfluence().getFireSafety(),d,tileInfluence.getFireSafetyRange()));
-			newTile.getInfluence().setCrimePrevention(addInfluence(tileInfluence.getCrimePrevention(),newTile.getInfluence().getCrimePrevention(),d,tileInfluence.getCrimePreventionRange()));
-			newTile.getInfluence().setEnergy(addInfluence(tileInfluence.getEnergy(),newTile.getInfluence().getEnergy(),d,tileInfluence.getEnergyRange()));
-			newTile.getInfluence().setCleanness(addInfluence(tileInfluence.getCleanness(),newTile.getInfluence().getCleanness(),d,tileInfluence.getCleannessRange()));
-			newTile.getInfluence().setScience(addInfluence(tileInfluence.getScience(),newTile.getInfluence().getScience(),d,tileInfluence.getScienceRange()));
-		
-			
+			Double d = Math.sqrt(Math.pow(tile.getPosX(), 2) + Math.pow(tile.getPosY(), 2));
+			newTile.getInfluence().setPeople(addInfluence(tileInfluence.getPeople(), newTile.getInfluence().getPeople(),
+					d, tileInfluence.getPeopleRange()));
+			newTile.getInfluence().setShops(addInfluence(tileInfluence.getShops(), newTile.getInfluence().getShops(), d,
+					tileInfluence.getShopsRange()));
+			newTile.getInfluence().setEntertainment(addInfluence(tileInfluence.getEntertainment(),
+					newTile.getInfluence().getEntertainment(), d, tileInfluence.getEntertainmentRange()));
+			newTile.getInfluence().setWork(addInfluence(tileInfluence.getWork(), newTile.getInfluence().getWork(), d,
+					tileInfluence.getWorkRange()));
+			newTile.getInfluence().setMedicalCare(addInfluence(tileInfluence.getMedicalCare(),
+					newTile.getInfluence().getMedicalCare(), d, tileInfluence.getMedicalCareRange()));
+			newTile.getInfluence().setServices(addInfluence(tileInfluence.getServices(),
+					newTile.getInfluence().getServices(), d, tileInfluence.getServicesRange()));
+			newTile.getInfluence().setGoods(addInfluence(tileInfluence.getGoods(), newTile.getInfluence().getGoods(), d,
+					tileInfluence.getGoodsRange()));
+			newTile.getInfluence().setFireSafety(addInfluence(tileInfluence.getFireSafety(),
+					newTile.getInfluence().getFireSafety(), d, tileInfluence.getFireSafetyRange()));
+			newTile.getInfluence().setCrimePrevention(addInfluence(tileInfluence.getCrimePrevention(),
+					newTile.getInfluence().getCrimePrevention(), d, tileInfluence.getCrimePreventionRange()));
+			newTile.getInfluence().setEnergy(addInfluence(tileInfluence.getEnergy(), newTile.getInfluence().getEnergy(),
+					d, tileInfluence.getEnergyRange()));
+			newTile.getInfluence().setCleanness(addInfluence(tileInfluence.getCleanness(),
+					newTile.getInfluence().getCleanness(), d, tileInfluence.getCleannessRange()));
+			newTile.getInfluence().setScience(addInfluence(tileInfluence.getScience(),
+					newTile.getInfluence().getScience(), d, tileInfluence.getScienceRange()));
+
 			Influence newTileInfluence = newTile.getTileGeneratedInfluence();
-			if(newTileInfluence!=null)
-			{
-			tile.getInfluence().setPeople(addInfluence(newTileInfluence.getPeople(),tile.getInfluence().getPeople(),d,newTileInfluence.getPeopleRange()));
-			tile.getInfluence().setShops(addInfluence(newTileInfluence.getShops(),tile.getInfluence().getShops(),d,newTileInfluence.getShopsRange()));
-			tile.getInfluence().setEntertainment(addInfluence(newTileInfluence.getEntertainment(),tile.getInfluence().getEntertainment(),d,newTileInfluence.getEntertainmentRange()));
-			tile.getInfluence().setWork(addInfluence(newTileInfluence.getWork(),tile.getInfluence().getWork(),d,newTileInfluence.getWorkRange()));
-			tile.getInfluence().setMedicalCare(addInfluence(newTileInfluence.getMedicalCare(),tile.getInfluence().getMedicalCare(),d,newTileInfluence.getMedicalCareRange()));
-			tile.getInfluence().setServices(addInfluence(newTileInfluence.getServices(),tile.getInfluence().getServices(),d,newTileInfluence.getServicesRange()));
-			tile.getInfluence().setGoods(addInfluence(newTileInfluence.getGoods(),tile.getInfluence().getGoods(),d,newTileInfluence.getGoodsRange()));
-			tile.getInfluence().setFireSafety(addInfluence(newTileInfluence.getFireSafety(),tile.getInfluence().getFireSafety(),d,newTileInfluence.getFireSafetyRange()));
-			tile.getInfluence().setCrimePrevention(addInfluence(newTileInfluence.getCrimePrevention(),tile.getInfluence().getCrimePrevention(),d,newTileInfluence.getCrimePreventionRange()));
-			tile.getInfluence().setEnergy(addInfluence(newTileInfluence.getEnergy(),tile.getInfluence().getEnergy(),d,newTileInfluence.getEnergyRange()));
-			tile.getInfluence().setCleanness(addInfluence(newTileInfluence.getCleanness(),tile.getInfluence().getCleanness(),d,newTileInfluence.getCleannessRange()));
-			tile.getInfluence().setScience(addInfluence(newTileInfluence.getScience(),tile.getInfluence().getScience(),d,newTileInfluence.getScienceRange()));
-		}
+			if (newTileInfluence != null) {
+				tile.getInfluence().setPeople(addInfluence(newTileInfluence.getPeople(),
+						tile.getInfluence().getPeople(), d, newTileInfluence.getPeopleRange()));
+				tile.getInfluence().setShops(addInfluence(newTileInfluence.getShops(), tile.getInfluence().getShops(),
+						d, newTileInfluence.getShopsRange()));
+				tile.getInfluence().setEntertainment(addInfluence(newTileInfluence.getEntertainment(),
+						tile.getInfluence().getEntertainment(), d, newTileInfluence.getEntertainmentRange()));
+				tile.getInfluence().setWork(addInfluence(newTileInfluence.getWork(), tile.getInfluence().getWork(), d,
+						newTileInfluence.getWorkRange()));
+				tile.getInfluence().setMedicalCare(addInfluence(newTileInfluence.getMedicalCare(),
+						tile.getInfluence().getMedicalCare(), d, newTileInfluence.getMedicalCareRange()));
+				tile.getInfluence().setServices(addInfluence(newTileInfluence.getServices(),
+						tile.getInfluence().getServices(), d, newTileInfluence.getServicesRange()));
+				tile.getInfluence().setGoods(addInfluence(newTileInfluence.getGoods(), tile.getInfluence().getGoods(),
+						d, newTileInfluence.getGoodsRange()));
+				tile.getInfluence().setFireSafety(addInfluence(newTileInfluence.getFireSafety(),
+						tile.getInfluence().getFireSafety(), d, newTileInfluence.getFireSafetyRange()));
+				tile.getInfluence().setCrimePrevention(addInfluence(newTileInfluence.getCrimePrevention(),
+						tile.getInfluence().getCrimePrevention(), d, newTileInfluence.getCrimePreventionRange()));
+				tile.getInfluence().setEnergy(addInfluence(newTileInfluence.getEnergy(),
+						tile.getInfluence().getEnergy(), d, newTileInfluence.getEnergyRange()));
+				tile.getInfluence().setCleanness(addInfluence(newTileInfluence.getCleanness(),
+						tile.getInfluence().getCleanness(), d, newTileInfluence.getCleannessRange()));
+				tile.getInfluence().setScience(addInfluence(newTileInfluence.getScience(),
+						tile.getInfluence().getScience(), d, newTileInfluence.getScienceRange()));
+			}
 		});
 
 	}
@@ -237,5 +268,25 @@ public class GameService {
 		}
 
 		return randomTileType;
+	}
+
+	private void newRound(Game game) {
+		List<Gamer> gamers = this.gamerRepository.findByGame(game);
+		for (Gamer gamer : gamers) {
+			Long ducklingsPerRound = 0L;
+			List<Tile> tiles = tileRepository.findByGamer(gamer);
+			for (Tile tile : tiles) {
+				Influence tileInfluence = tile.getTileGeneratedInfluence();
+				if (tileInfluence != null) {
+					ducklingsPerRound += tileInfluence.getDucklings();
+
+				}
+			}
+			gamer.setDucklingsPerRound(ducklingsPerRound);
+			gamer.setDucklings(gamer.getDucklings() + ducklingsPerRound);
+		}
+		gamers = gamerRepository.saveAll(gamers);
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 	}
 }

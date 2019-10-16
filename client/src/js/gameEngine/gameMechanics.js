@@ -140,7 +140,7 @@ export function getTileGeneralType(tileType){
     switch(tileType){
         case "HOUSE":
         case "SHOP":
-        case "HOSPPITAL":
+        case "HOSPITAL":
         case "FIRE_HOUSE":
         case "POLICE_STATION":
         case "SCHOOL":

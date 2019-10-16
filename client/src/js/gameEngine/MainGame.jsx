@@ -81,7 +81,7 @@ class MainGameComponent extends Component {
                     <div className="hud_card resources">
                         <div >
                             <img src="assets/duck.png"></img>
-                            {actualGame.meGamer.ducklings}
+                            {actualGame.meGamer.ducklings}d ({actualGame.meGamer.ducklingsPerRound}d/t)
                         </div>
                         <div>
                             <img src="assets/P.png"></img>
