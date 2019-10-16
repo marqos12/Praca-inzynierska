@@ -40,6 +40,7 @@ class MainGameComponent extends Component {
     }
 
     componentDidUpdate() {
+        console.log("Main game 43", this.props.actualGame)
         if (!this.state.gameJoined && this.props.ws.client) {
             this.props.gameWsGameJoin(this.props.actualGame.game)
             this.setState({
@@ -89,9 +90,9 @@ class MainGameComponent extends Component {
                         </div>
                     </div>
                     <div className="hud_card rank">
-                        {actualGame.gamers.sort((x, y) => { return x.posints - y.points }).map((value, index) => {
+                        {actualGame.gamers.sort((x, y) => { return y.points - x.points }).map((value, index) => {
                             return <div key={index}>
-                                <img src={"assets/" + (index + 1) + ".png"}></img>{value.user.username}
+                                <img src={"assets/" + (index + 1) + ".png"}></img>{value.user.username} ({value.points})
                             </div>
                         })}
                     </div>
