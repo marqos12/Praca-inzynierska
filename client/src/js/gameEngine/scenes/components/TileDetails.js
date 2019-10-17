@@ -1,3 +1,4 @@
+import { translateTileName } from "../../gameMechanics";
 
 export class TileDetails {
 
@@ -13,7 +14,7 @@ export class TileDetails {
 
         let fontConf =  { fontFamily: '"Roboto"',fontSize:"16px" };
 
-        this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + this.translateTileName(tile.name),fontConf)
+        this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + translateTileName(tile.name),fontConf)
         this.tileName.setDepth(111);
         this.tileName.setOrigin(0, 0);
         scene.add.existing(this.tileName);
@@ -62,63 +63,6 @@ export class TileDetails {
     }
 
 
-    translateTileName(tileName) {
-        switch (tileName) {
-            case "HOUSE_1":
-                return "Dom jednorodzinny";
-            case "HOUSE_2":
-                return "Blok mieszkalny";
-            case "HOUSE_3":
-                return "Osiedle";
-            case "SHOP_1":
-                return "Sklep osiedlowy";
-            case "SHOP_2":
-                return "Market";
-            case "SHOP_3":
-                return "Centrum handlowe";
-
-
-            case "HOSPITAL_1":
-                return "Szpital";
-            case "FIRE_HOUSE_1":
-                return "Remiza strażacka";
-            case "POLICE_STATION_1":
-                return "Komisariat policji";
-            case "SCHOOL_1":
-                return "Szkoła";
-            case "SCHOOL_2":
-                return "Uczelnia";
-            case "GARBAGE_DUMP_1":
-                return "Wysyppisko śmieci";
-            case "SEWAGE_FARM_1":
-                return "Oczyszczalnia ścieków";
-            case "FACTORY_1":
-                return "Fabryka";
-            case "OFFICE_BUILDING_1":
-                return "Biurowiec";
-            case "RESTAURANT_1":
-                return "Restauracja";
-            case "PARK_1":
-                return "Park";
-            case "CHURCH_1":
-                return "Kościół";
-
-            case "GROCERY_STORE_1":
-                return "Sklep spożywczy";
-            case "ROAD_STRAIGHT_1":
-                return "Droga";
-            case "ROAD_ACCESS_SINGLE_1":
-                return "Droga";
-            case "ROAD_CROSS_SINGLE_1":
-                return "Droga";
-            case "ROAD_ACCESS_DOUBLE_1":
-                return "Droga";
-            case "ROAD_CROSS_DOUBLE_1":
-                return "Droga";
-            case "ROAD_CURVE_1":
-                return "Droga";
-        }
-    }
 
     getOutcomes(influence) {
         let incomes = "";

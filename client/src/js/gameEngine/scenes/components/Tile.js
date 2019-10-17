@@ -1,7 +1,7 @@
 import { isThisPositionPossible, isThisPossibleRotation } from "../../gameMechanics";
 
 export class Tile extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, id) {
+    constructor(scene, x, y, texture, id, owner) {
         super(scene, x, y, 'tiles', texture)
         this.setOrigin(0, 0);
         this.name = texture;
@@ -15,6 +15,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
 
         this.influence = null;
         this.generalType = "";
+        this.scene = scene;
 
         this.x = x;
         this.y = y;
@@ -98,7 +99,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown(0)) {
                 if (this.clicked) {
-                        scene.input.activePointer.isDown = false;
+                    scene.input.activePointer.isDown = false;
                     if (!this.fixed) {
                         this.rotate()
                     }
@@ -126,10 +127,16 @@ export class Tile extends Phaser.GameObjects.Sprite {
             }
 
         })
+
+        this.highlight = null;
+        if (owner && scene.state.actualGame.meGamer.id == owner.id) {
+            this.highlight = new Phaser.GameObjects.Sprite(this.scene, this.x + this.displayWidth / 8, this.y + this.displayWidth / 8, "flag")
+            this.scene.add.existing(this.highlight.setDepth(3))
+
+        }
     }
 
     update() {
-
     }
 
     move(posX, posY) {
@@ -137,7 +144,8 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.posY = posY;
         this.x = this.posX * this.displayWidth + this.scene.tableCenterX - this.displayWidth / 2;
         this.y = this.posY * this.displayHeight + this.scene.tableCenterY - this.displayHeight / 2;
-
+        if(this.highlight)
+        this.highlight.setPosition(this.x + this.displayWidth / 8, this.y + this.displayWidth / 8)
     }
 
     setAngle_My(angle) {
@@ -170,6 +178,10 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.y -= window.innerHeight / 2;
         this.y = this.y / oldWidth * newWidth;
         this.y += window.innerHeight / 2;
+        if (this.highlight) {
+            this.highlight.setDisplaySize(this.displayWidth / 8, this.displayWidth / 4);
+            this.highlight.setPosition(this.x + this.displayWidth / 8, this.y + this.displayWidth / 8)
+        }
     }
 
     rotate() {

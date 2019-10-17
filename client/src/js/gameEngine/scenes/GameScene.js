@@ -28,7 +28,6 @@ export default class GameScene extends Phaser.Scene {
 
     this.newTile = null;
     this.newTileCard = null;
-    //this.newTileCardBorder = null;
 
     this.possiblePlaces = [];
     this.possibleHihglights = [];
@@ -78,8 +77,6 @@ export default class GameScene extends Phaser.Scene {
 
       this.newTileCard.destroy();
       this.newTileCard = null;
-      //this.newTileCardBorder.destroy();
-      //this.newTileCardBorder = null;
 
       this.highlightPossiblePlaces();
     })
@@ -120,6 +117,7 @@ export default class GameScene extends Phaser.Scene {
 
       this.tiles.forEach(x => {
         x.makeScale(this.myScale);
+        
       })
       this.fixedTiles.forEach(x => {
         x.makeScale(this.myScale);
@@ -152,6 +150,7 @@ export default class GameScene extends Phaser.Scene {
   preload() {
     this.load.image("arrow-back", 'assets/arrow-left.png');
     this.load.image("newTileBackground", 'assets/newTileBackground.png');
+    this.load.image("flag", 'assets/flaga.png');
     this.load.image("closeButton", 'assets/closeB.png');
     this.load.image("tileDetailsBackground", 'assets/tileInfo.png');
     this.load.atlas('tiles',
@@ -166,6 +165,10 @@ export default class GameScene extends Phaser.Scene {
         this.tiles.forEach(x => {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           x.y -= this.origDragPoint.y - this.input.activePointer.position.y;
+          if (x.highlight) {
+            x.highlight.x = x.x+ this.tileWidth/8;
+            x.highlight.y = x.y+ this.tileWidth/8;
+          }
         })
         this.fixedTiles.forEach(x => {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
@@ -205,13 +208,16 @@ export default class GameScene extends Phaser.Scene {
           0,
           0,
           tile.type + "_" + tile.lvl,
-          tile.id);
+          tile.id,
+          tile.gamer
+        );
         tile2.generalType = tile.generalType;
         tile2.setAngle_My(tile.angle);
         tile2.makeScale(this.myScale);
         tile2.move(tile.posX, tile.posY);
         this.tiles.push(tile2);
-        this.add.existing(tile2.setDepth(0));
+        this.add.existing(tile2.setDepth(2));
+
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
     }
