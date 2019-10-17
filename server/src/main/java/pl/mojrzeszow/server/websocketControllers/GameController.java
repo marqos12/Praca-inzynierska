@@ -12,7 +12,6 @@ import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
-import pl.mojrzeszow.server.repositories.GamerRepository;
 import pl.mojrzeszow.server.service.GameService;
 
 @Controller

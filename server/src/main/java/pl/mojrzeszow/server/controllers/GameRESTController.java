@@ -1,6 +1,5 @@
 package pl.mojrzeszow.server.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -16,10 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
+import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.repositories.GameRepository;
 import pl.mojrzeszow.server.repositories.GamerRepository;
+import pl.mojrzeszow.server.repositories.TileRepository;
 import pl.mojrzeszow.server.repositories.UserRepository;
 
 @RestController
@@ -34,6 +35,9 @@ public class GameRESTController {
 
 	@Autowired
 	UserRepository userRepository;
+
+	@Autowired
+	private TileRepository tileRepository;
 
 	@PostMapping
 	private Game newGame(@Valid @RequestBody DataExchange userId) {
@@ -93,6 +97,19 @@ public class GameRESTController {
 	private List<Gamer> findGamersForGame(@PathVariable Long id) {
 		Game game = this.gameRepository.findById(id).orElse(null);
 		return this.gamerRepository.findByGame(game);
+	}
+
+	@GetMapping("/tile/{id}")
+	private DataExchange getTileId(@PathVariable Long id) {
+		Tile tile = tileRepository.findById(id).orElse(null);
+		DataExchange dataExchange = new DataExchange();
+		dataExchange.gamer = tile.getGamer();
+		dataExchange.outcomeInfluence = tile.getTileGeneratedInfluence();
+		dataExchange.incomeInfluence = tile.getInfluence();
+		dataExchange.needToUppgrade = tile.getTileInfluenceNeedToUpgrade();
+		dataExchange.points = tile.getType().getPoints()*tile.getLvl()*tile.getLvl();
+		dataExchange.lvl = tile.getLvl();
+		return dataExchange;
 	}
 
 }

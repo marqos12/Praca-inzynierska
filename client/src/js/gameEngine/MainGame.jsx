@@ -81,7 +81,7 @@ class MainGameComponent extends Component {
                     <div className="hud_card resources">
                         <div >
                             <img src="assets/duck.png"></img>
-                            {actualGame.meGamer.ducklings}
+                            {actualGame.meGamer.ducklings}d ({actualGame.meGamer.ducklingsPerRound}d/t)
                         </div>
                         <div>
                             <img src="assets/P.png"></img>
@@ -89,9 +89,9 @@ class MainGameComponent extends Component {
                         </div>
                     </div>
                     <div className="hud_card rank">
-                        {actualGame.gamers.sort((x, y) => { return x.posints - y.points }).map((value, index) => {
+                        {actualGame.gamers.sort((x, y) => { return y.points - x.points }).map((value, index) => {
                             return <div key={index}>
-                                <img src={"assets/" + (index + 1) + ".png"}></img>{value.user.username}
+                                <img src={"assets/" + (index + 1) + ".png"}></img>{value.user.username} ({value.points})
                             </div>
                         })}
                     </div>

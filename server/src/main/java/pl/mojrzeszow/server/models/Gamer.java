@@ -48,6 +48,7 @@ public class Gamer {
 	
 	@NotNull
 	private Long ducklings;
+	private Long ducklingsPerRound;
 
 	private Boolean withTile;
 
@@ -69,6 +70,7 @@ public class Gamer {
 		this.ordinalNumber = 0L;
 		this.points = 0L;
 		this.ducklings = 0L;
+		this.ducklingsPerRound = 0L;
 		this.withTile = false;
 	}
 
@@ -76,7 +78,7 @@ public class Gamer {
 
 	public Gamer(Long id, @NotNull User user, @NotNull Game game, String sessionId, @NotNull Date notification,
 			@NotNull boolean status, boolean ready, @NotNull Long ordinalNumber, @NotNull Long points,
-			@NotNull Long ducklings, Boolean withTile, TileType newTileType) {
+			@NotNull Long ducklings, Boolean withTile, TileType newTileType,Long ducklingsPerRound) {
 		this.id = id;
 		this.user = user;
 		this.game = game;
@@ -89,6 +91,7 @@ public class Gamer {
 		this.ducklings = ducklings;
 		this.withTile = withTile;
 		this.newTileType = newTileType;
+		this.ducklingsPerRound = ducklingsPerRound;
 	}
 	
 
@@ -186,6 +189,14 @@ public class Gamer {
 
 	public void setNewTileType(TileType newTileType) {
 		this.newTileType = newTileType;
+	}
+
+	public Long getDucklingsPerRound() {
+		return ducklingsPerRound;
+	}
+
+	public void setDucklingsPerRound(Long ducklingsPerRound) {
+		this.ducklingsPerRound = ducklingsPerRound;
 	}
 	
 	

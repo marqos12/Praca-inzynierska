@@ -8,7 +8,8 @@ import {
     GAME_MY_NEW_TILE,
     GAME_MY_NEW_TILE_DISPLAYED,
     GAME_TILE_IN_GOOD_PLACE,
-    GAME_SEND_NEW_TILE_POSITION
+    GAME_SEND_NEW_TILE_POSITION,
+    GAME_ME_GAMER_UPDATE
 } from "../constants/game-action-types";
 
 
@@ -46,4 +47,8 @@ export function gameMyNewTileDisplayed(payload) {
 
 export function gameTileInGoodPlace(payload) {
     return { type: GAME_TILE_IN_GOOD_PLACE, payload };
+}
+
+export function gameMeGamerUpdate(payload) {
+    return { type: GAME_ME_GAMER_UPDATE, payload };
 }
