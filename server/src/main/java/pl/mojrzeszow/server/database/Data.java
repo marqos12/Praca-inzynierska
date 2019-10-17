@@ -7,17 +7,16 @@ import org.springframework.stereotype.Component;
 import pl.mojrzeszow.server.enums.RoleName;
 import pl.mojrzeszow.server.models.Role;
 import pl.mojrzeszow.server.repositories.RoleRepository;
-import pl.mojrzeszow.server.repositories.UserRepository;
 
 @Component
 public class Data implements CommandLineRunner {
 
 	@Autowired
 	private RoleRepository roleRepository;
-
+/*
 	@Autowired
 	private UserRepository userRepository;
-
+*/
 	@Override
 	public void run(String... args) throws Exception {
 

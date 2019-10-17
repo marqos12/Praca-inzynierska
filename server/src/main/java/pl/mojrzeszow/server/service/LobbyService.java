@@ -10,6 +10,7 @@ import pl.mojrzeszow.server.enums.MessageType;
 import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
+import pl.mojrzeszow.server.models.Influence;
 import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.models.messages.DataExchange;
@@ -163,7 +164,7 @@ public class LobbyService {
 
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatingGame);
 
-		Tile startTile = new Tile(null, gamers.get(0), game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L);
+		Tile startTile = new Tile(null, gamers.get(0), game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L,new Influence());
 
 		tileRepository.save(startTile);
 

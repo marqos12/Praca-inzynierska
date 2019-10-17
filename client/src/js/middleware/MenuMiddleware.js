@@ -27,7 +27,7 @@ import {
   wsGameDisconnected,
   wsGameUpdated,
 } from "../actions/index";
-import { gameNewTileToDisplay, gameMyNewTile } from "../actions/gameActions";
+import { gameNewTileToDisplay, gameMyNewTile, gameMeGamerUpdate } from "../actions/gameActions";
 
 export function menuMiddleware(getState, dispatch, action) {
 
@@ -50,6 +50,9 @@ export function menuMiddleware(getState, dispatch, action) {
           case "NEW_TILE":
             dispatch(gameMyNewTile(resp.payload))
             break;
+            case "ME_GAMER":
+              dispatch(gameMeGamerUpdate(resp.payload))
+              break;
         }
       });
       //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer

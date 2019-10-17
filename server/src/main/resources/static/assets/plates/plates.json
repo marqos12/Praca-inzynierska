@@ -1,23 +1,161 @@
 {"frames": [
-
     {
-        "filename": "SHOPPING_CENTER",
-        "frame": {"x":0,"y":301,"w":300,"h":300},
-        "rotated": false,
-        "trimmed": false,
-        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
-        "sourceSize": {"w":300,"h":300}
-    },
-    {
-        "filename": "HOUSE",
+        "filename": "HOUSE_1",
         "frame": {"x":301,"y":301,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
         "sourceSize": {"w":300,"h":300}
     },
+
     {
-        "filename": "CHURCH",
+        "filename": "HOUSE_2",
+        "frame": {"x":1201,"y":301,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "HOUSE_3",
+        "frame": {"x":1501,"y":301,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+
+    
+    {
+        "filename": "SHOP_1",
+        "frame": {"x":0,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "SHOP_2",
+        "frame": {"x":301,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "SHOP_3",
+        "frame": {"x":0,"y":301,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    }, 
+
+    {
+        "filename": "HOSPITAL_1",
+        "frame": {"x":601,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "FIRE_HOUSE_1",
+        "frame": {"x":901,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "POLICE_STATION_1",
+        "frame": {"x":1201,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "SCHOOL_1",
+        "frame": {"x":1501,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "SCHOOL_2",
+        "frame": {"x":1801,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "GARBAGE_DUMP_1",
+        "frame": {"x":1801,"y":301,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "SEWAGE_FARM_1",
+        "frame": {"x":2101,"y":301,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "FACTORY_1",
+        "frame": {"x":2101,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "OFFICE_BUILDING_1",
+        "frame": {"x":2401,"y":301,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "RESTAURANT_1",
+        "frame": {"x":2401,"y":601,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "PARK_1",
+        "frame": {"x":1801,"y":0,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "CHURCH_1",
         "frame": {"x":601,"y":301,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -25,7 +163,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "GROCERY_STORE",
+        "filename": "GROCERY_STORE_1",
         "frame": {"x":901,"y":301,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -33,7 +171,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "ROAD_STRAIGHT",
+        "filename": "ROAD_STRAIGHT_1",
         "frame": {"x":0,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -41,7 +179,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "ROAD_ACCESS_SINGLE",
+        "filename": "ROAD_ACCESS_SINGLE_1",
         "frame": {"x":301,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -49,7 +187,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "ROAD_CROSS_SINGLE",
+        "filename": "ROAD_CROSS_SINGLE_1",
         "frame": {"x":601,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -57,7 +195,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "ROAD_ACCESS_DOUBLE",
+        "filename": "ROAD_ACCESS_DOUBLE_1",
         "frame": {"x":901,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -65,7 +203,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "ROAD_CROSS_DOUBLE",
+        "filename": "ROAD_CROSS_DOUBLE_1",
         "frame": {"x":1201,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
@@ -73,7 +211,7 @@
         "sourceSize": {"w":300,"h":300}
     },
     {
-        "filename": "ROAD_CURVE",
+        "filename": "ROAD_CURVE_1",
         "frame": {"x":1501,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
