@@ -136,7 +136,6 @@ public class GameService {
 		simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
 				new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
 
-				
 		gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
 		simpMessagingTemplate.convertAndSendToUser(gamer.getSessionId(), "/reply",
 				new GameMessage<Gamer>(MessageType.ME_GAMER, gamer));
@@ -248,18 +247,11 @@ public class GameService {
 		Long countRoad = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ROAD)).count();
 		Long countAccess = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ACCESS)).count();
 
-		System.out.println("W grze jest " + countAccess + " wolnych dojazdów oraz " + countRoad + " wolnych drog");
-
 		TileType randomTileType = null;
 
 		if (countAccess <= 2) {
 			randomTileType = tileTypeService.getRandomRoadAccessTileType();
-		} /*
-			 * else if(countRoad>=8){ if(Math.random()>=0.5){ randomTileType
-			 * =tileTypeService.getRandomRoadAccessTileType(); } else { randomTileType
-			 * =tileTypeService.getRandomEndTileType(); } }
-			 */
-		else {
+		} else {
 			if (Math.random() >= 0.5) {
 				randomTileType = tileTypeService.getRandomEndTileType();
 			} else {

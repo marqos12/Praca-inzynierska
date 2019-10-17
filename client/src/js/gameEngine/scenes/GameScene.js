@@ -71,7 +71,6 @@ export default class GameScene extends Phaser.Scene {
     })
 
     addEventListener('draggedTile', (x) => {
-      console.log("GameScene 75")
       this.newTile.makeScale(this.myScale);
       this.tiles.push(this.newTile);
 

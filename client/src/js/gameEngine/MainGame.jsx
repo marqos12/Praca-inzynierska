@@ -40,7 +40,6 @@ class MainGameComponent extends Component {
     }
 
     componentDidUpdate() {
-        console.log("Main game 43", this.props.actualGame)
         if (!this.state.gameJoined && this.props.ws.client) {
             this.props.gameWsGameJoin(this.props.actualGame.game)
             this.setState({
