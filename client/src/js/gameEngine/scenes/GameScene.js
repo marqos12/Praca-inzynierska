@@ -95,6 +95,12 @@ export default class GameScene extends Phaser.Scene {
       if (this.tileDetails) this.tileDetails.destroy();
       this.tileDetails = new TileDetails(this, x.detail);
     })
+    
+    addEventListener('updatedTile', (x) => {
+      if (this.tileDetails) this.tileDetails.destroy();
+      this.tileDetails = new TileDetails(this, x.detail);
+    })
+
     addEventListener('closeTileDetails', (x) => {
       if (this.tileDetails) {
         this.tileDetails.destroy();
@@ -151,6 +157,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("newTileBackground", 'assets/newTileBackground.png');
     this.load.image("flag", 'assets/flaga.png');
     this.load.image("closeButton", 'assets/closeB.png');
+    this.load.image("upgradeButton", 'assets/upgrade.png');
     this.load.image("tileDetailsBackground", 'assets/tileInfo.png');
     this.load.atlas('tiles',
       './assets/plates/plates.png',

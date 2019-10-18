@@ -3,6 +3,8 @@ package pl.mojrzeszow.server.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -148,6 +150,29 @@ public class GameService {
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 	}
 
+	public void updateTile(DataExchange data) {
+		final Tile tile = tileRepository.findById(data.id).orElse(null);
+		tile.getGamer().setDucklings(tile.getGamer().getDucklings() -  tile.getTileInfluenceNeedToUpgrade().getDucklings());
+		tile.setLvl(tile.getLvl()+1);
+		tile.getGamer().setPoints(tile.getGamer().getPoints() -  tile.getTileGeneratedInfluence().getPoints());
+		gamerRepository.save(tile.getGamer());
+		List<Tile> gameTiles = tileRepository.findByGame(tile.getGame()).stream().filter(t->t.getId()!=tile.getId()).collect(Collectors.toList());
+		calculateTilesInfluence(tile, gameTiles);
+		tileRepository.saveAll(gameTiles);
+		tileRepository.save(tile);
+		List<Tile> newTiles = new ArrayList<Tile>();
+		newTiles.add(tile);
+		simpMessagingTemplate.convertAndSendToUser(tile.getGamer().getSessionId(), "/reply",
+				new GameMessage<Gamer>(MessageType.ME_GAMER, tile.getGamer()));
+
+		simpMessagingTemplate.convertAndSend("/topic/game/game/" + tile.getGame().getId(),
+				new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
+		List<Gamer> gamers = this.gamerRepository.findByGame(tile.getGame());
+
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + tile.getGame().getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+	}
+
 	private void calculateTilesInfluence(Tile newTile, List<Tile> tiles) {
 
 		tiles.stream().filter(t -> t.getTileGeneratedInfluence() != null).forEach(tile -> {
@@ -281,4 +306,8 @@ public class GameService {
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 	}
+
+
+
+
 }
