@@ -154,6 +154,10 @@ export default class GameScene extends Phaser.Scene {
 
   preload() {
     this.load.image("arrow-back", 'assets/arrow-left.png');
+    this.load.image("backButton", 'assets/backB.png');
+    this.load.image("buldozerButton", 'assets/buldozer.png');
+    this.load.image("arrowLeft", 'assets/arrL.png');
+    this.load.image("arrowRight", 'assets/arrR.png');
     this.load.image("newTileBackground", 'assets/newTileBackground.png');
     this.load.image("flag", 'assets/flaga.png');
     this.load.image("closeButton", 'assets/closeB.png');

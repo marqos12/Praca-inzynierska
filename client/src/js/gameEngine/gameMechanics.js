@@ -20,6 +20,8 @@ export function getTileEdges(tileType) {
             return [GREEN, ROAD, ROAD, GREEN]
         case "GREEN":
             return [GREEN, GREEN, GREEN, GREEN]
+        case "OPTIONAL":
+            return [GREEN, GREEN, GREEN, ACCESS]
     }
 }
 
@@ -29,9 +31,9 @@ export function getTileSortedEdges(tileType, angle) {
     let tileEdges = getTileEdges(tileType)
     let sortedEdges = [];
 
-    for (let i = 0; i < 4; i++) 
+    for (let i = 0; i < 4; i++)
         sortedEdges.push(tileEdges[j-- % 4])
-    
+
     return sortedEdges;
 }
 
@@ -136,8 +138,8 @@ export function isThisPossibleRotation(newTile, tiles, posX, posY) {
     return false;
 }
 
-export function getTileGeneralType(tileType){
-    switch(tileType){
+export function getTileGeneralType(tileType) {
+    switch (tileType) {
         case "HOUSE":
         case "SHOP":
         case "HOSPITAL":
@@ -151,17 +153,18 @@ export function getTileGeneralType(tileType){
         case "POWER_STATION":
         case "RESTAURANT":
         case "PARK":
-        case "CHURCH":return "END_TILE";
+        case "CHURCH": return "END_TILE";
 
-        case "ROAD_STRAIGHT":return "ROAD_STRAIGHT";
-        case "ROAD_ACCESS_SINGLE":return "ROAD_ACCESS_SINGLE";
-        case "ROAD_ACCESS_DOUBLE":return "ROAD_ACCESS_DOUBLE";
-        case "ROAD_CROSS_SINGLE":return "ROAD_CROSS_SINGLE";
-        case "ROAD_CROSS_DOUBLE":return "ROAD_CROSS_DOUBLE";
-        case "ROAD_CURVE":return "ROAD_CURVE";
-        
-        case "GREEN_1":return "GREEN";
-        case "GREEN_2":return "GREEN";
+        case "ROAD_STRAIGHT": return "ROAD_STRAIGHT";
+        case "ROAD_ACCESS_SINGLE": return "ROAD_ACCESS_SINGLE";
+        case "ROAD_ACCESS_DOUBLE": return "ROAD_ACCESS_DOUBLE";
+        case "ROAD_CROSS_SINGLE": return "ROAD_CROSS_SINGLE";
+        case "ROAD_CROSS_DOUBLE": return "ROAD_CROSS_DOUBLE";
+        case "ROAD_CURVE": return "ROAD_CURVE";
+        case "OPTIONAL": return "OPTIONAL";
+
+        case "GREEN_1": return "GREEN";
+        case "GREEN_2": return "GREEN";
 
     }
 
@@ -184,6 +187,8 @@ export function translateTileName(tileName) {
             return "Market";
         case "SHOP_3":
             return "Centrum handlowe";
+        case "OPTIONAL_1":
+            return "Plac budowy";
 
 
         case "HOSPITAL_1":
@@ -225,5 +230,198 @@ export function translateTileName(tileName) {
             return "Droga";
         case "ROAD_CURVE_1":
             return "Droga";
+    }
+}
+
+export function getOutcomes(influence) {
+    let incomes = "";
+    let incomesCounter = 1;
+    if (influence) {
+        incomes += "Korzyści: "
+        if (influence.ducklings) { incomes += `ducklingsy: ${influence.ducklings}d;`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.people) {
+            incomes += ` ludzie: ${influence.people}/ ${influence.peopleRange};`; incomesCounter++;
+            /*let circle = new Phaser.GameObjects.Ellipse(this.scene,0,0,influence.peopleRange*this.tile.displayWidth,influence.peopleRange*this.tile.displayWidth,0xff0000,0.2);this.influenceField.push(circle)*/
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.shops) { incomes += ` sklep: ${influence.shops}/ ${influence.shopsRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.work) { incomes += ` praca: ${influence.work}/ ${influence.workRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.services) { incomes += ` usługi: ${influence.services}/ ${influence.servicesRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.goods) { incomes += ` dobra: ${influence.goods}/ ${influence.goodsRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.entertainment) { incomes += ` rozrywka: ${influence.entertainment}/ ${influence.entertainmentRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.cleanness) { incomes += ` czystość: ${influence.cleanness}/ ${influence.cleannessRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.crimePrevention) { incomes += ` bezpieczeństwo: ${influence.crimePrevention}/ ${influence.crimePreventionRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.fireSafety) { incomes += ` PPOŻ: ${influence.fireSafety}/ ${influence.fireSafetyRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.medicalCare) { incomes += ` ochrona zdrowia: ${influence.medicalCare}/ ${influence.medicalCareRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.energy) { incomes += ` energia elektryczna: ${influence.energy}/ ${influence.energyRange};`; incomesCounter++; }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (influence.science) { incomes += ` nauka: ${influence.science}/ ${influence.scienceRange};`; }
+
+        //this.influenceField.forEach(x => this.scene.add.existing(x));
+        //this.move();
+    }
+    return incomes;
+}
+
+export function getNeedToUpgrade(incomeInfluence, needToUpgrade, ducklings) {
+    let incomes = ""
+    let canBeUpgrated = true;
+    if (needToUpgrade) {
+        incomes = "Wymagane do awansu: ";
+        let incomesCounter = 0;
+
+        console.log("gameMechanics 281", incomeInfluence, needToUpgrade, ducklings)
+
+        if (needToUpgrade.ducklings) {
+            incomes += `\n ducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++;
+            if (needToUpgrade.ducklings > ducklings) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.people) {
+            incomes += ` ludzie: ${needToUpgrade.people} (${incomeInfluence.people != null ? incomeInfluence.people : 0});`; incomesCounter++;
+            if (needToUpgrade.people > incomeInfluence.people) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.shops) {
+            incomes += ` sklep: ${needToUpgrade.shops} (${incomeInfluence.shops != null ? incomeInfluence.shops : 0});`; incomesCounter++;
+            if (needToUpgrade.shops > incomeInfluence.shops) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.work) {
+            incomes += ` praca: ${needToUpgrade.work} (${incomeInfluence.work != null ? incomeInfluence.work : 0});`; incomesCounter++;
+            if (needToUpgrade.work > incomeInfluence.work) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.services) {
+            incomes += ` usługi: ${needToUpgrade.services} (${incomeInfluence.services != null ? incomeInfluence.services : 0});`; incomesCounter++;
+            if (needToUpgrade.services > incomeInfluence.services) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.goods) {
+            incomes += ` dobra: ${needToUpgrade.goods} (${incomeInfluence.goods != null ? incomeInfluence.goods : 0});`; incomesCounter++;
+            if (needToUpgrade.goods > incomeInfluence.goods) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.entertainment) {
+            incomes += ` rozrywka: ${needToUpgrade.entertainment} (${incomeInfluence.entertainment != null ? incomeInfluence.entertainment : 0});`; incomesCounter++;
+            if (needToUpgrade.entertainment > incomeInfluence.entertainment) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.cleanness) {
+            incomes += ` czystość: ${needToUpgrade.cleanness} (${incomeInfluence.cleanness != null ? incomeInfluence.cleanness : 0});`; incomesCounter++;
+            if (needToUpgrade.cleanness > incomeInfluence.cleanness) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.crimePrevention) {
+            incomes += ` bezpieczeństwo: ${needToUpgrade.crimePrevention} (${incomeInfluence.crimePrevention != null ? incomeInfluence.crimePrevention : 0});`; incomesCounter++;
+            if (needToUpgrade.crimePrevention > incomeInfluence.crimePrevention) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.fireSafety) {
+            incomes += ` PPOŻ: ${needToUpgrade.fireSafety} (${incomeInfluence.fireSafety != null ? incomeInfluence.fireSafety : 0});`; incomesCounter++;
+            if (needToUpgrade.fireSafety > incomeInfluence.fireSafety) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.medicalCare) {
+            incomes += ` ochrona zdrowia: ${needToUpgrade.medicalCare} (${incomeInfluence.medicalCare != null ? incomeInfluence.medicalCare : 0});`; incomesCounter++;
+            if (needToUpgrade.medicalCare > incomeInfluence.medicalCare) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.energy) {
+            incomes += ` energia elektryczna: ${needToUpgrade.energy} (${incomeInfluence.energy != null ? incomeInfluence.energy : 0});`; incomesCounter++;
+            if (needToUpgrade.energy > incomeInfluence.energy) canBeUpgrated = false;
+        }
+        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (needToUpgrade.science) {
+            incomes += ` nauka: ${needToUpgrade.science} (${incomeInfluence.science != null ? incomeInfluence.science : 0});`;
+            if (needToUpgrade.science > incomeInfluence.science) canBeUpgrated = false;
+        }
+    }
+    return { incomes: incomes, canBeUpgrated: canBeUpgrated };
+}
+
+export function getWayOfUpgrade(tile) {
+    console.log(tile)
+    switch (tile.name) {
+        case "HOUSE_1":
+            return ["HOUSE_2"];
+        case "HOUSE_2":
+            return ["HOUSE_3"];
+        case "HOUSE_3":
+            return [];
+        case "SHOP_1":
+            return ["SHOP_2"];
+        case "SHOP_2":
+            return ["SHOP_3"];
+        case "SHOP_3":
+            return [];
+
+        case "OPTIONAL_1":
+            return [
+                "HOUSE_1",
+                "SHOP_1",
+                "RESTAURANT_1",
+                "FACTORY_1",
+                "ROAD_STRAIGHT_1",
+                "OFFICE_BUILDING_1",
+                "PARK_1",
+                "SCHOOL_1",
+                "HOSPITAL_1",
+                "FIRE_HOUSE_1",
+                "POLICE_STATION_1",
+                "GARBAGE_DUMP_1",
+                "SEWAGE_FARM_1",
+                "CHURCH_1"];
+
+
+        case "HOSPITAL_1":
+            return [];
+        case "FIRE_HOUSE_1":
+            return [];
+        case "POLICE_STATION_1":
+            return [];
+        case "SCHOOL_1":
+            return ["SCHOOL_2"];
+        case "SCHOOL_2":
+            return [];
+        case "GARBAGE_DUMP_1":
+            return [];
+        case "SEWAGE_FARM_1":
+            return [];
+        case "FACTORY_1":
+            return [];
+        case "OFFICE_BUILDING_1":
+            return [];
+        case "RESTAURANT_1":
+            return [];
+        case "PARK_1":
+            return [];
+        case "CHURCH_1":
+            return [];
+
+        case "GROCERY_STORE_1":
+            return [];
+        case "ROAD_STRAIGHT_1":
+            return ["ROAD_STRAIGHT_1", "ROAD_ACCESS_SINGLE_1", "ROAD_CROSS_SINGLE_1", "ROAD_ACCESS_DOUBLE_1", "ROAD_CROSS_DOUBLE_1", "ROAD_CURVE_1"];
+        case "ROAD_ACCESS_SINGLE_1":
+            return ["ROAD_STRAIGHT_1", "ROAD_ACCESS_SINGLE_1", "ROAD_CROSS_SINGLE_1", "ROAD_ACCESS_DOUBLE_1", "ROAD_CROSS_DOUBLE_1", "ROAD_CURVE_1"];
+        case "ROAD_CROSS_SINGLE_1":
+            return ["ROAD_STRAIGHT_1", "ROAD_ACCESS_SINGLE_1", "ROAD_CROSS_SINGLE_1", "ROAD_ACCESS_DOUBLE_1", "ROAD_CROSS_DOUBLE_1", "ROAD_CURVE_1"];
+        case "ROAD_ACCESS_DOUBLE_1":
+            return ["ROAD_STRAIGHT_1", "ROAD_ACCESS_SINGLE_1", "ROAD_CROSS_SINGLE_1", "ROAD_ACCESS_DOUBLE_1", "ROAD_CROSS_DOUBLE_1", "ROAD_CURVE_1"];
+        case "ROAD_CROSS_DOUBLE_1":
+            return ["ROAD_STRAIGHT_1", "ROAD_ACCESS_SINGLE_1", "ROAD_CROSS_SINGLE_1", "ROAD_ACCESS_DOUBLE_1", "ROAD_CROSS_DOUBLE_1", "ROAD_CURVE_1"];
+        case "ROAD_CURVE_1":
+            return ["ROAD_STRAIGHT_1", "ROAD_ACCESS_SINGLE_1", "ROAD_CROSS_SINGLE_1", "ROAD_ACCESS_DOUBLE_1", "ROAD_CROSS_DOUBLE_1", "ROAD_CURVE_1"];
     }
 }

@@ -1,6 +1,7 @@
-import { translateTileName } from "../../gameMechanics";
+import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade } from "../../gameMechanics";
 import store from "../../../store";
 import { gameUpdateTile } from "../../../actions/gameActions";
+import { Tile } from "./Tile";
 
 export class TileDetails {
 
@@ -9,19 +10,36 @@ export class TileDetails {
         this.tile = tile;
         this.x = tile.x;
         this.y = tile.y;
+        let fontConf = { fontFamily: '"Roboto"', fontSize: "16px" };
+        this.details = null;
+        this.showUpgradeDetails = false;
+        this.showBackButton = false;
+        this.influenceField = [];
+        this.upgradeButton = null;
+        this.canBeUpgrated = false;
+        this.upgradePage = 0;
+        this.upgradeMode = false;
+        this.waysOfUpgrade = [];
+        this.showUpgradeButton = true;
+
         this.background = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "tileDetailsBackground");
         this.background.setOrigin(0.5, 1);
         this.background.setDepth(110);
+        this.background.setInteractive();
+        this.background.on('pointerdown', (pointer) => {
+            this.scene.input.activePointer.isDown = false;
+        });
         scene.add.existing(this.background);
-
-        let fontConf = { fontFamily: '"Roboto"', fontSize: "16px" };
 
         this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + translateTileName(tile.name), fontConf)
         this.tileName.setDepth(111);
         this.tileName.setOrigin(0, 0);
         scene.add.existing(this.tileName);
-        this.details = null;
 
+        this.upgradeDetails = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "", fontConf)
+        this.upgradeDetails.setDepth(111);
+        this.upgradeDetails.setOrigin(0, 0);
+        this.scene.add.existing(this.upgradeDetails);
 
         this.closeButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "closeButton");
         this.closeButton.setDepth(111);
@@ -33,169 +51,198 @@ export class TileDetails {
                 dispatchEvent(closeTileDetails);
             }
         });
-        scene.add.existing(this.closeButton);
+        this.scene.add.existing(this.closeButton);
 
-        this.influenceField = [];
+        this.backButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "backButton");
+        this.backButton.setDepth(111);
+        this.backButton.setScale(0.7);
+        this.backButton.setInteractive();
+        this.backButton.on('pointerdown', (pointer) => {
+            if (pointer.leftButtonDown()) {
+                if (this.upgradeMode && !this.showUpgradeDetails) {
+                    this.upgradeMode = false;
+                    this.showBackButton = false;
+                    this.showUpgradeDetails = false;
+                    this.waysOfUpgrade.forEach(w => { w.destroy(0) });
+                    this.waysOfUpgrade = [];
+                    this.tileName.text = "Nazwa: " + translateTileName(tile.name);
+                    this.tileDetails()
+                    this.showUpgradeButton = true;
+                }
+                else {
+                    this.showUpgradeDetails = false
+                    this.waysOfUpgrade.forEach(w => { w.destroy(0) });
+                    this.waysOfUpgrade = [];
+                    this.showWayOfUpgrade();
+                    this.upgradeDetails.text = ""
+                    this.showUpgradeButton = false;
+                }
+            }
+        });
+        scene.add.existing(this.backButton);
+        /*
+        this.backButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "backButton");
+        this.backButton.setDepth(111);
+        this.backButton.setScale(0.7);
+        this.backButton.setInteractive();
+        this.backButton.on('pointerdown', (pointer) => {
+            if (pointer.leftButtonDown()) {
 
-        this.move();
+            }
+        });
+        scene.add.existing(this.backButton);*/
 
-        this.upgradeButton = null;
-        this.canBeUpgrated = false;
+        this.arrowLeft = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "arrowLeft");
+        this.arrowLeft.setDepth(111);
+        this.arrowLeft.setScale(0.5);
+        this.arrowLeft.setInteractive();
+        this.arrowLeft.on('pointerdown', (pointer) => {
+            this.upgradePage--;
+            this.move();
+        });
+        this.scene.add.existing(this.arrowLeft);
+
+        this.arrowRight = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "arrowRight");
+        this.arrowRight.setDepth(111);
+        this.arrowRight.setScale(0.5);
+        this.arrowRight.setInteractive();
+        this.arrowRight.on('pointerdown', (pointer) => {
+            this.upgradePage++;
+            this.move();
+        });
+        this.scene.add.existing(this.arrowRight);
 
         fetch(window.location.href.split("#")[0] + "api/game/tile/" + tile.id).then(response =>
             response.json()
         ).then(response => {
-            console.log("TileDetails 45", response);
             this.details = response;
-            this.tileName.text += `\n\nPoziom: ${response.lvl} \t Punkty: ${response.points}` +
-                `\n\nKorzyści: ${this.getOutcomes(response.outcomeInfluence)}`;
-            if (response.needToUppgrade != null && this.scene.state.actualGame.meGamer.id == this.tile.owner.id) {
-                this.tileName.text += `\n\nWymagane do awansu: ${this.getNeedToUpgrade(response.incomeInfluence, response.needToUppgrade, this.scene.state.actualGame.meGamer.ducklings)}`;
-                if (this.canBeUpgrated) {
-                    this.upgradeButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "upgradeButton");
-                    this.upgradeButton.setDepth(111);
-                    this.upgradeButton.setScale(0.7);
-                    this.upgradeButton.setInteractive();
-                    this.upgradeButton.on('pointerdown', (pointer) => {
-                        if (pointer.leftButtonDown()) {
-                          store.dispatch(gameUpdateTile({ id:this.tile.id }));
-                          let updatedTile = new CustomEvent('closeTileDetails', { detail: this.tile });
-                          dispatchEvent(updatedTile);
-                        }
-                    });
-                    scene.add.existing(this.upgradeButton);
-                    this.move();
-                }
-            }
+            this.tileDetails()
         })
+
+        this.move();
     }
+
+
     destroy() {
         this.background.destroy();
         this.tileName.destroy();
         this.closeButton.destroy();
-        this.influenceField.forEach(x => x.destroy());
         if (this.upgradeButton) this.upgradeButton.destroy();
+        this.waysOfUpgrade.forEach(w => w.destroy())
+        if (this.arrowLeft) this.arrowLeft.destroy();
+        if (this.arrowRight) this.arrowRight.destroy();
+        this.upgradeDetails.destroy();
+        this.backButton.destroy();
     }
+
     move() {
         this.background.setPosition(this.tile.x + this.tile.displayWidth / 2, this.tile.y + this.tile.displayWidth / 4)
         this.tileName.setPosition(this.background.x - 180, this.background.y - 280);
         this.closeButton.setPosition(this.background.x + 180, this.background.y - 280);
-        this.influenceField.forEach(x => x.setPosition(this.tile.x + this.tile.displayWidth / 2, this.tile.y + this.tile.displayWidth / 2));
-        if (this.upgradeButton) this.upgradeButton.setPosition(this.background.x + 130, this.background.y - 100);
+        if (this.upgradeButton) if (this.showUpgradeButton) this.upgradeButton.setPosition(this.background.x + 130, this.background.y - 100); else this.upgradeButton.setPosition(-300, -300)
+        if (this.showBackButton) this.backButton.setPosition(this.background.x + 0, this.background.y - 100); else this.backButton.setPosition(-300, -300)
+
+        let i = 0;
+        this.waysOfUpgrade.forEach(w => {
+            if (i >= this.upgradePage * 4 && i < (this.upgradePage + 1) * 4)
+                w.setPosition(this.background.x - 180 + w.displayWidth * (i % 4), this.background.y - 240)
+            else
+                w.setPosition(-300, -300)
+            i++
+        });
+        if (this.upgradeMode) {
+            if (this.upgradePage > 0) this.arrowLeft.setPosition(this.background.x - 160, this.background.y - 120); else this.arrowLeft.setPosition(-300, -300);
+            if ((this.upgradePage + 1) * 4 < this.waysOfUpgrade.length) this.arrowRight.setPosition(this.background.x - 120, this.background.y - 120); else this.arrowRight.setPosition(-300, -300);
+        }
+        else {
+            this.arrowLeft.setPosition(-300, -300);
+            this.arrowRight.setPosition(-300, -300);
+        }
+        this.upgradeDetails.setPosition(this.background.x - 70, this.background.y - 240)
     }
 
-
-
-    getOutcomes(influence) {
-        let incomes = "";
-        let incomesCounter = 1;
-        if (influence.ducklings) { incomes += `ducklingsy: ${influence.ducklings}d;`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.people) {
-            incomes += ` ludzie: ${influence.people}/ ${influence.peopleRange};`; incomesCounter++;
-            /*let circle = new Phaser.GameObjects.Ellipse(this.scene,0,0,influence.peopleRange*this.tile.displayWidth,influence.peopleRange*this.tile.displayWidth,0xff0000,0.2);this.influenceField.push(circle)*/
+    upgradeButtonClick() {
+        this.showBackButton = true;
+        if (this.tile.name != "OPTIONAL_1" && this.tile.name != "ROAD_STRAIGHT_1") {
+            store.dispatch(gameUpdateTile({ id: this.tile.id }));
+            let updatedTile = new CustomEvent('closeTileDetails', { detail: this.tile });
+            dispatchEvent(updatedTile);
         }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.shops) { incomes += ` sklep: ${influence.shops}/ ${influence.shopsRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.work) { incomes += ` praca: ${influence.work}/ ${influence.workRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.services) { incomes += ` usługi: ${influence.services}/ ${influence.servicesRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.goods) { incomes += ` dobra: ${influence.goods}/ ${influence.goodsRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.entertainment) { incomes += ` rozrywka: ${influence.entertainment}/ ${influence.entertainmentRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.cleanness) { incomes += ` czystość: ${influence.cleanness}/ ${influence.cleannessRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.crimePrevention) { incomes += ` bezpieczeństwo: ${influence.crimePrevention}/ ${influence.crimePreventionRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.fireSafety) { incomes += ` PPOŻ: ${influence.fireSafety}/ ${influence.fireSafetyRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.medicalCare) { incomes += ` ochrona zdrowia: ${influence.medicalCare}/ ${influence.medicalCareRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.energy) { incomes += ` energia elektryczna: ${influence.energy}/ ${influence.energyRange};`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.science) { incomes += ` nauka: ${influence.science}/ ${influence.scienceRange};`; }
+        else if (this.upgradeMode) {
+            console.log("upgrade")
+            store.dispatch(gameUpdateTile({ id: this.tile.id, type: this.waysOfUpgrade[0].name.slice(0, -2) }));
+            let updatedTile = new CustomEvent('closeTileDetails', { detail: this.tile });
+            dispatchEvent(updatedTile);
+        }
+        else {
+            this.showWayOfUpgrade();
+            this.showUpgradeButton = false;
+        }
 
-        this.influenceField.forEach(x => this.scene.add.existing(x));
+    }
+
+    tileDetails() {
+
+        this.tileName.text += `\n\nPoziom: ${this.details.lvl} \t Punkty: ${this.details.points}` +
+            `\n\n${getOutcomes(this.details.outcomeInfluence)}`;
+
+        if ((this.details.needToUppgrade != null || this.tile.name == "OPTIONAL_1") && this.scene.state.actualGame.meGamer.id == this.tile.owner.id) {
+            let a = getNeedToUpgrade(this.details.incomeInfluence, this.details.needToUppgrade, this.scene.state.actualGame.meGamer.ducklings, this.canBeUpgrated);
+            this.canBeUpgrated = a.canBeUpgrated;
+
+            this.tileName.text += `\n\n${a.incomes}`;
+
+            if (this.canBeUpgrated) {
+                this.upgradeButton = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "upgradeButton");
+                this.upgradeButton.setDepth(111);
+                this.upgradeButton.setScale(0.7);
+                this.upgradeButton.setInteractive();
+                this.upgradeButton.on('pointerdown', (pointer) => {
+
+                    if (pointer.leftButtonDown()) {
+                        this.upgradeButtonClick();
+                    }
+
+                });
+                this.scene.add.existing(this.upgradeButton);
+
+                this.move();
+            }
+        }
+    }
+
+    showWayOfUpgrade() {
+        this.tileName.text = "Dostępne opcje rozwoju płytki:"
+        let wayOfUpdate = getWayOfUpgrade(this.tile);
+
+        wayOfUpdate.forEach(w => {
+            console.log(w)
+            let way = new Tile(this.scene, this.tile.x, this.tile.y, w);
+            way.setDepth(111);
+            way.setScale(0.3);
+            way.setInteractive();
+            way.on('pointerdown', (pointer) => {
+                console.log("Wybrana opcjja " + way.name)
+                this.waysOfUpgrade.filter(w => w.name != way.name).forEach(w => w.destroy());
+                this.waysOfUpgrade = [way];
+                this.upgradePage = 0;
+                this.upgradeDetails.text = "Nazwa: " + translateTileName(way.name);
+                this.showUpgradeDetails = true;
+                this.showUpgradeButton = true;
+
+                fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + way.name.slice(0, -2) + "/1").then(response =>
+                    response.json()
+                ).then(response => {
+                    console.log("TileDetails 161", response);
+                    this.upgradeDetails.text += `\nWymagane do budowy:\n${response.buildCosts} d`
+                })
+
+            });
+            this.scene.add.existing(way);
+            this.waysOfUpgrade.push(way);
+        });
+
+        this.upgradeMode = true;
         this.move();
-        return incomes;
-    }
-
-    setRangeScale() { }
-
-    getNeedToUpgrade(incomeInfluence, needToUpgrade, ducklings) {
-        let incomes = "";
-        let incomesCounter = 0;
-
-        let canBeUpgrated = true;
-
-        if (needToUpgrade.ducklings) {
-            incomes += `\n ducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++;
-            if (needToUpgrade.ducklings > ducklings) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.people) {
-            incomes += ` ludzie: ${needToUpgrade.people} (${incomeInfluence.people != null ? incomeInfluence.people : 0});`; incomesCounter++;
-            if (needToUpgrade.people > incomeInfluence.people) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.shops) {
-            incomes += ` sklep: ${needToUpgrade.shops} (${incomeInfluence.shops != null ? incomeInfluence.shops : 0});`; incomesCounter++;
-            if (needToUpgrade.shops > incomeInfluence.shops) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.work) {
-            incomes += ` praca: ${needToUpgrade.work} (${incomeInfluence.work != null ? incomeInfluence.work : 0});`; incomesCounter++;
-            if (needToUpgrade.work > incomeInfluence.work) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.services) {
-            incomes += ` usługi: ${needToUpgrade.services} (${incomeInfluence.services != null ? incomeInfluence.services : 0});`; incomesCounter++;
-            if (needToUpgrade.services > incomeInfluence.services) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.goods) {
-            incomes += ` dobra: ${needToUpgrade.goods} (${incomeInfluence.goods != null ? incomeInfluence.goods : 0});`; incomesCounter++;
-            if (needToUpgrade.goods > incomeInfluence.goods) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.entertainment) {
-            incomes += ` rozrywka: ${needToUpgrade.entertainment} (${incomeInfluence.entertainment != null ? incomeInfluence.entertainment : 0});`; incomesCounter++;
-            if (needToUpgrade.entertainment > incomeInfluence.entertainment) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.cleanness) {
-            incomes += ` czystość: ${needToUpgrade.cleanness} (${incomeInfluence.cleanness != null ? incomeInfluence.cleanness : 0});`; incomesCounter++;
-            if (needToUpgrade.cleanness > incomeInfluence.cleanness) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.crimePrevention) {
-            incomes += ` bezpieczeństwo: ${needToUpgrade.crimePrevention} (${incomeInfluence.crimePrevention != null ? incomeInfluence.crimePrevention : 0});`; incomesCounter++;
-            if (needToUpgrade.crimePrevention > incomeInfluence.crimePrevention) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.fireSafety) {
-            incomes += ` PPOŻ: ${needToUpgrade.fireSafety} (${incomeInfluence.fireSafety != null ? incomeInfluence.fireSafety : 0});`; incomesCounter++;
-            if (needToUpgrade.fireSafety > incomeInfluence.fireSafety) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.medicalCare) {
-            incomes += ` ochrona zdrowia: ${needToUpgrade.medicalCare} (${incomeInfluence.medicalCare != null ? incomeInfluence.medicalCare : 0});`; incomesCounter++;
-            if (needToUpgrade.medicalCare > incomeInfluence.medicalCare) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.energy) {
-            incomes += ` energia elektryczna: ${needToUpgrade.energy} (${incomeInfluence.energy != null ? incomeInfluence.energy : 0});`; incomesCounter++;
-            if (needToUpgrade.energy > incomeInfluence.energy) canBeUpgrated = false;
-        }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (needToUpgrade.science) {
-            incomes += ` nauka: ${needToUpgrade.science} (${incomeInfluence.science != null ? incomeInfluence.science : 0});`;
-            if (needToUpgrade.science > incomeInfluence.science) canBeUpgrated = false;
-        }
-        this.canBeUpgrated = canBeUpgrated;
-        return incomes;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Tile;
@@ -109,6 +110,17 @@ public class GameRESTController {
 		dataExchange.needToUppgrade = tile.getTileInfluenceNeedToUpgrade();
 		dataExchange.points = tile.getType().getPoints()*tile.getLvl()*tile.getLvl();
 		dataExchange.lvl = tile.getLvl();
+		return dataExchange;
+	}
+
+	
+	@GetMapping("/tile/rebuild/{name}/{lvl}")
+	private DataExchange getTileId(@PathVariable String name,@PathVariable int lvl) {
+		DataExchange dataExchange = new DataExchange();
+		TileType type = TileType.valueOf(name);
+		dataExchange.buildCosts = type.getCosts()*lvl*lvl;
+		dataExchange.deconstructionCosts = dataExchange.buildCosts/2;
+		
 		return dataExchange;
 	}
 

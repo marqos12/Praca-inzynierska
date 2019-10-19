@@ -23,6 +23,8 @@ public class DataExchange {
 	public Influence outcomeInfluence;
 	public Influence needToUppgrade;
 	public Long points;
+	public Long buildCosts;
+	public Long deconstructionCosts;
 
 	public DataExchange() {
 	}
