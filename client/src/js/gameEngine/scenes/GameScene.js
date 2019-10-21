@@ -162,6 +162,9 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("flag", 'assets/flaga.png');
     this.load.image("closeButton", 'assets/closeB.png');
     this.load.image("upgradeButton", 'assets/upgrade.png');
+    this.load.image("cancelButton", 'assets/anuluj.png');
+    this.load.image("destroyButton", 'assets/zniszcz.png');
+    this.load.image("buildButton", 'assets/wybuduj.png');
     this.load.image("tileDetailsBackground", 'assets/tileInfo.png');
     this.load.atlas('tiles',
       './assets/plates/plates.png',

@@ -112,17 +112,18 @@ public class GameRESTController {
 		dataExchange.lvl = tile.getLvl();
 		return dataExchange;
 	}
-
 	
 	@GetMapping("/tile/rebuild/{name}/{lvl}")
 	private DataExchange getTileId(@PathVariable String name,@PathVariable int lvl) {
 		DataExchange dataExchange = new DataExchange();
 		TileType type = TileType.valueOf(name);
+		Tile tile = new Tile();
+		tile.setType(type);
+		tile.setLvl(1);
+		dataExchange.outcomeInfluence = tile.getTileGeneratedInfluence();
 		dataExchange.buildCosts = type.getCosts()*lvl*lvl;
 		dataExchange.deconstructionCosts = dataExchange.buildCosts/2;
 		
 		return dataExchange;
-	}
-
-	
+	}	
 }

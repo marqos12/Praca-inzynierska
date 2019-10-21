@@ -153,7 +153,7 @@ public class GameService {
 		final Tile tile = tileRepository.findById(data.id).orElse(null);
 
 		if (tile.getType().getGeneralType() == "END_TILE") {
-			if (data.type!=null||data.type != TileType.OPTIONAL) {
+			if (data.type==null||data.type != TileType.OPTIONAL) {
 				tile.getGamer().setDucklings(
 						tile.getGamer().getDucklings() - tile.getTileInfluenceNeedToUpgrade().getDucklings());
 				tile.setLvl(tile.getLvl() + 1);
@@ -162,6 +162,7 @@ public class GameService {
 						tile.getGamer().getDucklings() - tile.getType().getCosts());
 				tile.getGamer().setPoints(
 						tile.getGamer().getPoints() - tile.getTileGeneratedInfluence().getPoints());
+				tile.setType(data.type);
 				tile.setLvl(1);
 			}
 		} else {
@@ -194,7 +195,7 @@ public class GameService {
 
 		tiles.stream().filter(t -> t.getTileGeneratedInfluence() != null).forEach(tile -> {
 			Influence tileInfluence = tile.getTileGeneratedInfluence();
-			Double d = Math.sqrt(Math.pow(tile.getPosX(), 2) + Math.pow(tile.getPosY(), 2));
+			Double d = Math.sqrt(Math.pow(tile.getPosX()-newTile.getPosX(), 2) + Math.pow(tile.getPosY()-newTile.getPosY(), 2));
 			newTile.getInfluence().setPeople(addInfluence(tileInfluence.getPeople(), newTile.getInfluence().getPeople(),
 					d, tileInfluence.getPeopleRange()));
 			newTile.getInfluence().setShops(addInfluence(tileInfluence.getShops(), newTile.getInfluence().getShops(), d,
