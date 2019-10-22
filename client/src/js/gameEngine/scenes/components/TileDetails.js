@@ -70,7 +70,7 @@ export class TileDetails {
                     this.tileName.text = "Nazwa: " + translateTileName(tile.name);
                     this.tileDetails()
                     this.showUpgradeButton = true;
-                    if(this.destroyButton){this.destroyButton.destroy();this.destroyButton=null;}
+                    if (this.destroyButton) { this.destroyButton.destroy(); this.destroyButton = null; }
                 }
                 else {
                     this.showUpgradeDetails = false
@@ -98,24 +98,24 @@ export class TileDetails {
                     this.upgradeMode = true;
                     this.showBackButton = true;
 
-
+                    if(response.deconstructionCosts <= this.scene.state.actualGame.meGamer.ducklings) {
                     this.destroyButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "destroyButton");
                     this.destroyButton.setDepth(111);
                     this.destroyButton.setScale(0.7);
                     this.destroyButton.setInteractive();
                     this.destroyButton.on('pointerdown', (pointer) => {
                         if (pointer.leftButtonDown()) {
-                            store.dispatch(gameUpdateTile({ id: this.tile.id, type: "OPTIONAL" }));
+                            if (this.tile.name.includes("ROAD"))
+                                store.dispatch(gameUpdateTile({ id: this.tile.id, type: "ROAD_STRAIGHT" }));
+                            else
+                                store.dispatch(gameUpdateTile({ id: this.tile.id, type: "OPTIONAL" }));
                             let updatedTile = new CustomEvent('closeTileDetails', { detail: this.tile });
                             dispatchEvent(updatedTile);
 
                         }
                     });
                     scene.add.existing(this.destroyButton);
-
-
-
-
+                }
                 })
             }
         });
@@ -163,7 +163,7 @@ export class TileDetails {
         this.upgradeDetails.destroy();
         this.backButton.destroy();
         this.buldozerButton.destroy();
-        if(this.destroyButton)this.destroyButton.destroy();
+        if (this.destroyButton) this.destroyButton.destroy();
     }
 
     move() {
@@ -172,8 +172,8 @@ export class TileDetails {
         this.closeButton.setPosition(this.background.x + 180, this.background.y - 280);
         if (this.upgradeButton) if (this.showUpgradeButton) this.upgradeButton.setPosition(this.background.x + 130, this.background.y - 100); else this.upgradeButton.setPosition(-300, -300)
         if (this.showBackButton) this.backButton.setPosition(this.background.x + 0, this.background.y - 100); else this.backButton.setPosition(-300, -300)
-    if (this.destroyButton)  this.destroyButton.setPosition(this.background.x + 130, this.background.y - 100); 
-        
+        if (this.destroyButton) this.destroyButton.setPosition(this.background.x + 130, this.background.y - 100);
+
         let i = 0;
         this.waysOfUpgrade.forEach(w => {
             if (i >= this.upgradePage * 4 && i < (this.upgradePage + 1) * 4)
@@ -259,13 +259,14 @@ export class TileDetails {
                 this.upgradePage = 0;
                 this.upgradeDetails.text = "Nazwa: " + translateTileName(way.name);
                 this.showUpgradeDetails = true;
-                this.showUpgradeButton = true;
 
                 fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + way.name.slice(0, -2) + "/1").then(response =>
                     response.json()
                 ).then(response => {
                     this.upgradeDetails.text += `\nWymagane do budowy:\n${response.buildCosts} d\n${getOutcomes(response.outcomeInfluence)}`;
 
+                 if(response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings) 
+                    this.showUpgradeButton = true;
                 })
 
             });
