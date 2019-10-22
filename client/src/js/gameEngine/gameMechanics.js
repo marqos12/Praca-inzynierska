@@ -37,25 +37,28 @@ export function getTileSortedEdges(tileType, angle) {
     return sortedEdges;
 }
 
-export function getPossiblePlaces(tiles) {
-    let newTile = tiles.pop();
+export function getPossiblePlaces(tiles, newTile) {
+    //let newTile = tiles.pop();
     let newTileEdges = getTileSortedEdges(newTile.generalType, 0);
 
     let initPossiblePos = [];
     let tilesPos = [];
     tiles.forEach(tile => {
-        tilesPos.push({ posX: tile.posX, posY: tile.posY });
+     
+            tilesPos.push({ posX: tile.posX, posY: tile.posY });
 
-        let tileEdges = getTileSortedEdges(tile.generalType, tile.angle);
-        for (let i = 0; i < 4; i++) {
-            let j = 0;
-            tileEdges.forEach(edge => {
-                if (newTileEdges[i] == edge && edge != GREEN) {
-                    initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
-                }
-                j++
-            })
-        }
+            let tileEdges = getTileSortedEdges(tile.generalType, tile.angle);
+            for (let i = 0; i < 4; i++) {
+                let j = 0;
+                tileEdges.forEach(edge => {
+                    if (newTileEdges[i] == edge && edge != GREEN) {
+                        initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
+                    }
+                    j++
+                })
+            }
+        
+
     })
 
     let possiblePos = [];

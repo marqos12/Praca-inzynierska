@@ -72,7 +72,7 @@ export default class GameScene extends Phaser.Scene {
 
     addEventListener('draggedTile', (x) => {
       this.newTile.makeScale(this.myScale);
-      this.tiles.push(this.newTile);
+      //this.tiles.push(this.newTile);
 
       this.newTileCard.destroy();
       this.newTileCard = null;
@@ -95,7 +95,7 @@ export default class GameScene extends Phaser.Scene {
       if (this.tileDetails) this.tileDetails.destroy();
       this.tileDetails = new TileDetails(this, x.detail);
     })
-    
+
     addEventListener('updatedTile', (x) => {
       if (this.tileDetails) this.tileDetails.destroy();
       this.tileDetails = new TileDetails(this, x.detail);
@@ -122,7 +122,7 @@ export default class GameScene extends Phaser.Scene {
 
       this.tiles.forEach(x => {
         x.makeScale(this.myScale);
-        
+
       })
       this.fixedTiles.forEach(x => {
         x.makeScale(this.myScale);
@@ -179,8 +179,8 @@ export default class GameScene extends Phaser.Scene {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           x.y -= this.origDragPoint.y - this.input.activePointer.position.y;
           if (x.highlight) {
-            x.highlight.x = x.x+ this.tileWidth/8;
-            x.highlight.y = x.y+ this.tileWidth/8;
+            x.highlight.x = x.x + this.tileWidth / 8;
+            x.highlight.y = x.y + this.tileWidth / 8;
           }
         })
         this.fixedTiles.forEach(x => {
@@ -228,11 +228,22 @@ export default class GameScene extends Phaser.Scene {
         tile2.setAngle_My(tile.angle);
         tile2.makeScale(this.myScale);
         tile2.move(tile.posX, tile.posY);
+        let oldTile = this.tiles.filter(t => t.id == tile.id);
+        if (oldTile.length > 0) {
+          oldTile[0].destroy2();
+          oldTile[0] = null
+        }
+
+
         this.tiles.push(tile2);
+        this.tiles = this.tiles.filter(t => t.id != tile.id||t.name==tile.type + "_" + tile.lvl);
         this.add.existing(tile2.setDepth(2));
 
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
+      if (this.newTile) {
+        this.highlightPossiblePlaces()
+      }
     }
 
     if (this.state.actualGame.myNewTile && !this.newTile) {
@@ -251,26 +262,7 @@ export default class GameScene extends Phaser.Scene {
 
       this.add.existing(this.newTile.setDepth(101))
 
-      /*
-            this.newTileCardBorder = new Phaser.GameObjects.Rectangle(
-              this,
-              window.innerWidth * 0.9 - 2,
-              window.innerHeight * 0.85 - 2,
-              window.innerWidth * 0.2 + 4,
-              window.innerHeight * 0.3 + 4,
-              0x41E3FF);
-            this.add.existing(this.newTileCardBorder.setDepth(0))
-      
-            this.newTileCard = new Phaser.GameObjects.Rectangle(
-              this,
-              window.innerWidth * 0.9,
-              window.innerHeight * 0.85,
-              window.innerWidth * 0.2,
-              window.innerHeight * 0.3,
-              0x5d8FBD,
-              0.815);
-            this.add.existing(this.newTileCard.setDepth(0))
-      */
+
       this.newTileCard = new Phaser.GameObjects.Sprite(
         this,
         window.innerWidth * 0.9,
@@ -291,7 +283,9 @@ export default class GameScene extends Phaser.Scene {
 
 
   highlightPossiblePlaces() {
-    this.possiblePlaces = getPossiblePlaces(this.tiles);
+    this.possibleHihglights.forEach(highlight => highlight.destroy())
+    this.possibleHihglights = [];
+    this.possiblePlaces = getPossiblePlaces(this.tiles,this.newTile);
     this.possiblePlaces.forEach(pos => {
       let highlight = new Phaser.GameObjects.Rectangle(
         this,

@@ -139,6 +139,11 @@ export class Tile extends Phaser.GameObjects.Sprite {
     update() {
     }
 
+    destroy2(){
+        if(this.highlight)this.highlight.destroy();
+        this.destroy();
+    }
+
     move(posX, posY) {
         this.posX = posX;
         this.posY = posY;
