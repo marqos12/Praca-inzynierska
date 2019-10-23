@@ -72,8 +72,9 @@ $resources-tab-height:7vh;
         border-left:0;
 
         div{
-            width:9vw;
-            display: inline-block;
+            width:fit-content;
+            padding: 0 8px;
+            float:left;
         }
     }
 }
