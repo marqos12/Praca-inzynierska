@@ -3,6 +3,7 @@ package pl.mojrzeszow.server.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -148,11 +149,54 @@ public class GameService {
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 	}
 
+	public void updateTile(DataExchange data) {
+		final Tile tile = tileRepository.findById(data.id).orElse(null);
+
+		if (tile.getType().getGeneralType() == "END_TILE") {
+			if (data.type == null || data.type != TileType.OPTIONAL) {
+				tile.getGamer().setDucklings(
+						tile.getGamer().getDucklings() - tile.getTileInfluenceNeedToUpgrade().getDucklings());
+				tile.setLvl(tile.getLvl() + 1);
+			} else {
+				tile.getGamer().setDucklings(tile.getGamer().getDucklings() - tile.getType().getCosts());
+				tile.getGamer().setPoints(tile.getGamer().getPoints() - tile.getTileGeneratedInfluence().getPoints());
+				tile.setType(data.type);
+				tile.setGeneralType(data.type.getGeneralType());
+				tile.setLvl(1);
+			}
+		} else {
+			tile.setType(data.type);
+			tile.setGeneralType(data.type.getGeneralType());
+			tile.getGamer().setDucklings(tile.getGamer().getDucklings() - data.type.getCosts());
+		}
+
+		if (tile.getTileGeneratedInfluence() != null)
+			tile.getGamer().setPoints(tile.getGamer().getPoints() + tile.getTileGeneratedInfluence().getPoints());
+		gamerRepository.save(tile.getGamer());
+		List<Tile> gameTiles = tileRepository.findByGame(tile.getGame()).stream().filter(t -> t.getId() != tile.getId())
+				.collect(Collectors.toList());
+		calculateTilesInfluence(tile, gameTiles);
+		tileRepository.saveAll(gameTiles);
+		tileRepository.save(tile);
+		List<Tile> newTiles = new ArrayList<Tile>();
+		newTiles.add(tile);
+		simpMessagingTemplate.convertAndSendToUser(tile.getGamer().getSessionId(), "/reply",
+				new GameMessage<Gamer>(MessageType.ME_GAMER, tile.getGamer()));
+
+		simpMessagingTemplate.convertAndSend("/topic/game/game/" + tile.getGame().getId(),
+				new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
+		List<Gamer> gamers = this.gamerRepository.findByGame(tile.getGame());
+
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + tile.getGame().getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+	}
+
 	private void calculateTilesInfluence(Tile newTile, List<Tile> tiles) {
 
 		tiles.stream().filter(t -> t.getTileGeneratedInfluence() != null).forEach(tile -> {
 			Influence tileInfluence = tile.getTileGeneratedInfluence();
-			Double d = Math.sqrt(Math.pow(tile.getPosX(), 2) + Math.pow(tile.getPosY(), 2));
+			Double d = Math.sqrt(
+					Math.pow(tile.getPosX() - newTile.getPosX(), 2) + Math.pow(tile.getPosY() - newTile.getPosY(), 2));
 			newTile.getInfluence().setPeople(addInfluence(tileInfluence.getPeople(), newTile.getInfluence().getPeople(),
 					d, tileInfluence.getPeopleRange()));
 			newTile.getInfluence().setShops(addInfluence(tileInfluence.getShops(), newTile.getInfluence().getShops(), d,
@@ -281,4 +325,5 @@ public class GameService {
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 	}
+
 }

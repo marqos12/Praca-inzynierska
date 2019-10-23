@@ -39,4 +39,11 @@ public class GameController {
 	public void saveTile(@Payload DataExchange dataExchange) {
 		gameService.saveTile(dataExchange);
 	}
+
+	@MessageMapping("/updateTile")
+	public void updateTile(@Payload DataExchange dataExchange) {
+		gameService.updateTile(dataExchange);
+	}
+
+
 }

@@ -241,6 +241,10 @@ public class Tile {
 		case ROAD_STRAIGHT:
 			influence = null;
 			break;
+		case OPTIONAL:
+			influence = null;
+			break;
+		
 		}
 
 		return influence;
@@ -354,6 +358,9 @@ public class Tile {
 			break;
 
 		case ROAD_STRAIGHT:
+			influence = null;
+			break;
+		case OPTIONAL:
 			influence = null;
 			break;
 		}

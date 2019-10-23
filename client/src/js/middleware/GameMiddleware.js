@@ -1,6 +1,8 @@
 import {
     GAME_WS_GAME_DISCONNECT,
-    GAME_WS_GAME_JOIN
+    GAME_WS_GAME_JOIN,
+    GAME_TILE_UPDATE,
+    GAME_UPDATE_TILE
 } from "../constants/game-action-types";
 import {
     wsChannelSubscription,
@@ -27,6 +29,13 @@ export function GameMiddleware(getState, dispatch, action) {
             channel: "/game/joinGame", payload:
                 getState().actualGame.meGamer
 
+        }));
+    }
+
+    if (action.type === GAME_UPDATE_TILE) {
+        dispatch(wsSendMessage({
+            channel: "/game/updateTile", payload:
+            action.payload
         }));
     }
 
