@@ -129,7 +129,7 @@
 
     {
         "filename": "OFFICE_BUILDING_1",
-        "frame": {"x":2401,"y":301,"w":300,"h":300},
+        "frame": {"x":2401,"y":300,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -148,6 +148,15 @@
     {
         "filename": "PARK_1",
         "frame": {"x":1801,"y":0,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "POWER_STATION_1",
+        "frame": {"x":2101,"y":0,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -229,6 +238,15 @@
     {
         "filename": "green2",
         "frame": {"x":2700,"y":0,"w":300,"h":300},
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+        "sourceSize": {"w":300,"h":300}
+    },
+
+    {
+        "filename": "OPTIONAL_1",
+        "frame": {"x":2701,"y":301,"w":300,"h":300},
         "rotated": false,
         "trimmed": false,
         "spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
