@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { NavLink } from 'react-router-dom';
 
 import GameComponent from "./GameComponent.jsx";
 import { gameWsGameJoin, gameMyNewTile } from "../actions/gameActions.js";
@@ -26,8 +27,10 @@ class MainGameComponent extends Component {
         super();
         this.state = {
             gameJoined: false,
+            openMenu: false
         }
         this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
+        this.openMenu = this.openMenu.bind(this)
     }
 
     componentDidMount() {
@@ -55,12 +58,23 @@ class MainGameComponent extends Component {
         this.props.wsSendMessage({ channel: "/game/saveTile", payload: dataExchange });
     }
 
+    openMenu() {
+        this.setState({
+            gameJoined: this.state.gameJoined,
+            openMenu: true
+        })
+    }
+
     render() {
-        const { actualGame } = this.props;
+        const { actualGame, } = this.props;
+        const { openMenu } = this.state
         return (
             <div>
                 <GameComponent />
                 <div className="hud">
+                    <div className="hud_card menuButton" onClick={this.openMenu}>
+                        <img src="assets/menuB.png"></img>
+                    </div>
                     <div className="hud_card timer">
                         <img src="assets/timer.png"></img>
                         Upłynęło czasu: 15:11
@@ -96,6 +110,20 @@ class MainGameComponent extends Component {
                         })}
                     </div>
                 </div>
+                {openMenu ? <div className="inGameMenu">
+
+                    <div className="container">
+                        <div className="menuContent">
+                            <h1 className="gameTitle">MENU</h1>
+
+                            <div className="buttonList">
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewGame}>Powrót do gry</a>
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Zapisz grę</a>
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>
+                            </div>
+                        </div>
+                    </div>
+                </div> : <div></div>}
             </div>
         );
     }

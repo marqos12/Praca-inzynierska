@@ -94,7 +94,7 @@ export class TileDetails {
                 fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + this.tile.name.slice(0, -2) + "/1").then(response =>
                     response.json()
                 ).then(response => {
-                    this.tileName.text += `\n\nWybużenie kosztować będzie ${response.deconstructionCosts} d \n\nCzy na pewno chcesz wybużyć budynek:\n\t ${translateTileName(tile.name)}`;
+                    this.tileName.text += `\n\nWyburzenie kosztować będzie ${response.deconstructionCosts} d \n\nCzy na pewno chcesz wyburzyć budynek:\n\t ${translateTileName(tile.name)}`;
                     this.upgradeMode = true;
                     this.showBackButton = true;
 

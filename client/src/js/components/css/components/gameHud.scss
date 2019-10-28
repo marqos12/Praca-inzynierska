@@ -12,6 +12,8 @@ $resources-tab-height:7vh;
 .hud{
     color: #ffffff;
 
+
+
     .hud_card{
         position: absolute;
         z-index: 100;
@@ -38,9 +40,24 @@ $resources-tab-height:7vh;
         top:$timer-tab-height;
         width:$tab-width;
         height:$rank-tab-heigth;
-        border-bottom-left-radius: 15px;
+        border-bottom-left-radius: 15px; 
+    }
 
-        
+    .menuButton{
+        padding: 6px;
+        left: 10px;
+        padding-top: 14px;
+        top: 10px;
+        border-radius: 25px;
+        width: 40px;
+        height: 40px;
+
+        img{
+            width: 25px;
+            height: 25px;
+            top: -9px;
+            position: relative;
+        }
     }
     
     .newTile{
@@ -77,6 +94,14 @@ $resources-tab-height:7vh;
             float:left;
         }
     }
+}
+
+.inGameMenu{
+    position: absolute;
+    z-index: 100;
+    width: 100vw;
+    height: 100vh;
+    background-color: $card-background-color;
 }
 
 #phaser-game{
