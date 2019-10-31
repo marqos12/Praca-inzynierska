@@ -102,6 +102,11 @@ export class Tile extends Phaser.GameObjects.Sprite {
                     scene.input.activePointer.isDown = false;
                     if (!this.fixed) {
                         this.rotate()
+                        for (let i = 0; i < 4; i++) {
+                            if (isThisPossibleRotation(this, this.scene.tiles, this.dummyPosX, this.dummyPosY))
+                                break;
+                            else this.rotate()
+                        }
                     }
                     else {
                         let draggedTile = new CustomEvent('showDetails', { detail: this });

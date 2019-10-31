@@ -17,9 +17,9 @@ export default class GameScene extends Phaser.Scene {
     this.origDragPoint;
     this.tableCenterX = 0;
     this.tableCenterY = 0;
-    this.myScale = 0.5;
+    this.myScale = window.innerWidth > 1000 ? 0.5 : 0.3;
 
-    this.tileWidth = 150;
+    this.tileWidth = 300 * this.myScale;
     this.halfOfTable = 15;
     this.tableWidth = this.halfOfTable * 2 + 1;
 
@@ -43,6 +43,10 @@ export default class GameScene extends Phaser.Scene {
       if (this.initialized)
         this.stateChanged();
     });
+
+
+    this.plusButton = null;
+    this.minusButton = null;
   }
 
   create() {
@@ -63,6 +67,29 @@ export default class GameScene extends Phaser.Scene {
     this.tableCenterY = Math.floor(window.innerHeight / 2)
     this.fixedTiles.forEach(x => { x.setScale(this.myScale) })
     this.tileWidth = this.fixedTiles[0].displayWidth
+
+    if (window.innerWidth < 700) {
+      this.plusButton = new Phaser.GameObjects.Sprite(this, 30, 100, "plusButton");
+      this.plusButton.setDepth(900);
+      this.plusButton.setScale(0.5);
+      this.plusButton.setInteractive();
+      this.plusButton.on('pointerdown', (pointer) => {
+          if (pointer.leftButtonDown()) {
+            this.changeScale({deltaY:-1})
+          }
+      });
+      this.add.existing(this.plusButton);
+      this.minusButton = new Phaser.GameObjects.Sprite(this, 30, 130, "minusButton");
+      this.minusButton.setDepth(900);
+      this.minusButton.setScale(0.5);
+      this.minusButton.setInteractive();
+      this.minusButton.on('pointerdown', (pointer) => {
+          if (pointer.leftButtonDown()) {
+            this.changeScale({deltaY:1})
+          }
+      });
+      this.add.existing(this.minusButton);
+    }
 
     this.stateChanged();
 
@@ -108,52 +135,16 @@ export default class GameScene extends Phaser.Scene {
       }
     })
 
-    addEventListener("wheel", x => {
-      if (x.deltaY < 0)
-        this.myScale += 0.05;
-      else
-        this.myScale -= 0.05;
-
-      if (this.myScale < 0.2)
-        this.myScale = 0.2;
-
-      if (this.myScale > 2)
-        this.myScale = 2;
-
-      this.tiles.forEach(x => {
-        x.makeScale(this.myScale);
-
-      })
-      this.fixedTiles.forEach(x => {
-        x.makeScale(this.myScale);
-      })
-      this.possibleHihglights.forEach(x => {
-        makeHighlightScale(x, this.myScale)
-      })
-
-      if (this.newTile && !this.newTileCard)
-        this.newTile.makeScale(this.myScale)
-
-      let oldTileWidth = this.tileWidth;
-      this.tileWidth = this.fixedTiles[0].displayWidth
-
-
-      this.tableCenterX -= window.innerWidth / 2;
-      this.tableCenterX = this.tableCenterX / oldTileWidth * this.tileWidth;
-      this.tableCenterX += window.innerWidth / 2;
-
-      this.tableCenterY -= window.innerHeight / 2;
-      this.tableCenterY = this.tableCenterY / oldTileWidth * this.tileWidth;
-      this.tableCenterY += window.innerHeight / 2;
-
-      if (this.tileDetails) this.tileDetails.move();
-    })
+    addEventListener("wheel", x=> this.changeScale(x))
 
     this.initialized = true;
   }
 
   preload() {
-    this.load.image("arrow-back", 'assets/arrow-left.png');
+
+    this.load.image("plusButton", 'assets/plusB.png');
+    this.load.image("minusButton", 'assets/minusB.png');
+
     this.load.image("backButton", 'assets/backB.png');
     this.load.image("buldozerButton", 'assets/buldozer.png');
     this.load.image("arrowLeft", 'assets/arrL.png');
@@ -236,7 +227,7 @@ export default class GameScene extends Phaser.Scene {
 
 
         this.tiles.push(tile2);
-        this.tiles = this.tiles.filter(t => t.id != tile.id||t.name==tile.type + "_" + tile.lvl);
+        this.tiles = this.tiles.filter(t => t.id != tile.id || t.name == tile.type + "_" + tile.lvl);
         this.add.existing(tile2.setDepth(2));
 
       })
@@ -249,7 +240,7 @@ export default class GameScene extends Phaser.Scene {
     if (this.state.actualGame.myNewTile && !this.newTile) {
       this.newTile = new Tile(
         this,
-        window.innerWidth + 400,
+        window.innerWidth,
         window.innerHeight,
         this.state.actualGame.myNewTile + "_1",
         -1
@@ -257,7 +248,9 @@ export default class GameScene extends Phaser.Scene {
       this.newTile.fixed = false;
       this.newTile.generalType = getTileGeneralType(this.state.actualGame.myNewTile);
       this.newTile.makeScale(0.5)
-      //this.newTile.setInteractive()
+      this.newTile.setPosition(
+        window.innerWidth - this.newTile.displayWidth * 1.25,
+        window.innerHeight - this.newTile.displayWidth * 1.25)
       this.input.setDraggable(this.newTile)
 
       this.add.existing(this.newTile.setDepth(101))
@@ -265,9 +258,13 @@ export default class GameScene extends Phaser.Scene {
 
       this.newTileCard = new Phaser.GameObjects.Sprite(
         this,
-        window.innerWidth * 0.9,
-        window.innerHeight * 0.85,
+        this.newTile.x + this.newTile.displayWidth / 2,
+        this.newTile.y + this.newTile.displayWidth / 2,
         "newTileBackground");
+      this.newTileCard.setDisplaySize(
+        this.newTile.displayWidth * 1.5,
+        this.newTile.displayWidth * 1.5
+      );
       this.add.existing(this.newTileCard.setDepth(100))
     } else if (!this.state.actualGame.myNewTile && this.newTile) {
       this.newTile.destroy();
@@ -285,7 +282,7 @@ export default class GameScene extends Phaser.Scene {
   highlightPossiblePlaces() {
     this.possibleHihglights.forEach(highlight => highlight.destroy())
     this.possibleHihglights = [];
-    this.possiblePlaces = getPossiblePlaces(this.tiles,this.newTile);
+    this.possiblePlaces = getPossiblePlaces(this.tiles, this.newTile);
     this.possiblePlaces.forEach(pos => {
       let highlight = new Phaser.GameObjects.Rectangle(
         this,
@@ -299,4 +296,50 @@ export default class GameScene extends Phaser.Scene {
     })
   }
 
+
+  changeScale(x){
+    if (x.deltaY < 0)
+      this.myScale += 0.05;
+    else
+      this.myScale -= 0.05;
+
+    if (window.innerWidth >= 700 &&this.myScale < 0.2)
+      this.myScale = 0.2;
+      else if(window.innerWidth < 700 && this.myScale < 0.1)
+      this.myScale = 0.1;
+
+
+    if (window.innerWidth >= 700 && this.myScale > 2)
+      this.myScale = 2;
+      else if(window.innerWidth < 700 && this.myScale > 0.6)
+      this.myScale = 0.6;
+
+    this.tiles.forEach(x => {
+      x.makeScale(this.myScale);
+
+    })
+    this.fixedTiles.forEach(x => {
+      x.makeScale(this.myScale);
+    })
+    this.possibleHihglights.forEach(x => {
+      makeHighlightScale(x, this.myScale)
+    })
+
+    if (this.newTile && !this.newTileCard)
+      this.newTile.makeScale(this.myScale)
+
+    let oldTileWidth = this.tileWidth;
+    this.tileWidth = this.fixedTiles[0].displayWidth
+
+
+    this.tableCenterX -= window.innerWidth / 2;
+    this.tableCenterX = this.tableCenterX / oldTileWidth * this.tileWidth;
+    this.tableCenterX += window.innerWidth / 2;
+
+    this.tableCenterY -= window.innerHeight / 2;
+    this.tableCenterY = this.tableCenterY / oldTileWidth * this.tileWidth;
+    this.tableCenterY += window.innerHeight / 2;
+
+    if (this.tileDetails) this.tileDetails.move();
+  }
 }

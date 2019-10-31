@@ -1,17 +1,16 @@
 @import "../variables";
 
 $tab-width:12vw;
-$tile-tab-width:20vw;
+$tile-tab-width:15vw;
 $timer-tab-height:95px;
 $rank-tab-heigth:30vh;
-$resources-tab-width:20vw;
-$resources-tab-height:7vh;
+$resources-tab-width:fit-content;
+$resources-tab-height:fit-content;
 
 
 
 .hud{
     color: #ffffff;
-
 
 
     .hud_card{
@@ -31,12 +30,14 @@ $resources-tab-height:7vh;
     .timer{
         right: 0;
         width:$tab-width;
+        min-width: 100px;
         height:$timer-tab-height;
         border-bottom: 0
     }
 
     .gamersList{
         right: 0;
+        min-width: 100px;
         top:$timer-tab-height;
         width:$tab-width;
         height:$rank-tab-heigth;
@@ -63,12 +64,15 @@ $resources-tab-height:7vh;
     .newTile{
         right: 0;
         bottom: 0;
+        min-width:fit-content;
         width:$tile-tab-width;
-        height:30vh;
+        height:20vh;
+        min-height: fit-content;
         border-top-left-radius: 15px;
 
         .newTileButton{
-            display: block
+            display: block;
+            margin:auto;
         }
     }
 
@@ -84,6 +88,7 @@ $resources-tab-height:7vh;
         left: $tab-width;
         bottom: 0;
         width:$resources-tab-width;
+        max-width: calc(100% - 60px);
         height:$resources-tab-height;
         border-top-right-radius: 15px;
         border-left:0;
@@ -92,6 +97,13 @@ $resources-tab-height:7vh;
             width:fit-content;
             padding: 0 8px;
             float:left;
+        }
+
+        .onSmallVisible{    
+            width: 0px;
+            height: 0px;
+            overflow: hidden;
+            display: inline-block;
         }
     }
 }
@@ -110,4 +122,50 @@ $resources-tab-height:7vh;
     width: 100vw;
     overflow: hidden;
     position: absolute;
+    
+}
+
+
+@media screen and (max-width: 1800px) {
+    .onSmallinvisible{
+        width: 0px;
+        height: 0px;
+        overflow: hidden;
+        display: inline-block;
+    }
+}
+@media screen and (max-width: 700px){
+    .hud  {
+        
+       width:100%;
+        .resources  {
+            right: 0;
+            top: 0;
+            left: unset;
+            border-left:2px solid $card-border-color;
+            border-top-right-radius: 0;
+            border-bottom-left-radius: 15px;
+            .onSmallVisible{
+                height:fit-content;
+                width: fit-content;
+            }
+        }
+
+        .timer,.gamersList,.rank{
+            display: none
+        }   
+    }
+    
+
+}
+@media screen and (max-width: 1000px){
+    .hud  { 
+        
+    .gamersList{
+        img{
+            width: 0;
+        }
+    }
+    
+    }
 }

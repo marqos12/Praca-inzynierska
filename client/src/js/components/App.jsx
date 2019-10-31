@@ -20,7 +20,7 @@ class App extends Component {
     this.state = {
       gameStarted: false,
     }
-    document.addEventListener('contextmenu', event => event.preventDefault());
+    //document.addEventListener('contextmenu', event => event.preventDefault());
   }
 
   componentWillMount() {
@@ -55,7 +55,7 @@ class App extends Component {
     return (
       <div className="app">
         {!gameStarted ?
-          <div>
+          <div className="mainMenu">
             <Route exact path="/" component={Home} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/registration" component={Registration} />
@@ -66,7 +66,7 @@ class App extends Component {
             <Route exact path="/newGame/:id" component={NewGame} />
           </div>
           :
-          <div>
+          <div className="game">
             <MainGame />
           </div>
         }

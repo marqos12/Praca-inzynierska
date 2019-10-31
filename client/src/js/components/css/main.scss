@@ -10,10 +10,12 @@
     background-image:url("/assets/wawa2.jpg");
     background-size: cover; 
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
+    height: fit-content;
+    background-attachment: fixed;
     //overflow: hidden;
 }
 
-html{
+.game{
     overflow: hidden;
 }

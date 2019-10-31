@@ -113,8 +113,8 @@ public class GameService {
 		Influence tileInfluence = tile.getTileGeneratedInfluence();
 		if (tileInfluence != null) {
 			gamer.setPoints(gamer.getPoints() + tileInfluence.getPoints());
-			gamer = gamerRepository.save(gamer);
 		}
+		gamer = gamerRepository.save(gamer);
 		List<Tile> newTiles = new ArrayList<Tile>();
 		newTiles.add(tile);
 

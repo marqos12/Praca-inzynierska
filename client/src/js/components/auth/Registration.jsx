@@ -28,7 +28,7 @@ class RegistrationComponent extends Component {
     handleChange(event) {
         this.setState({ [event.target.id]: event.target.value });
     }
-    
+
     register() {
 
         const { username, email, password, confirmPassword } = this.state;
@@ -79,18 +79,20 @@ class RegistrationComponent extends Component {
                                     </span>
                                 </div>
                             </div>
-                            {auth.registerSuccess &&
-                                <p>Rejestracja udana!</p>
-                            }
-                            {auth.registerFailed &&
-                                <p>Rejestracja nieudana!</p>
-                            }
-                            {auth.registerSuccess ?
-                                <NavLink to="/login" type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.login}>Zaloguj się</NavLink>
-                                :
-                                <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.register}>Zarejestruj się</a>
-                            }
-                            Masz już konto? <NavLink to="/login" className="">Zaloguj się</NavLink>
+                            <div className="subTitle">
+                                {auth.registerSuccess &&
+                                    <p>Rejestracja udana!</p>
+                                }
+                                {auth.registerFailed &&
+                                    <p>Rejestracja nieudana!</p>
+                                }
+                                {auth.registerSuccess ?
+                                    <NavLink to="/login" type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.login}>Zaloguj się</NavLink>
+                                    :
+                                    <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.register}>Zarejestruj się</a>
+                                }
+                                Masz już konto? <NavLink to="/login" className="subtitleBtn">Zaloguj się</NavLink>
+                            </div>
                         </div>
                     </form>
                 </div>

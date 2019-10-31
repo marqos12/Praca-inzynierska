@@ -19,7 +19,6 @@ const mapStateToProps = (state) => {
 class HomeComponent extends Component {
     constructor(props) {
         super(props);
-        console.log("stefan",window.innerWidth)
     }
 
     componentDidMount() {
@@ -35,12 +34,10 @@ class HomeComponent extends Component {
     }
     
     render() {
-        const width = window.innerWidth;
         return (
             <div className="container">
                 <div className="menuContent">
-                    <h1 className="gameTitle">Witaj w grze <span>Moje Miasto</span></h1>
-<h1> a{width}</h1>
+                    <h1 className="gameTitle">Witaj w grze <span>Moje&nbsp;Miasto</span></h1>
                     <div className="buttonList">
                         <NavLink to="/login" className="button is-large  is-link is-rounded is-fullwidth">Zaloguj się!</NavLink>
                         <NavLink to="/registration" className="button is-large  is-link is-rounded is-fullwidth">Zarejestruj</NavLink>

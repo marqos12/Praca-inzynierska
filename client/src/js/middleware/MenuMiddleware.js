@@ -36,8 +36,8 @@ export function menuMiddleware(getState, dispatch, action) {
     var socket = new SockJS('/gameWS');
     var stompClient = Stomp.over(socket);
 
+    stompClient.debug = null
     stompClient.connect({}, function (frame) {
-
       var url = stompClient.ws._transport.url;
       url = url.split("/")
       let sessionId = url[url.length - 2];

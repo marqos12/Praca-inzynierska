@@ -5,15 +5,15 @@ import { NavLink } from 'react-router-dom';
 
 function mapDispatchToProps(dispatch) {
     return {
-        login: payload=> dispatch(login(payload))
+        login: payload => dispatch(login(payload))
     };
 }
 
 const mapStateToProps = state => {
-    return { 
+    return {
         auth: state.auth,
         cookies: state.cookies
-    };    
+    };
 };
 
 class LoginComponent extends Component {
@@ -29,20 +29,20 @@ class LoginComponent extends Component {
     handleChange(event) {
         this.setState({ [event.target.id]: event.target.value });
     }
-   
-    login(){
+
+    login() {
         const { username, password } = this.state;
         this.props.login({ username: username, password: password })
     }
-    componentDidUpdate(){
-        if(this.props.auth.loginSuccess){
+    componentDidUpdate() {
+        if (this.props.auth.loginSuccess) {
             this.props.cookies.set('auth', JSON.stringify(this.props.auth), { path: '/' });
             this.props.history.push("/panel")
         }
     }
     render() {
         const { auth } = this.props
-        const { username,  password } = this.state;
+        const { username, password } = this.state;
         return (
             <div className="container">
                 <div className="menuContent">
@@ -66,11 +66,13 @@ class LoginComponent extends Component {
                                 </span>
                             </div>
                         </div>
+                        <div className="subTitle">
                             {auth.loginFailed &&
                                 <p>Logowanie nieudane!</p>
                             }
-                        <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.login}>Zaloguj się</a>
-                        Nie masz jeszcze konta? <NavLink to="/registration" className="">Zarejestruj się</NavLink>
+                            <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.login}>Zaloguj się</a>
+                            Nie masz jeszcze konta? <NavLink to="/registration" className="subtitleBtn">Zarejestruj się</NavLink>
+                        </div>
                     </div>
                 </div>
             </div>

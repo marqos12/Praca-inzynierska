@@ -8,15 +8,36 @@
     border:2px solid $card-border-color;
       
     padding-bottom: 50px;
-    height:80vh;
+    height:fit-content;
+    min-height: 80vh;
 
     .buttonList{
         width:600px;
         margin: 0 auto;
         margin-top:50px;
+        color: black;
 
         a{
             margin:10px 0;
+        }
+
+        .subTitle{
+            color:white;
+
+            .subtitleBtn{
+                color: black;
+                font-weight: bold;
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .menuContent{
+        .buttonList{
+            width:100%;
+            
         }
     }
 }

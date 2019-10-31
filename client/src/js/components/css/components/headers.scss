@@ -2,6 +2,7 @@
 
 
 .gameTitle{
+    text-shadow: 2px 2px 2px #CCCCCC;
     position: relative;
     top:-12px;
     font-size: 60px;
@@ -15,3 +16,13 @@
         top:12px;
     }
 }
+
+@media screen and (max-width: 1000px) {
+    .gameTitle{
+        top:0;
+        font-size: 40px;
+        span{
+            font-size: 60px;
+        }
+    }
+  }
