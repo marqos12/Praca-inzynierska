@@ -74,10 +74,10 @@ class SearchGamesComponent extends Component {
                         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                             <thead>
                                 <tr>
-                                    <th>Type</th>
-                                    <th>Gamers</th>
-                                    <th>Game limit</th>
-                                    <th>Author</th>
+                                    <th>Typ</th>
+                                    <th>Gracze</th>
+                                    <th>Limit gry</th>
+                                    <th>Autor</th>
                                 </tr>
                             </thead>
                             <tbody>

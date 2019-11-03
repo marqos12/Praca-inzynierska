@@ -51,7 +51,7 @@ class LoginComponent extends Component {
                         <div className="field">
                             <label className="label">Login</label>
                             <div className="control has-icons-left">
-                                <input className="input is-link is-rounded is-large" type="text" id="username" placeholder="Login" value={username} onChange={this.handleChange} />
+                                <input className="input is-link is-rounded is-large" autocomplete="off" type="text" id="username" placeholder="Login" value={username} onChange={this.handleChange} />
                                 <span className="icon is-small is-left">
                                     <i className="fas fa-user"></i>
                                 </span>

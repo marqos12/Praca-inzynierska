@@ -20,7 +20,7 @@ class App extends Component {
     this.state = {
       gameStarted: false,
     }
-    //document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('contextmenu', event => event.preventDefault());
   }
 
   componentWillMount() {

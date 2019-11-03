@@ -10,7 +10,8 @@ import {
     GAME_TILE_IN_GOOD_PLACE,
     GAME_SEND_NEW_TILE_POSITION,
     GAME_ME_GAMER_UPDATE,
-    GAME_UPDATE_TILE
+    GAME_UPDATE_TILE,
+    SHOW_TILE_DETAILS
 } from "../constants/game-action-types";
 
 
@@ -56,4 +57,8 @@ export function gameMeGamerUpdate(payload) {
 
 export function gameUpdateTile(payload) {
     return { type: GAME_UPDATE_TILE, payload };
+}
+
+export function gameShowTileDetails(payload) {
+    return { type: SHOW_TILE_DETAILS, payload };
 }

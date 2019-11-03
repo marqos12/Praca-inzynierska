@@ -1,6 +1,6 @@
 import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
-import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace } from "../../actions/gameActions.js";
+import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace, gameShowTileDetails } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
 import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale, getTileGeneralType } from "../gameMechanics";
 import { TileDetails } from "./components/TileDetails";
@@ -74,9 +74,9 @@ export default class GameScene extends Phaser.Scene {
       this.plusButton.setScale(0.5);
       this.plusButton.setInteractive();
       this.plusButton.on('pointerdown', (pointer) => {
-          if (pointer.leftButtonDown()) {
-            this.changeScale({deltaY:-1})
-          }
+        if (pointer.leftButtonDown()) {
+          this.changeScale({ deltaY: -1 })
+        }
       });
       this.add.existing(this.plusButton);
       this.minusButton = new Phaser.GameObjects.Sprite(this, 30, 130, "minusButton");
@@ -84,9 +84,9 @@ export default class GameScene extends Phaser.Scene {
       this.minusButton.setScale(0.5);
       this.minusButton.setInteractive();
       this.minusButton.on('pointerdown', (pointer) => {
-          if (pointer.leftButtonDown()) {
-            this.changeScale({deltaY:1})
-          }
+        if (pointer.leftButtonDown()) {
+          this.changeScale({ deltaY: 1 })
+        }
       });
       this.add.existing(this.minusButton);
     }
@@ -119,8 +119,14 @@ export default class GameScene extends Phaser.Scene {
     })
 
     addEventListener('showDetails', (x) => {
-      if (this.tileDetails) this.tileDetails.destroy();
-      this.tileDetails = new TileDetails(this, x.detail);
+      if (window.innerWidth >= 700) {
+        if (this.tileDetails) this.tileDetails.destroy();
+        this.tileDetails = new TileDetails(this, x.detail);
+      }
+      else {
+        store.dispatch(gameShowTileDetails(null))
+        store.dispatch(gameShowTileDetails(x.detail))
+      }
     })
 
     addEventListener('updatedTile', (x) => {
@@ -135,7 +141,7 @@ export default class GameScene extends Phaser.Scene {
       }
     })
 
-    addEventListener("wheel", x=> this.changeScale(x))
+    addEventListener("wheel", x => this.changeScale(x))
 
     this.initialized = true;
   }
@@ -297,21 +303,21 @@ export default class GameScene extends Phaser.Scene {
   }
 
 
-  changeScale(x){
+  changeScale(x) {
     if (x.deltaY < 0)
       this.myScale += 0.05;
     else
       this.myScale -= 0.05;
 
-    if (window.innerWidth >= 700 &&this.myScale < 0.2)
+    if (window.innerWidth >= 700 && this.myScale < 0.2)
       this.myScale = 0.2;
-      else if(window.innerWidth < 700 && this.myScale < 0.1)
+    else if (window.innerWidth < 700 && this.myScale < 0.1)
       this.myScale = 0.1;
 
 
     if (window.innerWidth >= 700 && this.myScale > 2)
       this.myScale = 2;
-      else if(window.innerWidth < 700 && this.myScale > 0.6)
+    else if (window.innerWidth < 700 && this.myScale > 0.6)
       this.myScale = 0.6;
 
     this.tiles.forEach(x => {

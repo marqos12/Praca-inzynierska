@@ -1,4 +1,4 @@
-import { GAME_TILE_UPDATE, GAME_NEW_TILE_TO_DISPLAY, GAME_NEW_TILE_DISPLAYED, GAME_MY_NEW_TILE, GAME_MY_NEW_TILE_DISPLAYED, GAME_TILE_IN_GOOD_PLACE, GAME_ME_GAMER_UPDATE } from "../constants/game-action-types";
+import { GAME_TILE_UPDATE, GAME_NEW_TILE_TO_DISPLAY, GAME_NEW_TILE_DISPLAYED, GAME_MY_NEW_TILE, GAME_MY_NEW_TILE_DISPLAYED, GAME_TILE_IN_GOOD_PLACE, GAME_ME_GAMER_UPDATE, SHOW_TILE_DETAILS } from "../constants/game-action-types";
 import { wsConnectGame } from "../actions";
 
 export function gameReducer(state, action){
@@ -49,6 +49,14 @@ export function gameReducer(state, action){
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         meGamer: action.payload
+      })
+    });
+  }
+
+  if (action.type === SHOW_TILE_DETAILS) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        tileDetails: action.payload
       })
     });
   }

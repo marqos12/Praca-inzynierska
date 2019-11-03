@@ -2,20 +2,18 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
 import { wsConnect, wsOpenPrivateCanals, wsSendMessage } from "../../actions/index";
+import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade } from "../../gameEngine/gameMechanics";
+import { gameShowTileDetails, gameUpdateTile } from "../../actions/gameActions";
 
 function mapDispatchToProps(dispatch) {
     return {
-        wsConnect: () => dispatch(wsConnect()),
-        wsOpenPrivateCanals: () => dispatch(wsOpenPrivateCanals()),
-        wsSendMessage: payload => dispatch(wsSendMessage(payload))
+        gameShowTileDetails: (payload) => dispatch(gameShowTileDetails(payload)),
+        gameUpdateTile: (payload) => dispatch(gameUpdateTile(payload))
     };
 }
 
 const mapStateToProps = state => {
     return {
-        auth: state.auth,
-        cookies: state.cookies,
-        ws: state.ws,
         actualGame: state.actualGame
     };
 };
@@ -27,26 +25,242 @@ class TileDetailsComponent extends Component {
         super();
 
         this.state = {
-            initialized: false
+            initialized: false,
+            lvlNpoint: "",
+            outcomes: "",
+            needToUppgrade: "",
+            canBeUpgraded: false,
+            owning: false,
+            canBeDestroyed: false,
+            destroyMode: false,
+            destroyCost: 0,
+            modernizeMode: false,
+            modernizeWays: [],
+            modernizePage: 0,
+            modernizeName: "",
+            modernizeCost: 0
         }
+        this.close = this.close.bind(this);
+        this.destroy = this.destroy.bind(this);
+        this.confirmDestroy = this.confirmDestroy.bind(this);
+        this.back = this.back.bind(this);
+        this.upgrade = this.upgrade.bind(this);
+        this.showWayOfUpgrade = this.showWayOfUpgrade.bind(this);
+        this.nextUpgradePage = this.nextUpgradePage.bind(this);
+        this.getWaysOfModernize = this.getWaysOfModernize.bind(this);
+        this.chooseWayOfModernize = this.chooseWayOfModernize.bind(this);
 
-        this.joinGame = this.joinGame.bind(this);
+
     }
 
-    joinGame(id){
-        this.props.history.push("/game/"+id)
-    }
 
     componentDidMount() {
 
+        this.setState(Object.assign({}, this.state, {
+            canBeDestroyed: (this.props.actualGame.tileDetails.name != "OPTIONAL_1" && this.props.actualGame.tileDetails.name != "ROAD_STRAIGHT_1")
+                && this.props.actualGame.tileDetails.owner && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id
+        }))
+
+        fetch(window.location.href.split("#")[0] + "api/game/tile/" + this.props.actualGame.tileDetails.id).then(response =>
+            response.json()
+        ).then(response => {
+
+            let lvlNpoint = `Poziom: ${response.lvl}  Punkty: ${response.points}`;
+            let outcomes = `${getOutcomes(response.outcomeInfluence)}`;
+
+            if ((response.needToUppgrade != null || this.props.actualGame.tileDetails.name == "OPTIONAL_1" || this.props.actualGame.tileDetails.name == "ROAD_STRAIGHT_1") && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id) {
+                let canBeUpgraded = false;
+                let a = getNeedToUpgrade(response.incomeInfluence, response.needToUppgrade, this.props.actualGame.meGamer.ducklings, canBeUpgraded);
+                canBeUpgraded = a.canBeUpgrated;
+
+                let needToUppgrade = a.incomes;
+
+                if (canBeUpgraded) {
+
+                }
+                this.setState(Object.assign({}, this.state, {
+
+                    needToUppgrade: needToUppgrade,
+                    canBeUpgraded: canBeUpgraded
+                }))
+            }
+
+            this.setState(Object.assign({}, this.state, {
+                lvlNpoint: lvlNpoint,
+                outcomes: outcomes,
+            }))
+
+        })
     }
+
+    close() {
+        this.props.gameShowTileDetails(null)
+    }
+
+    destroy() {
+        fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + this.props.actualGame.tileDetails.name.slice(0, -2) + "/1").then(response =>
+            response.json()
+        ).then(response => {
+
+            this.setState(Object.assign({}, this.state, {
+                destroyMode: true,
+                destroyCost: response.deconstructionCosts
+            }))
+
+        })
+    }
+
+    back() {
+
+        this.setState(Object.assign({}, this.state, {
+            destroyMode: false
+        }))
+    }
+
+    confirmDestroy() {
+        if (this.props.actualGame.tileDetails.name.includes("ROAD"))
+            this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id, type: "ROAD_STRAIGHT" });
+        else
+            this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id, type: "OPTIONAL" });
+        this.close();
+    }
+
+    upgrade() {
+
+        if (this.props.actualGame.tileDetails.name != "OPTIONAL_1" && this.props.actualGame.tileDetails.name != "ROAD_STRAIGHT_1") {
+            this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id });
+            this.close();
+        }
+        else if (this.upgradeMode) {
+            this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id, type: this.waysOfUpgrade[0].name.slice(0, -2) });
+            this.close();
+        }
+        else {
+            this.showWayOfUpgrade();
+        }
+    }
+
+    showWayOfUpgrade() {
+        let modernizeWays = [];
+        let wayOfUpdate = getWayOfUpgrade(this.props.actualGame.tileDetails);
+
+        wayOfUpdate.forEach(w => {
+            let name = w.slice(0, -2)
+            modernizeWays.push(name);
+        });
+
+        this.setState(Object.assign({}, this.state, {
+            modernizeMode: true,
+            modernizeWays: modernizeWays
+        }))
+
+    }
+
+    nextUpgradePage(direction) {
+        this.setState(Object.assign({}, this.state, {
+            modernizePage: this.state.modernizePage + direction
+        }))
+    }
+
+    getWaysOfModernize() {
+        let i = 0;
+        let ways = [];
+        this.state.modernizeWays.forEach(w => {
+            if (i >= this.state.modernizePage * 4 && i < (this.state.modernizePage + 1) * 4)
+                ways.push(w)
+            i++
+        });
+        return ways;
+    }
+
+    chooseWayOfModernize(way){
+        let ways = [];
+        ways.push(way);
+        this.setState(Object.assign({}, this.state, {
+            modernizeWays: ways,
+            modernizePage:0
+        }))
+        
+    }
+
+    stopPropagation(e) { 
+        e.persist(); 
+        e.nativeEvent.stopImmediatePropagation();
+        e.stopPropagation(); 
+   }
 
     render() {
 
         const { actualGame } = this.props;
+        const {
+            lvlNpoint,
+            outcomes,
+            needToUppgrade,
+            destroyCost,
+            canBeUpgraded,
+            destroyMode,
+            canBeDestroyed,
+            modernizeMode,
+            modernizeWays,
+            modernizePage,
+            modernizeName,
+            modernizeCost
+        } = this.state;
         return (
-            <div className="">
-                
+            <div className="" onClick={this.stopPropagation}>
+                {!modernizeMode ?
+                    <div>
+                        <p>Nazwa: {translateTileName(actualGame.tileDetails.name)}</p>
+                        <br />
+                        {!destroyMode ?
+                            <div>
+                                <p>{lvlNpoint}</p>
+                                <br />
+                                <p>{outcomes}</p>
+                                <br />
+                                <p>{needToUppgrade}</p>
+
+                                {canBeUpgraded ?
+                                    <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton" onClick={this.upgrade}>Ulepsz</a>
+                                    : <span></span>
+                                }
+
+                                <img src="assets/closeB.png" className="closeButton" onClick={this.close} />
+
+                                {canBeDestroyed ?
+                                    <img src="assets/buldozer.png" className="destroyButton" onClick={this.destroy} />
+                                    : <span></span>
+                                }
+
+                            </div>
+                            :
+                            <div>
+                                <p>Wyburzenie kosztować będzie: {destroyCost}</p>
+                                <br />
+                                <p>Czy na pewno chcesz wybużyć budynek:</p>
+                                <p> {translateTileName(actualGame.tileDetails.name)}</p>
+                                {destroyCost <= actualGame.meGamer.ducklings ?
+                                    <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton" onClick={this.confirmDestroy}>Zniszcz</a>
+                                    : <span></span>
+                                }
+                                <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton" onClick={this.back}>Powrót</a>
+                            </div>
+                        }
+                    </div> :
+                    <div>
+                        <p>Dostępne opcje rozwoju płytki:</p>
+                        {this.getWaysOfModernize().map((way, index) => {
+                            return <img key={index} src={'assets/plates/jpg/'+way+'.jpg'} className={"modernizeImage"+index} onClick={()=>this.chooseWayOfModernize(way)}/>
+                        })}
+                    </div>}
+
+
+                <img src="assets/closeB.png" className="closeButton" onClick={this.close} />
+
+                {canBeDestroyed ?
+                    <img src="assets/buldozer.png" className="destroyButton" onClick={this.destroy} />
+                    : <span></span>
+                }
             </div>
         );
     }

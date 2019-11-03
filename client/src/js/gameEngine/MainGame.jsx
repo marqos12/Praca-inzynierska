@@ -73,6 +73,8 @@ class MainGameComponent extends Component {
                 }))
 
             }
+
+            
         }
     }
 
@@ -89,12 +91,12 @@ class MainGameComponent extends Component {
             openMenu: true
         })
     }
+
     closeMenu() {
         this.setState({
             gameJoined: this.state.gameJoined,
             openMenu: false
         })
-
     }
 
     render() {
@@ -149,10 +151,11 @@ class MainGameComponent extends Component {
                             </div>
                         })}
                     </div>
-
-                    <div className="hud_card tileDetails">
-                        <TileDetails />
-                    </div>
+                    {actualGame.tileDetails != null ?
+                        <div className="hud_card tileDetails">
+                            <TileDetails />
+                        </div> : <div></div>
+                    }
 
                 </div>
                 {openMenu ? <div className="inGameMenu">
