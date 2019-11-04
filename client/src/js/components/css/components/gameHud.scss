@@ -167,6 +167,30 @@ $resources-tab-height:fit-content;
             left:calc(3vw + 22.75vw * 3 + 1vw * 3);
             
         }
+
+        .arrL{
+            width:35px;
+            height:35px;
+            top:calc(120px + 22.75vw );
+            left:50px;
+        }
+        .arrR{
+            width:35px;
+            height:35px;
+            top:calc(120px + 22.75vw );
+            left:100px;
+
+        }
+        .modernizeWay{
+            position: absolute;
+            left:calc(20px + 22.75vw );
+            top:100px;
+        }
+        .upgradeBack{
+            position: absolute;
+            top:calc(120px + 22.75vw );
+            right:10vw;
+        }
     }
 }
 

@@ -38,7 +38,8 @@ class TileDetailsComponent extends Component {
             modernizeWays: [],
             modernizePage: 0,
             modernizeName: "",
-            modernizeCost: 0
+            modernizeCost: 0,
+            modernizeProfit: ""
         }
         this.close = this.close.bind(this);
         this.destroy = this.destroy.bind(this);
@@ -49,8 +50,7 @@ class TileDetailsComponent extends Component {
         this.nextUpgradePage = this.nextUpgradePage.bind(this);
         this.getWaysOfModernize = this.getWaysOfModernize.bind(this);
         this.chooseWayOfModernize = this.chooseWayOfModernize.bind(this);
-
-
+        this.build = this.build.bind(this);
     }
 
 
@@ -111,10 +111,19 @@ class TileDetailsComponent extends Component {
     }
 
     back() {
-
-        this.setState(Object.assign({}, this.state, {
-            destroyMode: false
-        }))
+        if (!this.state.modernizeMode) {
+            this.setState(Object.assign({}, this.state, {
+                destroyMode: false
+            }))
+        }
+        else {
+            if(this.state.modernizeWays.length == 1){
+                this.upgrade();
+            }else 
+            this.setState(Object.assign({}, this.state, {
+                modernizeMode: false
+            }))
+        }
     }
 
     confirmDestroy() {
@@ -173,24 +182,43 @@ class TileDetailsComponent extends Component {
         return ways;
     }
 
-    chooseWayOfModernize(way){
+    chooseWayOfModernize(way) {
         let ways = [];
         ways.push(way);
         this.setState(Object.assign({}, this.state, {
             modernizeWays: ways,
-            modernizePage:0
+            modernizePage: 0
         }))
-        
+
+        fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + way + "/1").then(response =>
+            response.json()
+        ).then(response => {
+            let modernizeCost = response.buildCosts;
+            let modernizeProfit = getOutcomes(response.outcomeInfluence)
+            let modernizeName = translateTileName(way + "_1")
+
+            this.setState(Object.assign({}, this.state, {
+                modernizeCost: modernizeCost,
+                modernizeProfit: modernizeProfit,
+                modernizeName: modernizeName
+            }))
+        })
+
     }
 
-    stopPropagation(e) { 
-        e.persist(); 
+    stopPropagation(e) {
+        e.persist();
         e.nativeEvent.stopImmediatePropagation();
-        e.stopPropagation(); 
-   }
+        e.stopPropagation();
+    }
+
+    build() {
+
+        this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id, type: this.state.modernizeWays[0] });
+        this.close();
+    }
 
     render() {
-
         const { actualGame } = this.props;
         const {
             lvlNpoint,
@@ -204,7 +232,8 @@ class TileDetailsComponent extends Component {
             modernizeWays,
             modernizePage,
             modernizeName,
-            modernizeCost
+            modernizeCost,
+            modernizeProfit
         } = this.state;
         return (
             <div className="" onClick={this.stopPropagation}>
@@ -250,8 +279,29 @@ class TileDetailsComponent extends Component {
                     <div>
                         <p>Dostępne opcje rozwoju płytki:</p>
                         {this.getWaysOfModernize().map((way, index) => {
-                            return <img key={index} src={'assets/plates/jpg/'+way+'.jpg'} className={"modernizeImage"+index} onClick={()=>this.chooseWayOfModernize(way)}/>
+                            return <img key={index} src={'assets/plates/jpg/' + way + '.jpg'} className={"modernizeImage" + index} onClick={() => this.chooseWayOfModernize(way)} />
                         })}
+                        {modernizePage > 0 ?
+                            <img src="assets/arrL.png" className="arrL" onClick={() => this.nextUpgradePage(-1)} />
+                            : <span></span>
+                        }
+                        {this.getWaysOfModernize().length == 4 ?
+                            <img src="assets/arrR.png" className="arrR" onClick={() => this.nextUpgradePage(1)} />
+                            : <span></span>
+                        }
+                        {this.getWaysOfModernize().length == 1 ?
+                            <div class="modernizeWay">
+                                <p>Nazwa: {modernizeName}</p>
+                                <p>Wymagane do budowy: {modernizeCost}</p>
+                                <p>Korzyści: {modernizeProfit}</p>
+                                {modernizeCost <= actualGame.meGamer.ducklings ?
+                                    <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton" onClick={this.build}>Wybuduj</a>
+                                    : <span></span>
+                                }
+                                <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton" onClick={this.back}>Powrót</a>
+                            </div>
+                            : <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton upgradeBack" onClick={this.back}>Powrót</a>
+                        }
                     </div>}
 
 

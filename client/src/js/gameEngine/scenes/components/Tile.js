@@ -98,7 +98,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
 
         this.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown()) {
-                if (!scene.state.actualGame.tileDetails || pointer.position.y < (window.innerHeight - 300)) {
+                if (!scene.state.actualGame.tileDetails || pointer.position.y < (window.innerHeight - 300)  ) {
 
                     if (this.clicked) {
                         scene.input.activePointer.isDown = false;
