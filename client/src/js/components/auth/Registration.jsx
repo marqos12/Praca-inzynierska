@@ -91,7 +91,7 @@ class RegistrationComponent extends Component {
                                     :
                                     <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.register}>Zarejestruj się</a>
                                 }
-                                Masz już konto? <NavLink to="/login" className="subtitleBtn">Zaloguj się</NavLink>
+                                Masz już konto? <NavLink to="/login" className="subtitleBtn noBorder">Zaloguj się</NavLink>
                             </div>
                         </div>
                     </form>

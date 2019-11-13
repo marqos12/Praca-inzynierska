@@ -1,5 +1,9 @@
 package pl.mojrzeszow.server.service;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -121,7 +125,11 @@ public class GameService {
 		Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), gamer.getOrdinalNumber() + 1L);
 		if (nextGamer == null) {
 			Game game = gamer.getGame();
-			game.setElapsed(game.getElapsed() + 1);
+			// game.setElapsed(game.getElapsed() + 1);
+			/*
+			 * if(game.getElapsed() >= game.getGameLimit()){ game.setEnded(true); }
+			 */
+			checkEnding(game);
 			gameRepository.save(game);
 			this.newRound(game);
 			simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
@@ -147,6 +155,36 @@ public class GameService {
 		List<Gamer> gamers = this.gamerRepository.findByGame(nextGamer.getGame());
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + nextGamer.getGame().getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+	}
+
+	private Game checkEnding(Game game) {
+		List<Gamer> gamers = gamerRepository.findByGame(game);
+			game.setElapsed(game.getElapsed() + 1);
+		switch (game.getEndType()) {
+		case POINT_LIMIT:
+			if (gamers.stream().map(g -> g.getPoints()).max(Long::compare).get() >= game.getGameLimit())
+				game.setEnded(true);
+			break;
+		case DUCKLINGS_LIMIT:
+			if (gamers.stream().map(g -> g.getDucklings()).max(Long::compare).get() >= game.getGameLimit())
+				game.setEnded(true);
+			break;
+		case ENDLESS:
+			break;
+		case ROUND_LIMIT:
+			if (game.getElapsed() >= game.getGameLimit())
+				game.setEnded(true);
+			break;
+		case TIME_LIMIT:
+			LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochSecond(game.getGameLimit()), ZoneId.systemDefault());
+			System.out.println(time);
+			System.out.println(LocalDateTime.now());
+			System.out.println(time.isBefore(LocalDateTime.now()));
+			if (time.isBefore(LocalDateTime.now()))
+				game.setEnded(true);
+			break;
+		}
+		return game;
 	}
 
 	public void updateTile(DataExchange data) {

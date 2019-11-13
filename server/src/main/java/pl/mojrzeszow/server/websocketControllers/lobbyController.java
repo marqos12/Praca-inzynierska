@@ -62,5 +62,10 @@ public class lobbyController {
 	public void startGame(@Payload Game game) {
 		lobbyService.startGame(game);
 	}
+	
+	@MessageMapping("/kickGamer")
+	public void kickGamer(@Payload DataExchange gamerData) {
+		 lobbyService.kickGamer(gamerData);
+	}
 
 }

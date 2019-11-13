@@ -28,6 +28,7 @@ import {
     WS_SUBSCRIBE_GAME_LIST_CHANNEL,
     WS_UNSUBSCRIBE_GAME_LIST_CHANNEL,
     SET_ORIGIN,
+    BEEN_KICKED_OUT,
 } from "../constants/action-types";
 
 export function wsConnect() {
@@ -146,4 +147,8 @@ export function wsUnsubscribeGameListChannel(payload) {
 
 export function setOrigin(payload) {
     return { type: SET_ORIGIN, payload };
+}
+
+export function beenKickedOut(payload) {
+    return { type: BEEN_KICKED_OUT, payload };
 }

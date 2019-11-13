@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import pl.mojrzeszow.server.enums.GameEndType;
+
 @Entity
 @Table(name = "games")
 
@@ -36,6 +38,8 @@ public class Game {
 	@NotNull
 	private Long elapsed;
 
+	private GameEndType endType;
+
 	private Boolean inProgress;
 
 	private Long gamersCount;
@@ -51,17 +55,18 @@ public class Game {
 		this.elapsed = 0L;
 		this.started = false;
 		this.ended = false;
-		this.gameLimit = 45L;
+		this.gameLimit = 100L;
 		this.isRTS = false;
 		this.privateGame = true;
 		this.gamersCountLimit = 4L;
 		this.gamersCount = 0L;
 		this.inProgress = false;
+		this.endType = GameEndType.ROUND_LIMIT;
 	}
 
 	public Game(Long id, @NotNull User author, @NotNull boolean ended, @NotNull boolean started, @NotNull boolean isRTS,
 			@NotNull Long gameLimit, @NotNull Long elapsed, Boolean inProgress, Long gamersCount, Long gamersCountLimit,
-			boolean privateGame) {
+			boolean privateGame, GameEndType gameEndType) {
 		this.id = id;
 		this.author = author;
 		this.ended = ended;
@@ -73,6 +78,7 @@ public class Game {
 		this.gamersCount = gamersCount;
 		this.gamersCountLimit = gamersCountLimit;
 		this.privateGame = privateGame;
+		this.endType = gameEndType;
 	}
 
 	public Long getId() {
@@ -161,5 +167,13 @@ public class Game {
 
 	public void setInProgress(Boolean inProgress) {
 		this.inProgress = inProgress;
+	}
+
+	public GameEndType getEndType() {
+		return endType;
+	}
+
+	public void setEndType(GameEndType endType) {
+		this.endType = endType;
 	}
 }

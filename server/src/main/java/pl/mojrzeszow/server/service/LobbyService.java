@@ -1,11 +1,16 @@
 package pl.mojrzeszow.server.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import pl.mojrzeszow.server.enums.GameEndType;
 import pl.mojrzeszow.server.enums.MessageType;
 import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Game;
@@ -160,6 +165,11 @@ public class LobbyService {
 
 		Game updatingGame = this.gameRepository.findById(game.getId()).orElse(null);
 		updatingGame.setStarted(game.isStarted());
+		if(updatingGame.getEndType().equals(GameEndType.TIME_LIMIT)){
+			LocalDateTime time = LocalDateTime.now();
+			updatingGame.setGameLimit(updatingGame.getGameLimit()*60 + time.atZone(ZoneId.systemDefault()).toEpochSecond()
+			);
+		}
 		updatingGame = this.gameRepository.save(updatingGame);
 
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatingGame);
@@ -175,5 +185,39 @@ public class LobbyService {
 
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<Game>(MessageType.GAME_STARTED, updatingGame));
+	}
+
+	public void kickGamer(DataExchange gamerData){
+		Gamer gamer = gamerRepository.findById(gamerData.getId()).orElse(null);
+		Game game = gamer.getGame();
+
+		List<Gamer> gamers2 = this.gamerRepository.findByGame(game);
+		if (game.getAuthor().equals(gamer.getUser())) {
+			for (Gamer gameGamer : gamers2)
+				if (!game.getAuthor().getId().equals(gameGamer.getUser().getId())) {
+					game.setAuthor(gameGamer.getUser());
+					break;
+				}
+
+		} 
+
+		simpMessagingTemplate.convertAndSendToUser(gamer.getSessionId(), "/reply",
+				new GameMessage<Gamer>(MessageType.GTFO_MESSAGE, gamer));
+
+		gamerRepository.delete(gamer);
+		game.setGamersCount(game.getGamersCount() - 1);
+		gameRepository.save(game);
+
+		List<Gamer> gamers = this.gamerRepository.findByGame(game);
+
+		if (gamers.size() < 1) {
+			this.gameRepository.delete(game);
+		}
+
+		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
+		simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
+
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 	}
 }

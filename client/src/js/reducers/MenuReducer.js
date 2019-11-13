@@ -15,7 +15,8 @@ import {
   WS_GAME_JOINED,
   WS_GAME_DISCONNECTED,
   LOGOUT,
-  SET_ORIGIN
+  SET_ORIGIN,
+  BEEN_KICKED_OUT
 } from "../constants/action-types";
 
 export function menuReducer(state, action) {
@@ -158,5 +159,19 @@ export function menuReducer(state, action) {
       origin: action.payload
     });
   }
+
+  if (action.type === BEEN_KICKED_OUT) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        game: null,
+        gamers: [],
+        amIAuthor: false,
+        meGamer: null
+      })
+    });
+  }
+
+
+
   return state;
 }

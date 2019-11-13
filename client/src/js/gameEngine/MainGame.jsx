@@ -35,6 +35,7 @@ class MainGameComponent extends Component {
         }
         this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
         this.openMenu = this.openMenu.bind(this)
+        this.closeMenu = this.closeMenu.bind(this)
     }
 
     componentDidMount() {
@@ -167,6 +168,20 @@ class MainGameComponent extends Component {
                             <div className="buttonList">
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.closeMenu}>Powrót do gry</a>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opcje</a>
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>
+                            </div>
+                        </div>
+                    </div>
+                </div> : <div></div>}
+                {actualGame.game.ended ? <div className="inGameMenu">
+
+                    <div className="container">
+                        <div className="menuContent">
+                            <h1 className="gameTitle">Gra zakończona!</h1>
+
+                            <div className="buttonList">
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.closeMenu}>Kontynuuj</a>
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>
                             </div>
                         </div>
