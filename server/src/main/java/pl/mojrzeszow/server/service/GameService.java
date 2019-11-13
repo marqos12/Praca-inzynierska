@@ -106,7 +106,7 @@ public class GameService {
 
 		List<Tile> gameTiles = tileRepository.findByGame(gamer.getGame());
 
-		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle(), 1, data.getPosX(),
+		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle().intValue(), 1, data.getPosX(),
 				data.getPosY(), new Influence());
 
 		calculateTilesInfluence(tile, gameTiles);
@@ -189,7 +189,8 @@ public class GameService {
 
 	public void updateTile(DataExchange data) {
 		final Tile tile = tileRepository.findById(data.id).orElse(null);
-
+		
+		if(data.angle==null){
 		if (tile.getType().getGeneralType() == "END_TILE") {
 			if (data.type == null || data.type != TileType.OPTIONAL) {
 				tile.getGamer().setDucklings(
@@ -215,9 +216,16 @@ public class GameService {
 				.collect(Collectors.toList());
 		calculateTilesInfluence(tile, gameTiles);
 		tileRepository.saveAll(gameTiles);
-		tileRepository.save(tile);
+
+	}
+
+	else {
+		System.out.println("GameService 223");
+		tile.setAngle(data.angle.intValue());
+	}
+	Tile tile2 = tileRepository.save(tile);
 		List<Tile> newTiles = new ArrayList<Tile>();
-		newTiles.add(tile);
+		newTiles.add(tile2);
 		simpMessagingTemplate.convertAndSendToUser(tile.getGamer().getSessionId(), "/reply",
 				new GameMessage<Gamer>(MessageType.ME_GAMER, tile.getGamer()));
 

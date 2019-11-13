@@ -15,7 +15,7 @@ public class DataExchange {
 	public Long gamerId;
 	public Long posX;
 	public Long posY;
-	public int angle;
+	public Long angle;
 	public TileType type;
 	public Gamer gamer;
 	public long lvl;
@@ -37,11 +37,11 @@ public class DataExchange {
 		this.type = type;
 	}
 
-	public @NotBlank int getAngle() {
+	public @NotBlank Long getAngle() {
 		return angle;
 	}
 
-	public void setAngle(int angle) {
+	public void setAngle(Long angle) {
 		this.angle = angle;
 	}
 
@@ -102,7 +102,7 @@ public class DataExchange {
 	}
 
 	public DataExchange(Long id, Long userId, Long gameId, String sessionId, Long gamerId, Long posX, Long posY,
-			int angle, TileType type) {
+	Long angle, TileType type) {
 		this.id = id;
 		this.userId = userId;
 		this.gameId = gameId;

@@ -167,6 +167,9 @@ export default class GameScene extends Phaser.Scene {
 
     this.load.image("plusButton", 'assets/plusB.png');
     this.load.image("minusButton", 'assets/minusB.png');
+    this.load.image("rotateButton", 'assets/rotate.png');
+    this.load.image("rotateBigButton", 'assets/rotateButton.png');
+    this.load.image("saveButton", 'assets/saveBtn.png');
 
     this.load.image("backButton", 'assets/backB.png');
     this.load.image("buldozerButton", 'assets/buldozer.png');
@@ -258,7 +261,7 @@ export default class GameScene extends Phaser.Scene {
         tile2.highlightNewTile();
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
-      if (this.newTile) {
+      if (this.newTile && !this.newTileCard) {
         this.highlightPossiblePlaces()
       }
     }
