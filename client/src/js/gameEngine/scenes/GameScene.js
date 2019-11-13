@@ -144,6 +144,11 @@ export default class GameScene extends Phaser.Scene {
     addEventListener("wheel", x => this.changeScale(x))
 
     this.initialized = true;
+
+
+    window.addEventListener('resize', () => {
+      this.scale.resize(window.innerWidth, window.innerHeight);
+    });
   }
 
   preload() {
