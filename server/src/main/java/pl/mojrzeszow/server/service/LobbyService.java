@@ -42,14 +42,13 @@ public class LobbyService {
 	@Autowired
 	UserRepository userRepository;
 
-
-    public GameMessage<List<Game>> getAllgames(String message){
+	public GameMessage<List<Game>> getAllgames(String message) {
 		List<Game> games = this.gameRepository.findByPrivateGameFalseAndStartedFalse();
 		GameMessage<List<Game>> gameMessage = new GameMessage<List<Game>>(MessageType.GAME_LIST_UPDATED, games);
 		return gameMessage;
-    }
-    
-    public GameMessage<Game> createGame(DataExchange userId) {
+	}
+
+	public GameMessage<Game> createGame(DataExchange userId) {
 
 		User user = userRepository.findById(userId.getId()).orElse(null);
 		Game game = new Game(user);
@@ -57,9 +56,9 @@ public class LobbyService {
 
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_CREATED, game);
 		return gameMessage;
-    }
-    
-    public GameMessage<Game> updateGame(Game game) {
+	}
+
+	public GameMessage<Game> updateGame(Game game) {
 		game = gameRepository.save(game);
 
 		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
@@ -70,9 +69,9 @@ public class LobbyService {
 
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_UPDATE, game);
 		return gameMessage;
-    }
-    
-    public GameMessage<Gamer> joinGame(DataExchange gamersData) {
+	}
+
+	public GameMessage<Gamer> joinGame(DataExchange gamersData) {
 
 		User user = userRepository.findById(gamersData.getUserId()).orElse(null);
 		Game game = gameRepository.findById(gamersData.getGameId()).orElse(null);
@@ -123,7 +122,7 @@ public class LobbyService {
 					break;
 				}
 
-		} 
+		}
 
 		gamerRepository.delete(gamer);
 		game.setGamersCount(game.getGamersCount() - 1);
@@ -147,7 +146,7 @@ public class LobbyService {
 
 	public GameMessage<Gamer> gamerStatusUpdate(Gamer gamer) {
 
-        Gamer exactGamer = this.gamerRepository.findById(gamer.getId()).orElse(gamer);
+		Gamer exactGamer = this.gamerRepository.findById(gamer.getId()).orElse(gamer);
 		exactGamer.setStatus(gamer.isStatus());
 		exactGamer.setReady(gamer.isReady());
 
@@ -165,16 +164,17 @@ public class LobbyService {
 
 		Game updatingGame = this.gameRepository.findById(game.getId()).orElse(null);
 		updatingGame.setStarted(game.isStarted());
-		if(updatingGame.getEndType().equals(GameEndType.TIME_LIMIT)){
-			LocalDateTime time = LocalDateTime.now();
-			updatingGame.setGameLimit(updatingGame.getGameLimit()*60 + time.atZone(ZoneId.systemDefault()).toEpochSecond()
-			);
+		LocalDateTime time = LocalDateTime.now();
+		updatingGame.setStartTime(time.atZone(ZoneId.systemDefault()).toEpochSecond());
+		if (updatingGame.getEndType().equals(GameEndType.TIME_LIMIT)) {
+			updatingGame.setGameLimit(
+					updatingGame.getGameLimit() * 60 + time.atZone(ZoneId.systemDefault()).toEpochSecond());
 		}
 		updatingGame = this.gameRepository.save(updatingGame);
 
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatingGame);
 
-		Tile startTile = new Tile(null, null, game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L,new Influence());
+		Tile startTile = new Tile(null, null, game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L, new Influence());
 
 		tileRepository.save(startTile);
 
@@ -187,7 +187,7 @@ public class LobbyService {
 				new GameMessage<Game>(MessageType.GAME_STARTED, updatingGame));
 	}
 
-	public void kickGamer(DataExchange gamerData){
+	public void kickGamer(DataExchange gamerData) {
 		Gamer gamer = gamerRepository.findById(gamerData.getId()).orElse(null);
 		Game game = gamer.getGame();
 
@@ -199,7 +199,7 @@ public class LobbyService {
 					break;
 				}
 
-		} 
+		}
 
 		simpMessagingTemplate.convertAndSendToUser(gamer.getSessionId(), "/reply",
 				new GameMessage<Gamer>(MessageType.GTFO_MESSAGE, gamer));

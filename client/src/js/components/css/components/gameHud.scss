@@ -30,14 +30,14 @@ $resources-tab-height:fit-content;
     .timer{
         right: 0;
         width:$tab-width;
-        min-width: 100px;
+        min-width: 130px;
         height:$timer-tab-height;
         border-bottom: 0
     }
 
     .gamersList{
         right: 0;
-        min-width: 100px;
+        min-width: 130px;
         top:$timer-tab-height;
         width:$tab-width;
         height:$rank-tab-heigth;
@@ -200,6 +200,27 @@ $resources-tab-height:fit-content;
     width: 100vw;
     height: 100vh;
     background-color: $card-background-color;
+
+    .menuTimer{
+        width: fit-content;
+        margin: 0 auto;
+        margin-bottom: 10px;
+
+        div{
+            float: left;
+            padding: 10px;
+            margin-left: 10px;
+            color:white;
+            font-size: 18px;
+        }
+        img{
+            width:25px;
+            height:25px;
+            position: relative;
+            left:-9px;
+            top:6px;
+        }
+    }
 }
 
 #phaser-game{

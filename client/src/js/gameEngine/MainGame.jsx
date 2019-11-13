@@ -31,7 +31,9 @@ class MainGameComponent extends Component {
             openMenu: false,
             posiInRank: 1,
             userWithtile: null,
-            toNextRound: 0
+            toNextRound: 0,
+            refresh: 0,
+            refreshInterval: null
         }
         this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
         this.openMenu = this.openMenu.bind(this)
@@ -45,6 +47,15 @@ class MainGameComponent extends Component {
                 gameJoined: true,
             })
         }
+        this.setState({
+            refreshInterval: setInterval(() => {
+                this.setState({ refresh: this.state.refresh + 1 })
+            }, 1000)
+        })
+
+    }
+    componentWillUnmount() {
+        clearInterval(this.state.refreshInterval);
     }
 
     componentDidUpdate() {
@@ -75,8 +86,9 @@ class MainGameComponent extends Component {
 
             }
 
-            
+
         }
+
     }
 
     commitNewTilePosiotion() {
@@ -100,9 +112,31 @@ class MainGameComponent extends Component {
         })
     }
 
+    getTimer(actualGame) {
+        let minutes = "00";
+        let seconds = "00";
+        let limitMinutes = "00";
+        let limitSeconds = "00";
+        if (actualGame && actualGame.game) {
+            minutes = Math.floor((new Date().getTime() / 1000 - actualGame.game.startTime) / 60);
+            seconds = Math.floor((new Date().getTime() / 1000 - actualGame.game.startTime) % 60)
+            if (minutes < 10) minutes = "0" + minutes;
+            if (seconds < 10) seconds = "0" + seconds;
+
+            if(actualGame.game.endType=="TIME_LIMIT"){
+                limitMinutes = Math.floor((actualGame.game.gameLimit - actualGame.game.startTime) / 60);
+                limitSeconds = Math.floor((actualGame.game.gameLimit - actualGame.game.startTime) % 60)
+                if (limitMinutes < 10) limitMinutes = "0" + limitMinutes;
+                if (limitSeconds < 10) limitSeconds = "0" + limitSeconds;
+            }
+        }
+        return { minutes: minutes, seconds: seconds, limitMinutes: limitMinutes, limitSeconds: limitSeconds  }
+    }
+
     render() {
         const { actualGame, } = this.props;
         const { openMenu } = this.state
+        const timer = this.getTimer(actualGame)
         return (
             <div>
                 <GameComponent />
@@ -112,10 +146,10 @@ class MainGameComponent extends Component {
                     </div>
                     <div className="hud_card timer">
                         <img src="assets/timer.png"></img>
-                        <span className="onSmallinvisible">Upłynęło czasu: </span>15:11
+                        <span className="onSmallinvisible">Upłynęło czasu: </span>{timer.minutes}:{timer.seconds}
                         <br />
                         <img src="assets/left.png"></img>
-                        <span className="onSmallinvisible">Upłynęło rund: </span>{actualGame.game.elapsed + "/" + actualGame.game.gameLimit}
+                        <span className="onSmallinvisible">Upłynęło rund: </span>{actualGame.game.elapsed}{actualGame.game.endType == "ROUND_LIMIT" ? <span>{" / " + actualGame.game.gameLimit}</span> : ""}
                     </div>
                     <div className="hud_card gamersList">
                         {actualGame.gamers.map((value, index) => {
@@ -165,6 +199,16 @@ class MainGameComponent extends Component {
                         <div className="menuContent">
                             <h1 className="gameTitle">MENU</h1>
 
+                            <div className="onSmallVisible menuTimer">
+                                <div>
+                                    <img src="assets/timer.png"></img>
+                                    Upłynęło czasu: {timer.minutes}:{timer.seconds}{actualGame.game.endType=="TIME_LIMIT"?<span>({timer.limitMinutes}:{timer.limitSeconds})</span>:""}
+                                </div>
+                                <div>
+                                    <img src="assets/left.png"></img>
+                                    Upłynęło rund: {actualGame.game.elapsed}{actualGame.game.endType == "ROUND_LIMIT" ? <span>{" / " + actualGame.game.gameLimit}</span> : ""}
+                                </div>
+                            </div>
                             <div className="buttonList">
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.closeMenu}>Powrót do gry</a>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opcje</a>

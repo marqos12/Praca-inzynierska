@@ -40,6 +40,8 @@ public class Game {
 
 	private GameEndType endType;
 
+	private Long startTime;
+
 	private Boolean inProgress;
 
 	private Long gamersCount;
@@ -66,7 +68,7 @@ public class Game {
 
 	public Game(Long id, @NotNull User author, @NotNull boolean ended, @NotNull boolean started, @NotNull boolean isRTS,
 			@NotNull Long gameLimit, @NotNull Long elapsed, Boolean inProgress, Long gamersCount, Long gamersCountLimit,
-			boolean privateGame, GameEndType gameEndType) {
+			boolean privateGame, GameEndType gameEndType, Long startTime) {
 		this.id = id;
 		this.author = author;
 		this.ended = ended;
@@ -79,6 +81,7 @@ public class Game {
 		this.gamersCountLimit = gamersCountLimit;
 		this.privateGame = privateGame;
 		this.endType = gameEndType;
+		this.startTime = startTime;
 	}
 
 	public Long getId() {
@@ -175,5 +178,13 @@ public class Game {
 
 	public void setEndType(GameEndType endType) {
 		this.endType = endType;
+	}
+
+	public Long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Long startTime) {
+		this.startTime = startTime;
 	}
 }
