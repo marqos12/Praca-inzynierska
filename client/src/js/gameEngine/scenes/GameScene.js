@@ -20,7 +20,7 @@ export default class GameScene extends Phaser.Scene {
     this.myScale = window.innerWidth > 1000 ? 0.5 : 0.3;
 
     this.tileWidth = 300 * this.myScale;
-    this.halfOfTable = 15;
+    this.halfOfTable = 45;
     this.tableWidth = this.halfOfTable * 2 + 1;
 
     this.state = store.getState();
