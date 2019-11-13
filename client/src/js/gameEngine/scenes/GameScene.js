@@ -2,7 +2,7 @@ import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
 import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace, gameShowTileDetails } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
-import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale, getTileGeneralType } from "../gameMechanics";
+import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale, getTileGeneralType, translateTileName } from "../gameMechanics";
 import { TileDetails } from "./components/TileDetails";
 
 export default class GameScene extends Phaser.Scene {
@@ -44,6 +44,7 @@ export default class GameScene extends Phaser.Scene {
         this.stateChanged();
     });
 
+    this.newTileName = "";
 
     this.plusButton = null;
     this.minusButton = null;
@@ -103,6 +104,8 @@ export default class GameScene extends Phaser.Scene {
 
       this.newTileCard.destroy();
       this.newTileCard = null;
+      this.newTileName.destroy();
+      this.newTileName = null;
 
       this.highlightPossiblePlaces();
     })
@@ -148,6 +151,15 @@ export default class GameScene extends Phaser.Scene {
 
     window.addEventListener('resize', () => {
       this.scale.resize(window.innerWidth, window.innerHeight);
+      if (this.newTileCard) {
+        this.newTile.setPosition(
+          window.innerWidth - this.newTile.displayWidth * 1.25,
+          window.innerHeight - this.newTile.displayWidth * 1.25)
+        this.newTileCard.setPosition(this.newTile.x + this.newTile.displayWidth / 2,
+          this.newTile.y + this.newTile.displayWidth / 2)
+        this.newTileName.setPosition(this.newTile.x, this.newTile.y - 23);
+
+      }
     });
   }
 
@@ -184,7 +196,7 @@ export default class GameScene extends Phaser.Scene {
             x.highlight.x = x.x + this.tileWidth / 8;
             x.highlight.y = x.y + this.tileWidth / 8;
           }
-          if(x.flash){
+          if (x.flash) {
             x.flash.x = x.x;
             x.flash.y = x.y;
           }
@@ -240,7 +252,6 @@ export default class GameScene extends Phaser.Scene {
           oldTile[0] = null
         }
 
-
         this.tiles.push(tile2);
         this.tiles = this.tiles.filter(t => t.id != tile.id || t.name == tile.type + "_" + tile.lvl);
         this.add.existing(tile2.setDepth(2));
@@ -281,6 +292,12 @@ export default class GameScene extends Phaser.Scene {
         this.newTile.displayWidth * 1.5
       );
       this.add.existing(this.newTileCard.setDepth(100))
+
+      let fontConf = { fontFamily: '"Roboto"', fontSize: "16px" };
+      this.newTileName = new Phaser.GameObjects.Text(this, this.newTile.x, this.newTile.y - 23,  translateTileName(this.state.actualGame.myNewTile+"_1"), fontConf)
+      this.newTileName.setDepth(101)
+      this.add.existing(this.newTileName);
+
     } else if (!this.state.actualGame.myNewTile && this.newTile) {
       this.newTile.destroy();
       this.newTile = null;
@@ -310,7 +327,6 @@ export default class GameScene extends Phaser.Scene {
       this.add.existing(highlight)
     })
   }
-
 
   changeScale(x) {
     if (x.deltaY < 0)

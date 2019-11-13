@@ -222,17 +222,17 @@ export function translateTileName(tileName) {
         case "GROCERY_STORE_1":
             return "Sklep spożywczy";
         case "ROAD_STRAIGHT_1":
-            return "Droga";
+            return "Droga prosta";
         case "ROAD_ACCESS_SINGLE_1":
-            return "Droga";
+            return "Droga z dojazdem";
         case "ROAD_CROSS_SINGLE_1":
-            return "Droga";
+            return "Droga skrzyżowanie";
         case "ROAD_ACCESS_DOUBLE_1":
-            return "Droga";
+            return "Droga z dojazami";
         case "ROAD_CROSS_DOUBLE_1":
-            return "Droga";
+            return "Droga skrzyżowanie";
         case "ROAD_CURVE_1":
-            return "Droga";
+            return "Droga zakręt";
     }
 }
 
