@@ -31,7 +31,8 @@ class NewGameComponent extends Component {
             canStart: false,
             loopPrevent: false,
             endType: "ROUND_LIMIT",
-            firstLoad: false
+            firstLoad: false,
+            gamersLimit: 4
         };
 
         this.loopPrevent = false;
@@ -72,11 +73,12 @@ class NewGameComponent extends Component {
 
     updateGame() {
         let game = this.props.actualGame.game;
-        const { privateGame, isRts, gameLimit, endType } = this.state;
+        const { privateGame, isRts, gameLimit, endType, gamersLimit } = this.state;
         game.privateGame = privateGame;
         game.rts = isRts;
         game.gameLimit = gameLimit;
         game.endType = endType;
+        game.gamersCountLimit = gamersLimit;
 
         console.log("newGame 80", game)
         this.props.wsSendMessage({
@@ -132,7 +134,8 @@ class NewGameComponent extends Component {
                     isRts: this.props.actualGame.game.isRts,
                     gameLimit: this.props.actualGame.game.gameLimit,
                     endType: this.props.actualGame.game.endType,
-                    firstLoad: true
+                    firstLoad: true,
+                    gamersLimit: this.props.actualGame.game.gamersCountLimit
                 }))
             }
 
@@ -169,7 +172,7 @@ class NewGameComponent extends Component {
 
     render() {
 
-        const { privateGame, isRts, gameLimit, ready, canStart, endType } = this.state;
+        const { privateGame, isRts, gameLimit, ready, canStart, endType, gamersLimit } = this.state;
         const limitValues = this.getEndTypeRange();
         return (
             <div className="container">
@@ -234,7 +237,17 @@ class NewGameComponent extends Component {
                                         <input type="range" min={limitValues.min} max={limitValues.max} className="slider" id="gameLimit" value={gameLimit} onChange={this.handleChange} />
                                     </div>
 
+                                    <div className="separator">Gracze</div>
 
+                                    <div className="field">
+                                        <div className="control">
+                                            <label class="label">Limit graczy: </label>
+                                            <input className="input is-medium is-info" type="number" placeholder="Limit graczy" id="gamersLimit" value={gamersLimit} onChange={this.handleChange} />
+                                        </div>
+                                    </div>
+                                    <div className="slidecontainer">
+                                        <input type="range" min="1" max="8" className="slider" id="gamersLimit" value={gamersLimit} onChange={this.handleChange} />
+                                    </div>
                                     <br />
                                     <br />
 

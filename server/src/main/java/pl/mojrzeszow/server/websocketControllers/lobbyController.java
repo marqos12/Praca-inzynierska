@@ -35,6 +35,12 @@ public class lobbyController {
 		return lobbyService.createGame(userId);
 	}
 
+	@MessageMapping("/createAloneGame")
+	@SendToUser("/queue/reply")
+	public GameMessage<Game> createAloneGame(@Payload DataExchange userId) {
+		return lobbyService.createAloneGame(userId);
+	}
+
 	@MessageMapping("/updateGame")
 	@SendToUser("/queue/reply")
 	public GameMessage<Game> updateGame(@Payload Game game) {

@@ -60,10 +60,10 @@ class App extends Component {
             <Route exact path="/login" component={Login} />
             <Route exact path="/registration" component={Registration} />
             <Route exact path="/panel" component={UserPanel} />
-            <Route exact path="/newGame" component={NewGame} />
+            <Route exact path="/game" component={NewGame} />
             <Route exact path="/searchGames" component={SearchGame} />
-            <Route exact path="/game/:id" component={Game} />
-            <Route exact path="/newGame/:id" component={NewGame} />
+            <Route exact path="/alone/:id" component={Game} />
+            <Route exact path="/game/:id" component={NewGame} />
           </div>
           :
           <div className="game">

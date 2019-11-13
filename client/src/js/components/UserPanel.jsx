@@ -27,12 +27,22 @@ const mapStateToProps = state => {
 class HomeComponent extends Component {
     constructor() {
         super();
+        this.state = {
+            aloneGame: false
+        }
+
         this.createNewGame = this.createNewGame.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.logout = this.logout.bind(this);
+        this.createNewAloneGame = this.createNewAloneGame.bind(this);
     }
 
     createNewGame() {
+        this.props.wsSendMessage({ channel: "/lobby/createGame", payload: { id: this.props.auth.user.id } })
+    }
+
+    createNewAloneGame() {
+        this.setState({aloneGame:true})
         this.props.wsSendMessage({ channel: "/lobby/createGame", payload: { id: this.props.auth.user.id } })
     }
 
@@ -50,7 +60,10 @@ class HomeComponent extends Component {
 
     componentDidUpdate() {
         if (this.props.actualGame.game != null)
-            this.props.history.push("/newGame/" + this.props.actualGame.game.id)
+        if(!this.state.aloneGame)
+            this.props.history.push("/game/" + this.props.actualGame.game.id)
+            else 
+            this.props.history.push("/alone/" + this.props.actualGame.game.id)
     }
 
     componentWillMount() {
@@ -71,9 +84,9 @@ class HomeComponent extends Component {
                     <div className="buttonList">
                         <NavLink to="/searchGames" className="button is-large  is-link is-rounded is-fullwidth" >Szukaj gry</NavLink>
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewGame}>Utwórz grę</a>
-                        <NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth" >Graj sam</NavLink>
-                        <NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
-                        <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>
+                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewAloneGame}>Graj sam</a>
+                        {/*<NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
+                        <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>*/}
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Wyloguj</a>
                     </div>
 

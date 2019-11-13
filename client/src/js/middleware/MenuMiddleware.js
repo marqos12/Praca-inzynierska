@@ -73,6 +73,10 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(wsGameCreated(resp.payload));
             dispatch(wsConnectGame(resp.payload));
             break;
+            case "GAME_ALONE_CREATED":
+              dispatch(wsGameCreated(resp.payload));
+              dispatch(wsConnectGame(resp.payload));
+              break;
           case "ME_GAMER":
             dispatch(wsGameJoined(resp.payload));
             dispatch(wsConnectGame(resp.payload.game));

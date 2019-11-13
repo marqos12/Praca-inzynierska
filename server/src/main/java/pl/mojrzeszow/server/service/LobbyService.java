@@ -55,6 +55,17 @@ public class LobbyService {
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_CREATED, game);
 		return gameMessage;
 	}
+	
+	public GameMessage<Game> createAloneGame(DataExchange userId) {
+
+		User user = userRepository.findById(userId.getId()).orElse(null);
+		Game game = new Game(user);
+		game.setGamersCountLimit(1L);
+		gameRepository.save(game);
+
+		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_ALONE_CREATED, game);
+		return gameMessage;
+	}
 
 	public GameMessage<Game> updateGame(Game game) {
 		game = gameRepository.save(game);
@@ -88,22 +99,28 @@ public class LobbyService {
 			}
 		}
 
-		if (!exists) {
-			gamer = new Gamer(user, game, gamersData.getSessionId());
-			game.setGamersCount(game.getGamersCount() + 1L);
-			gameRepository.save(game);
-			List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
-			simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
+		if (gamers.size() < game.getGamersCountLimit()) {
+			if (!exists) {
+				gamer = new Gamer(user, game, gamersData.getSessionId());
+				game.setGamersCount(game.getGamersCount() + 1L);
+				gameRepository.save(game);
+				List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
+				simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
+			}
 		}
+		GameMessage<Gamer> gameMessage = null;
+		if (gamer != null) {
+			gamer = gamerRepository.save(gamer);
 
-		gamer = gamerRepository.save(gamer);
+			gamers = this.gamerRepository.findByGame(game);
 
-		gamers = this.gamerRepository.findByGame(game);
+			simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + gamersData.getGameId(),
+					new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 
-		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + gamersData.getGameId(),
-				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+			gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, gamer);
+		} else
+			gameMessage = new GameMessage<Gamer>(MessageType.GAME_LEFT, gamer);
 
-		GameMessage<Gamer> gameMessage = new GameMessage<Gamer>(MessageType.ME_GAMER, gamer);
 		return gameMessage;
 	}
 
