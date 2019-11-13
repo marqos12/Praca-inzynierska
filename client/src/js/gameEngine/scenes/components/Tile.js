@@ -29,6 +29,8 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.fixed = true;
         this.setInteractive();
         //scene.input.setDraggable(this)
+        this.flash = null;
+        this.flashInterval = null;
 
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
 
@@ -98,7 +100,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
 
         this.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown()) {
-                if (!scene.state.actualGame.tileDetails || pointer.position.y < (window.innerHeight - 300)  ) {
+                if (!scene.state.actualGame.tileDetails || pointer.position.y < (window.innerHeight - 300)) {
 
                     if (this.clicked) {
                         scene.input.activePointer.isDown = false;
@@ -161,6 +163,9 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.y = this.posY * this.displayHeight + this.scene.tableCenterY - this.displayHeight / 2;
         if (this.highlight)
             this.highlight.setPosition(this.x + this.displayWidth / 8, this.y + this.displayWidth / 8)
+        if (this.flash)
+            this.flash.setPosition(this.x, this.y)
+
     }
 
     setAngle_My(angle) {
@@ -197,6 +202,10 @@ export class Tile extends Phaser.GameObjects.Sprite {
             this.highlight.setDisplaySize(this.displayWidth / 8, this.displayWidth / 4);
             this.highlight.setPosition(this.x + this.displayWidth / 8, this.y + this.displayWidth / 8)
         }
+        if (this.flash) {
+            this.flash.setDisplaySize(this.displayWidth, this.displayWidth);
+            this.flash.setPosition(this.x, this.y)
+        }
     }
 
     rotate() {
@@ -213,5 +222,18 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.dy = 0;
         let rotatedTile = new CustomEvent('rotatedTile', { detail: this.getTileObj(this) });
         dispatchEvent(rotatedTile);
+    }
+
+    highlightNewTile() {
+        this.flash = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, this.displayWidth, this.displayHeight, 0xf0f000, 0.4)
+        this.flash.setOrigin(0, 0);
+        this.flash.setDepth(11);
+        this.flash.setPosition(this.x, this.y);
+        this.scene.add.existing(this.flash)
+        this.flashInterval = setInterval(()=>{
+            clearInterval(this.flashInterval);
+            this.flash.destroy();
+            this.flash = null;
+        },2000)
     }
 }

@@ -184,6 +184,10 @@ export default class GameScene extends Phaser.Scene {
             x.highlight.x = x.x + this.tileWidth / 8;
             x.highlight.y = x.y + this.tileWidth / 8;
           }
+          if(x.flash){
+            x.flash.x = x.x;
+            x.flash.y = x.y;
+          }
         })
         this.fixedTiles.forEach(x => {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
@@ -240,7 +244,7 @@ export default class GameScene extends Phaser.Scene {
         this.tiles.push(tile2);
         this.tiles = this.tiles.filter(t => t.id != tile.id || t.name == tile.type + "_" + tile.lvl);
         this.add.existing(tile2.setDepth(2));
-
+        tile2.highlightNewTile();
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
       if (this.newTile) {
