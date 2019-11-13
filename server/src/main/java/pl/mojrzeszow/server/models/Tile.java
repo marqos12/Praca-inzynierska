@@ -261,9 +261,10 @@ public class Tile {
 				influence.shops = 1L;
 				influence.entertainment = 2L;
 				influence.work = 2L;
+				influence.cleanness=1L;
 			} else if (lvl == 2) {
 				influence.ducklings = 1000L;
-				influence.shops = 2L;
+				influence.shops = 5L;
 				influence.entertainment = 3L;
 				influence.medicalCare = 1L;
 				influence.services = 10L;
@@ -276,11 +277,12 @@ public class Tile {
 				influence.ducklings = 1000L;
 				influence.people = 10L;
 				influence.goods = 1L;
+				influence.crimePrevention = 1L;
 			} else if (lvl == 2) {
 				influence.ducklings = 4000L;
 				influence.people = 30L;
 				influence.fireSafety = 1L;
-				influence.goods = 5L;
+				influence.goods = 15L;
 			} else {
 				influence = null;
 			}

@@ -106,8 +106,8 @@ public class GameService {
 
 		List<Tile> gameTiles = tileRepository.findByGame(gamer.getGame());
 
-		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle().intValue(), 1, data.getPosX(),
-				data.getPosY(), new Influence());
+		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle().intValue(), 1,
+				data.getPosX(), data.getPosY(), new Influence());
 
 		calculateTilesInfluence(tile, gameTiles);
 
@@ -158,10 +158,10 @@ public class GameService {
 
 	private Game checkEnding(Game game) {
 		List<Gamer> gamers = gamerRepository.findByGame(game);
-			game.setElapsed(game.getElapsed() + 1);
+		game.setElapsed(game.getElapsed() + 1);
 		switch (game.getEndType()) {
 		case POINT_LIMIT:
-	
+
 			if (gamers.stream().map(g -> g.getPoints()).max(Long::compare).get() >= game.getGameLimit())
 				game.setEnded(true);
 			break;
@@ -176,7 +176,8 @@ public class GameService {
 				game.setEnded(true);
 			break;
 		case TIME_LIMIT:
-			LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochSecond(game.getGameLimit()), ZoneId.systemDefault());
+			LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochSecond(game.getGameLimit()),
+					ZoneId.systemDefault());
 			System.out.println(time);
 			System.out.println(LocalDateTime.now());
 			System.out.println(time.isBefore(LocalDateTime.now()));
@@ -189,41 +190,41 @@ public class GameService {
 
 	public void updateTile(DataExchange data) {
 		final Tile tile = tileRepository.findById(data.id).orElse(null);
-		
-		if(data.angle==null){
-		if (tile.getType().getGeneralType() == "END_TILE") {
-			if (data.type == null || data.type != TileType.OPTIONAL) {
-				tile.getGamer().setDucklings(
-						tile.getGamer().getDucklings() - tile.getTileInfluenceNeedToUpgrade().getDucklings());
-				tile.setLvl(tile.getLvl() + 1);
+
+		if (data.angle == null) {
+			if (tile.getType().getGeneralType() == "END_TILE") {
+				if (data.type == null || data.type != TileType.OPTIONAL) {
+					tile.getGamer().setDucklings(
+							tile.getGamer().getDucklings() - tile.getTileInfluenceNeedToUpgrade().getDucklings());
+					tile.setLvl(tile.getLvl() + 1);
+				} else {
+					tile.getGamer().setDucklings(tile.getGamer().getDucklings() - tile.getType().getCosts());
+					tile.getGamer()
+							.setPoints(tile.getGamer().getPoints() - tile.getTileGeneratedInfluence().getPoints());
+					tile.setType(data.type);
+					tile.setGeneralType(data.type.getGeneralType());
+					tile.setLvl(1);
+				}
 			} else {
-				tile.getGamer().setDucklings(tile.getGamer().getDucklings() - tile.getType().getCosts());
-				tile.getGamer().setPoints(tile.getGamer().getPoints() - tile.getTileGeneratedInfluence().getPoints());
 				tile.setType(data.type);
 				tile.setGeneralType(data.type.getGeneralType());
-				tile.setLvl(1);
+				tile.getGamer().setDucklings(tile.getGamer().getDucklings() - data.type.getCosts());
 			}
-		} else {
-			tile.setType(data.type);
-			tile.setGeneralType(data.type.getGeneralType());
-			tile.getGamer().setDucklings(tile.getGamer().getDucklings() - data.type.getCosts());
+
+			if (tile.getTileGeneratedInfluence() != null)
+				tile.getGamer().setPoints(tile.getGamer().getPoints() + tile.getTileGeneratedInfluence().getPoints());
+			gamerRepository.save(tile.getGamer());
+			List<Tile> gameTiles = tileRepository.findByGame(tile.getGame()).stream()
+					.filter(t -> t.getId() != tile.getId()).collect(Collectors.toList());
+			calculateTilesInfluence(tile, gameTiles);
+			tileRepository.saveAll(gameTiles);
 		}
 
-		if (tile.getTileGeneratedInfluence() != null)
-			tile.getGamer().setPoints(tile.getGamer().getPoints() + tile.getTileGeneratedInfluence().getPoints());
-		gamerRepository.save(tile.getGamer());
-		List<Tile> gameTiles = tileRepository.findByGame(tile.getGame()).stream().filter(t -> t.getId() != tile.getId())
-				.collect(Collectors.toList());
-		calculateTilesInfluence(tile, gameTiles);
-		tileRepository.saveAll(gameTiles);
-
-	}
-
-	else {
-		System.out.println("GameService 223");
-		tile.setAngle(data.angle.intValue());
-	}
-	Tile tile2 = tileRepository.save(tile);
+		else {
+			System.out.println("GameService 223");
+			tile.setAngle(data.angle.intValue());
+		}
+		Tile tile2 = tileRepository.save(tile);
 		List<Tile> newTiles = new ArrayList<Tile>();
 		newTiles.add(tile2);
 		simpMessagingTemplate.convertAndSendToUser(tile.getGamer().getSessionId(), "/reply",
