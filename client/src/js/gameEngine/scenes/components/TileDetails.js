@@ -264,7 +264,7 @@ export class TileDetails {
                     response.json()
                 ).then(response => {
                     this.upgradeDetails.text += `\nWymagane do budowy:\n${response.buildCosts} d\n${getOutcomes(response.outcomeInfluence)}`;
-
+                    console.log('TileDetails 267 przycisk budowania placu budowy',response.buildCosts,this.scene.state.actualGame.meGamer.ducklings,response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings)
                  if(response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings) 
                     this.showUpgradeButton = true;
                 })

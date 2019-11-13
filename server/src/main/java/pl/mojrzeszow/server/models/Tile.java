@@ -175,8 +175,8 @@ public class Tile {
 			influence.points = 30L;
 			influence.work = 20L;
 			influence.workRange = 15L;
-			influence.services = 10L;
-			influence.servicesRange = 15L;
+			influence.goods = 10L;
+			influence.goodsRange = 15L;
 			break;
 
 		case OFFICE_BUILDING:

@@ -162,6 +162,7 @@ public class GameService {
 			game.setElapsed(game.getElapsed() + 1);
 		switch (game.getEndType()) {
 		case POINT_LIMIT:
+	
 			if (gamers.stream().map(g -> g.getPoints()).max(Long::compare).get() >= game.getGameLimit())
 				game.setEnded(true);
 			break;
