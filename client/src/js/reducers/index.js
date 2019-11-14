@@ -28,7 +28,10 @@ const initialState = {
     tilesToDisplay:[],
     myNewTile:null,
     newTileInGoodlPlace:false,
-    tileDetails:null
+    tileDetails:null,
+    rotateTile:false,
+    tileOriginalAngle:null,
+    restoreTileAngle:false
   },
   origin: ""
 };

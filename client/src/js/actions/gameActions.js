@@ -11,7 +11,11 @@ import {
     GAME_SEND_NEW_TILE_POSITION,
     GAME_ME_GAMER_UPDATE,
     GAME_UPDATE_TILE,
-    SHOW_TILE_DETAILS
+    SHOW_TILE_DETAILS,
+    ROTATE_TILE,
+    TILE_ROTATED,
+    RESTORE_TILE_ROTATE,
+    TILE_ROTATE_RESTORED
 } from "../constants/game-action-types";
 
 
@@ -61,4 +65,20 @@ export function gameUpdateTile(payload) {
 
 export function gameShowTileDetails(payload) {
     return { type: SHOW_TILE_DETAILS, payload };
+}
+
+export function gameRotateTile(payload) {
+    return { type: ROTATE_TILE, payload };
+}
+
+export function gameTileRotated(payload) {
+    return { type: TILE_ROTATED, payload };
+}
+
+export function gameRestoreTileRotate(payload) {
+    return { type: RESTORE_TILE_ROTATE, payload };
+}
+
+export function gameTileRotateRestored(payload) {
+    return { type: TILE_ROTATE_RESTORED, payload };
 }

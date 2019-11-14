@@ -3,12 +3,14 @@ import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
 import { wsConnect, wsOpenPrivateCanals, wsSendMessage } from "../../actions/index";
 import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade } from "../../gameEngine/gameMechanics";
-import { gameShowTileDetails, gameUpdateTile } from "../../actions/gameActions";
+import { gameShowTileDetails, gameUpdateTile, gameRotateTile, gameRestoreTileRotate } from "../../actions/gameActions";
 
 function mapDispatchToProps(dispatch) {
     return {
         gameShowTileDetails: (payload) => dispatch(gameShowTileDetails(payload)),
-        gameUpdateTile: (payload) => dispatch(gameUpdateTile(payload))
+        gameUpdateTile: (payload) => dispatch(gameUpdateTile(payload)),
+        gameRotateTile: () => dispatch(gameRotateTile()),
+        gameRestoreTile: () => dispatch(gameRestoreTileRotate())
     };
 }
 
@@ -32,6 +34,8 @@ class TileDetailsComponent extends Component {
             canBeUpgraded: false,
             owning: false,
             canBeDestroyed: false,
+            canBeRotated: false,
+            rotateMode: false,
             destroyMode: false,
             destroyCost: 0,
             modernizeMode: false,
@@ -51,6 +55,8 @@ class TileDetailsComponent extends Component {
         this.getWaysOfModernize = this.getWaysOfModernize.bind(this);
         this.chooseWayOfModernize = this.chooseWayOfModernize.bind(this);
         this.build = this.build.bind(this);
+        this.rotate = this.rotate.bind(this);
+        this.rotateSave = this.rotateSave.bind(this);
     }
 
 
@@ -58,7 +64,8 @@ class TileDetailsComponent extends Component {
 
         this.setState(Object.assign({}, this.state, {
             canBeDestroyed: (this.props.actualGame.tileDetails.name != "OPTIONAL_1" && this.props.actualGame.tileDetails.name != "ROAD_STRAIGHT_1")
-                && this.props.actualGame.tileDetails.owner && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id
+                && this.props.actualGame.tileDetails.owner && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id,
+            canBeRotated: this.props.actualGame.tileDetails.owner && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id
         }))
 
         fetch(window.location.href.split("#")[0] + "api/game/tile/" + this.props.actualGame.tileDetails.id).then(response =>
@@ -85,6 +92,8 @@ class TileDetailsComponent extends Component {
                 }))
             }
 
+
+
             this.setState(Object.assign({}, this.state, {
                 lvlNpoint: lvlNpoint,
                 outcomes: outcomes,
@@ -93,7 +102,9 @@ class TileDetailsComponent extends Component {
         })
     }
 
+
     close() {
+        this.props.gameRestoreTile();
         this.props.gameShowTileDetails(null)
     }
 
@@ -117,12 +128,12 @@ class TileDetailsComponent extends Component {
             }))
         }
         else {
-            if(this.state.modernizeWays.length == 1){
+            if (this.state.modernizeWays.length == 1) {
                 this.upgrade();
-            }else 
-            this.setState(Object.assign({}, this.state, {
-                modernizeMode: false
-            }))
+            } else
+                this.setState(Object.assign({}, this.state, {
+                    modernizeMode: false
+                }))
         }
     }
 
@@ -206,6 +217,15 @@ class TileDetailsComponent extends Component {
 
     }
 
+    rotate() {
+        this.props.gameRotateTile();
+        this.setState({ rotateMode: true })
+    }
+    rotateSave() {
+        this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id, angle:this.props.actualGame.tileDetails.angle });
+        this.close();
+    }
+
     stopPropagation(e) {
         e.persist();
         e.nativeEvent.stopImmediatePropagation();
@@ -217,6 +237,8 @@ class TileDetailsComponent extends Component {
         this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id, type: this.state.modernizeWays[0] });
         this.close();
     }
+
+
 
     render() {
         const { actualGame } = this.props;
@@ -233,7 +255,9 @@ class TileDetailsComponent extends Component {
             modernizePage,
             modernizeName,
             modernizeCost,
-            modernizeProfit
+            modernizeProfit,
+            canBeRotated,
+            rotateMode,
         } = this.state;
         return (
             <div className="" onClick={this.stopPropagation}>
@@ -243,21 +267,32 @@ class TileDetailsComponent extends Component {
                         <br />
                         {!destroyMode ?
                             <div>
-                                <p>{lvlNpoint}</p>
-                                <br />
-                                <p>{outcomes}</p>
-                                <br />
-                                <p>{needToUppgrade}</p>
+                                {!rotateMode ? <div>
+                                    <p>{lvlNpoint}</p>
+                                    <br />
+                                    <p>{outcomes}</p>
+                                    <br />
+                                    <p>{needToUppgrade}</p>
 
-                                {canBeUpgraded ?
-                                    <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton" onClick={this.upgrade}>Ulepsz</a>
-                                    : <span></span>
-                                }
+                                    {canBeUpgraded ?
+                                        <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton" onClick={this.upgrade}>Ulepsz</a>
+                                        : <span></span>
+                                    }
+
+                                </div> : <div>
+                                        <a className="button is-large  is-link is-rounded is-fullwidth rotateButtons" onClick={this.rotateSave}>Zapisz</a>
+                                        <a className="button is-large  is-link is-rounded is-fullwidth rotateButtons" onClick={this.rotate}>Obróć</a>
+                                        <a className="button is-large  is-link is-rounded is-fullwidth rotateButtons" onClick={this.close}>Anuluj</a>
+                                    </div>}
 
                                 <img src="assets/closeB.png" className="closeButton" onClick={this.close} />
 
                                 {canBeDestroyed ?
                                     <img src="assets/buldozer.png" className="destroyButton" onClick={this.destroy} />
+                                    : <span></span>
+                                }
+                                {canBeRotated ?
+                                    <img src="assets/rotate.png" className="rotateButton" onClick={this.rotate} />
                                     : <span></span>
                                 }
 

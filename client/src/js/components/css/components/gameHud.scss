@@ -136,8 +136,18 @@ $resources-tab-height:fit-content;
         .destroyButton{
             width:35px;
             height: 35px;
-            top:60px;
+            top:50px;
             right:25px;
+        }
+        .rotateButton{
+            width:35px;
+            height: 35px;
+            top:90px;
+            right:25px;
+        }
+
+        .rotateButtons{
+            top:100px;
         }
 
         .modernizeImage0{

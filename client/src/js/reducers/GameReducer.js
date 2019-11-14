@@ -1,4 +1,4 @@
-import { GAME_TILE_UPDATE, GAME_NEW_TILE_TO_DISPLAY, GAME_NEW_TILE_DISPLAYED, GAME_MY_NEW_TILE, GAME_MY_NEW_TILE_DISPLAYED, GAME_TILE_IN_GOOD_PLACE, GAME_ME_GAMER_UPDATE, SHOW_TILE_DETAILS } from "../constants/game-action-types";
+import { GAME_TILE_UPDATE, GAME_NEW_TILE_TO_DISPLAY, GAME_NEW_TILE_DISPLAYED, GAME_MY_NEW_TILE, GAME_MY_NEW_TILE_DISPLAYED, GAME_TILE_IN_GOOD_PLACE, GAME_ME_GAMER_UPDATE, SHOW_TILE_DETAILS, ROTATE_TILE, TILE_ROTATED, RESTORE_TILE_ROTATE, TILE_ROTATE_RESTORED } from "../constants/game-action-types";
 import { wsConnectGame } from "../actions";
 
 export function gameReducer(state, action){
@@ -56,7 +56,42 @@ export function gameReducer(state, action){
   if (action.type === SHOW_TILE_DETAILS) {
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
-        tileDetails: action.payload
+        tileDetails: action.payload,     
+      })
+    });
+  }
+  
+  if (action.type === ROTATE_TILE) {
+   let tileOriginalAngle = state.actualGame.tileOriginalAngle==null?state.actualGame.tileDetails.angle:state.actualGame.tileOriginalAngle
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        rotateTile: true,
+        tileOriginalAngle:tileOriginalAngle
+      })
+    });
+  }
+  
+  if (action.type === TILE_ROTATED) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        rotateTile:false
+      })
+    });
+  }
+  
+  if (action.type === RESTORE_TILE_ROTATE) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        restoreTileAngle:true
+      })
+    });
+  }
+  
+  if (action.type === TILE_ROTATE_RESTORED) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        restoreTileAngle:false,
+        tileOriginalAngle:null,    
       })
     });
   }

@@ -1,6 +1,6 @@
 import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
-import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace, gameShowTileDetails } from "../../actions/gameActions.js";
+import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace, gameShowTileDetails, gameTileRotated, gameTileRotateRestored } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
 import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale, getTileGeneralType, translateTileName } from "../gameMechanics";
 import { TileDetails } from "./components/TileDetails";
@@ -20,7 +20,7 @@ export default class GameScene extends Phaser.Scene {
     this.myScale = window.innerWidth > 1000 ? 0.5 : 0.3;
 
     this.tileWidth = 300 * this.myScale;
-    this.halfOfTable = 45;
+    this.halfOfTable = 23;
     this.tableWidth = this.halfOfTable * 2 + 1;
 
     this.state = store.getState();
@@ -310,6 +310,19 @@ export default class GameScene extends Phaser.Scene {
       this.possibleHihglights.forEach(highlight => highlight.destroy())
       this.possibleHihglights = [];
       store.dispatch(gameTileInGoodPlace({ status: false, tile: null }));
+    }
+    if (this.state.actualGame.rotateTile){
+      let tile = this.tiles.filter(t=>t.id==this.state.actualGame.tileDetails.id)
+      tile = tile[tile.length-1]
+      tile.rotate();
+      store.dispatch(gameTileRotated());
+      store.dispatch(gameShowTileDetails(tile))
+    } 
+    
+    if (this.state.actualGame.restoreTileAngle){
+      let tile = this.tiles.filter(t=>t.id==this.state.actualGame.tileDetails.id)[0]  
+      tile.setAngle_My(this.state.actualGame.tileOriginalAngle);
+      store.dispatch(gameTileRotateRestored());
     }
   }
 

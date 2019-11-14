@@ -4,14 +4,15 @@ import { NavLink } from 'react-router-dom';
 
 import GameComponent from "./GameComponent.jsx";
 import { gameWsGameJoin, gameMyNewTile } from "../actions/gameActions.js";
-import { wsSendMessage } from "../actions/index.js";
+import { wsSendMessage, wsGameDisconnect } from "../actions/index.js";
 import TileDetails from "../components/gameComponents/TileDetails.jsx";
 
 function mapDispatchToProps(dispatch) {
     return {
         gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload)),
         wsSendMessage: payload => dispatch(wsSendMessage(payload)),
-        gameMyNewTile: payload => dispatch(gameMyNewTile(payload))
+        gameMyNewTile: payload => dispatch(gameMyNewTile(payload)),
+        wsGameDisconnect: payload => dispatch(wsGameDisconnect(payload))
     };
 }
 
@@ -38,6 +39,7 @@ class MainGameComponent extends Component {
         this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
         this.openMenu = this.openMenu.bind(this)
         this.closeMenu = this.closeMenu.bind(this)
+        this.leaveGame = this.leaveGame.bind(this)
     }
 
     componentDidMount() {
@@ -103,6 +105,11 @@ class MainGameComponent extends Component {
             gameJoined: this.state.gameJoined,
             openMenu: true
         })
+    }
+
+    leaveGame(){
+        
+        this.props.wsGameDisconnect();
     }
 
     closeMenu() {
@@ -211,8 +218,9 @@ class MainGameComponent extends Component {
                             </div>
                             <div className="buttonList">
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.closeMenu}>Powrót do gry</a>
-                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opcje</a>
-                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>
+                                {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opcje</a>
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</a>*/}
+                                <NavLink to="/panel" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</NavLink>
                             </div>
                         </div>
                     </div>
@@ -225,8 +233,9 @@ class MainGameComponent extends Component {
 
                             <div className="buttonList">
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.closeMenu}>Kontynuuj</a>
-                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
-                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>
+                                {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>*/}
+                                <NavLink to="/panel" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</NavLink>
                             </div>
                         </div>
                     </div>
