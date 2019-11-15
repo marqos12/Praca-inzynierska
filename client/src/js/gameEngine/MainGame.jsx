@@ -40,6 +40,7 @@ class MainGameComponent extends Component {
         this.openMenu = this.openMenu.bind(this)
         this.closeMenu = this.closeMenu.bind(this)
         this.leaveGame = this.leaveGame.bind(this)
+        this.getGamersResult = this.getGamersResult.bind(this)
     }
 
     componentDidMount() {
@@ -140,10 +141,22 @@ class MainGameComponent extends Component {
         return { minutes: minutes, seconds: seconds, limitMinutes: limitMinutes, limitSeconds: limitSeconds  }
     }
 
+    getGamersResult(){
+        let tab = [];
+        let rankPoint = this.props.actualGame.gamers.sort((x, y) => { return y.points - x.points })
+        let rankDucklings = this.props.actualGame.gamers.sort((x, y) => { return y.ducklings - x.ducklings })
+        for(let i = 0; i < rankPoint.length;i++){
+            tab.push({points:rankPoint[i],ducklings:rankDucklings[i]})
+        }
+        console.log(tab)
+        return tab;
+    }
+
     render() {
         const { actualGame, } = this.props;
         const { openMenu } = this.state
         const timer = this.getTimer(actualGame)
+        const result = this.getGamersResult();
         return (
             <div>
                 <GameComponent />
@@ -229,9 +242,28 @@ class MainGameComponent extends Component {
 
                     <div className="container">
                         <div className="menuContent">
-                            <h1 className="gameTitle">Gra zakończona!</h1>
-
                             <div className="buttonList">
+                            <h1 className="gameTitle">Gra zakończona!</h1>
+                                <h3 className="gameTitle">Wyniki:</h3>
+                            <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                                <thead>
+                                    <tr>
+                                        <th>Pozycja</th>
+                                        <th>Punkty</th>
+                                        <th>Ducklingsy</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="gameResult">
+                                    {result.map((row, index) => {
+                                        return <tr key={index} >
+                                            <td >{index + 1}</td>
+                                            <td >{row.points.user.username}</td>
+                                            <td >{row.ducklings.user.username}</td>                                            
+                                        </tr>
+                                    })}
+                                </tbody>
+                            </table>
+
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.closeMenu}>Kontynuuj</a>
                                 {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>*/}

@@ -233,6 +233,10 @@ $resources-tab-height:fit-content;
     }
 }
 
+.gameResult tr:first-child{
+    background-color: gold;
+}
+
 #phaser-game{
     z-index: 10;
     height: 100vh;
