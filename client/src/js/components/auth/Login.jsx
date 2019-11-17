@@ -71,7 +71,8 @@ class LoginComponent extends Component {
                                 <p>Logowanie nieudane!</p>
                             }
                             <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.login}>Zaloguj się</a>
-                            Nie masz jeszcze konta? <NavLink to="/registration" className="subtitleBtn noBorder">Zarejestruj się</NavLink>
+                            Nie masz jeszcze konta? <NavLink to="/registration" className="subtitleBtn noBorder">Zarejestruj się</NavLink>&nbsp;
+                            lub <NavLink to="/#" className="subtitleBtn noBorder">Powróć do strony głównej</NavLink>
                         </div>
                     </div>
                 </div>

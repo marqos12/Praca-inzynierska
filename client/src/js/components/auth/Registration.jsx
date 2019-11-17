@@ -89,9 +89,10 @@ class RegistrationComponent extends Component {
                                 {auth.registerSuccess ?
                                     <NavLink to="/login" type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.login}>Zaloguj się</NavLink>
                                     :
-                                    <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.register}>Zarejestruj się</a>
+                                    <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.register}>Zarejestruj się</a> 
                                 }
-                                Masz już konto? <NavLink to="/login" className="subtitleBtn noBorder">Zaloguj się</NavLink>
+                                Masz już konto? <NavLink to="/login" className="subtitleBtn noBorder">Zaloguj się</NavLink>&nbsp;
+                            lub <NavLink to="/#" className="subtitleBtn noBorder">Powróć do strony głównej</NavLink>
                             </div>
                         </div>
                     </form>

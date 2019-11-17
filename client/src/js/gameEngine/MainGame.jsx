@@ -41,6 +41,7 @@ class MainGameComponent extends Component {
         this.closeMenu = this.closeMenu.bind(this)
         this.leaveGame = this.leaveGame.bind(this)
         this.getGamersResult = this.getGamersResult.bind(this)
+        this.continueGame = this.continueGame.bind(this)
     }
 
     componentDidMount() {
@@ -148,8 +149,17 @@ class MainGameComponent extends Component {
         for(let i = 0; i < rankPoint.length;i++){
             tab.push({points:rankPoint[i],ducklings:rankDucklings[i]})
         }
-        console.log(tab)
         return tab;
+    }
+
+    continueGame(){
+        let game = this.props.actualGame.game;
+        game.endType = "ENDLESS";
+        game.ended = false;
+
+        this.props.wsSendMessage({
+            channel: "/lobby/updateGame", payload: game
+        })
     }
 
     render() {
@@ -264,7 +274,7 @@ class MainGameComponent extends Component {
                                 </tbody>
                             </table>
 
-                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.closeMenu}>Kontynuuj</a>
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.continueGame}>Kontynuuj</a>
                                 {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>*/}
                                 <NavLink to="/panel" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</NavLink>

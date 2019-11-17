@@ -41,8 +41,9 @@
             .noBorder{
                 border: solid 0px $card-border-color;
             }
-            .noBorder::hover{
+            .noBorder:hover{
                 border: solid 0px $card-border-color;
+                color: rgb(15, 15, 15);
             }
         label{
             font-size: 22px;
