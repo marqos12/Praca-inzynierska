@@ -27,6 +27,7 @@ import {
   wsGameDisconnected,
   wsGameUpdated,
   beenKickedOut,
+  wsAloneGameCreated,
 } from "../actions/index";
 import { gameNewTileToDisplay, gameMyNewTile, gameMeGamerUpdate } from "../actions/gameActions";
 
@@ -74,7 +75,7 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(wsConnectGame(resp.payload));
             break;
             case "GAME_ALONE_CREATED":
-              dispatch(wsGameCreated(resp.payload));
+              dispatch(wsAloneGameCreated(resp.payload));
               dispatch(wsConnectGame(resp.payload));
               break;
           case "ME_GAMER":

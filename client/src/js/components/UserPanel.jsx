@@ -43,7 +43,7 @@ class HomeComponent extends Component {
 
     createNewAloneGame() {
         this.setState({aloneGame:true})
-        this.props.wsSendMessage({ channel: "/lobby/createGame", payload: { id: this.props.auth.user.id } })
+        this.props.wsSendMessage({ channel: "/lobby/createAloneGame", payload: { id: this.props.auth.user.id } })
     }
 
     componentDidMount() {
@@ -60,7 +60,7 @@ class HomeComponent extends Component {
 
     componentDidUpdate() {
         if (this.props.actualGame.game != null)
-        if(!this.state.aloneGame)
+        if(!this.props.actualGame.alone)
             this.props.history.push("/game/" + this.props.actualGame.game.id)
             else 
             this.props.history.push("/alone/" + this.props.actualGame.game.id)
@@ -85,6 +85,7 @@ class HomeComponent extends Component {
                         <NavLink to="/searchGames" className="button is-large  is-link is-rounded is-fullwidth" >Szukaj gry</NavLink>
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewGame}>Utwórz grę</a>
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewAloneGame}>Graj sam</a>
+                        <a className="button is-large  is-link is-rounded is-fullwidth" href="assets/manual.pdf"  target="_blank">Zobacz poradnik</a>
                         {/*<NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
                         <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>*/}
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Wyloguj</a>

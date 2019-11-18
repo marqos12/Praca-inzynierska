@@ -13,6 +13,7 @@ import NewGame from "./gameComponents/NewGame.jsx";
 import SearchGame from "./gameComponents/SearchGame.jsx";
 import Game from "./gameComponents/Game.jsx";
 import MainGame from "../gameEngine/MainGame.jsx";
+import About from "./gameComponents/About.jsx";
 
 class App extends Component {
   constructor(props) {
@@ -60,6 +61,7 @@ class App extends Component {
             <Route exact path="/login" component={Login} />
             <Route exact path="/registration" component={Registration} />
             <Route exact path="/panel" component={UserPanel} />
+            <Route exact path="/about" component={About} />
             <Route exact path="/game" component={NewGame} />
             <Route exact path="/searchGames" component={SearchGame} />
             <Route exact path="/alone/:id" component={Game} />

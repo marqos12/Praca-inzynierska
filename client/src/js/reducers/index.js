@@ -31,7 +31,8 @@ const initialState = {
     tileDetails:null,
     rotateTile:false,
     tileOriginalAngle:null,
-    restoreTileAngle:false
+    restoreTileAngle:false,
+    alone:false
   },
   origin: ""
 };

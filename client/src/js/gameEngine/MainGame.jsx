@@ -274,7 +274,7 @@ class MainGameComponent extends Component {
                                 </tbody>
                             </table>
 
-                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.continueGame}>Kontynuuj</a>
+                                {actualGame.amIAuthor?<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.continueGame}>Kontynuuj</a>:""}
                                 {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>*/}
                                 <NavLink to="/panel" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</NavLink>

@@ -85,6 +85,25 @@
     }
 }
 
+    .about{
+      background-color: #5d8FBD;
+      font-size: 20px;
+
+      img{
+        margin:0 auto;
+        border:white 2px solid;
+        max-height: 400px;
+        display:block;
+      }
+
+      .buttonList{
+        color:white;
+      }
+      a{
+        color:black
+      }
+    }
+
 .switch {
     position: relative;
     display: inline-block;

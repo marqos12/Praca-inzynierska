@@ -117,6 +117,7 @@ class SearchGamesComponent extends Component {
                                 })}
                             </tbody>
                         </table>
+                        <NavLink to="/#" className="button is-large  is-link is-rounded is-fullwidth" >Powrót</NavLink>
                     </div>
                 </div>
             </div>

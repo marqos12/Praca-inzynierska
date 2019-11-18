@@ -44,20 +44,20 @@ export function getPossiblePlaces(tiles, newTile) {
     let initPossiblePos = [];
     let tilesPos = [];
     tiles.forEach(tile => {
-     
-            tilesPos.push({ posX: tile.posX, posY: tile.posY });
 
-            let tileEdges = getTileSortedEdges(tile.generalType, tile.angle);
-            for (let i = 0; i < 4; i++) {
-                let j = 0;
-                tileEdges.forEach(edge => {
-                    if (newTileEdges[i] == edge && edge != GREEN) {
-                        initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
-                    }
-                    j++
-                })
-            }
-        
+        tilesPos.push({ posX: tile.posX, posY: tile.posY });
+
+        let tileEdges = getTileSortedEdges(tile.generalType, tile.angle);
+        for (let i = 0; i < 4; i++) {
+            let j = 0;
+            tileEdges.forEach(edge => {
+                if (newTileEdges[i] == edge && edge != GREEN) {
+                    initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
+                }
+                j++
+            })
+        }
+
 
     })
 
@@ -218,6 +218,8 @@ export function translateTileName(tileName) {
             return "Park";
         case "CHURCH_1":
             return "Kościół";
+        case "POWER_STATION_1":
+            return "Elektrownia";
 
         case "GROCERY_STORE_1":
             return "Sklep spożywczy";
@@ -382,6 +384,7 @@ export function getWayOfUpgrade(tile) {
                 "HOSPITAL_1",
                 "FIRE_HOUSE_1",
                 "POLICE_STATION_1",
+                "POWER_STATION_1",
                 "GARBAGE_DUMP_1",
                 "SEWAGE_FARM_1",
                 "CHURCH_1"];

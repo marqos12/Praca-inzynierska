@@ -20,7 +20,8 @@ class RegistrationComponent extends Component {
             username: "",
             email: "",
             password: "",
-            confirmPassword: ""
+            confirmPassword: "",
+            samePassword:true
         };
         this.handleChange = this.handleChange.bind(this);
         this.register = this.register.bind(this);
@@ -30,13 +31,15 @@ class RegistrationComponent extends Component {
     }
 
     register() {
-
         const { username, email, password, confirmPassword } = this.state;
+        if(password==confirmPassword)
         this.props.register({ username: username, email: email, password: password, role: ["user", "pm"], name: 'stefan' })
+        else 
+        this.setState({samePassword: false });
     }
     render() {
         const { auth } = this.props
-        const { username, email, password, confirmPassword } = this.state;
+        const { username, email, password, confirmPassword, samePassword } = this.state;
         return (
             <div className="container">
                 <div className="menuContent">
@@ -80,6 +83,9 @@ class RegistrationComponent extends Component {
                                 </div>
                             </div>
                             <div className="subTitle">
+                                {!samePassword &&
+                                    <p>Podane hasła muszą być takie same!</p>
+                                }
                                 {auth.registerSuccess &&
                                     <p>Rejestracja udana!</p>
                                 }

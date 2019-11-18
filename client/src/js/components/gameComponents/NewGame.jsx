@@ -197,7 +197,7 @@ class NewGameComponent extends Component {
                                                     <input id="isRts" type="checkbox" name="isRts" checked={isRts} onChange={this.checkboxHandleChange} />
                                                     <span className="slider round"></span>
                                                 </label>
-                                                <label for="isRts">Tryb gry: RTS</label>
+                                                <label for="isRts">Tryb gry: {!isRts?"turowa":"RTS"}</label>
                                             </div>
                                             <div className="field">
                                                 <label className="switch">

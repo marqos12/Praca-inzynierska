@@ -29,6 +29,7 @@ import {
     WS_UNSUBSCRIBE_GAME_LIST_CHANNEL,
     SET_ORIGIN,
     BEEN_KICKED_OUT,
+    WS_ALONE_GAME_CREATED,
 } from "../constants/action-types";
 
 export function wsConnect() {
@@ -115,6 +116,10 @@ export function wsChannelSubscription(payload) {
 
 export function wsGameCreated(payload) {
     return { type: WS_GAME_CREATED, payload };
+}
+
+export function wsAloneGameCreated(payload) {
+    return { type: WS_ALONE_GAME_CREATED, payload };
 }
 
 export function wsGameUpdated(payload) {
