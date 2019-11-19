@@ -1,10 +1,12 @@
 package pl.mojrzeszow.server.service;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,7 +109,7 @@ public class GameService {
 		List<Tile> gameTiles = tileRepository.findByGame(gamer.getGame());
 
 		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle().intValue(), 1,
-				data.getPosX(), data.getPosY(), new Influence());
+				data.getPosX(), data.getPosY(), new Influence(), new Influence(), "", "", 0L, 0L);
 
 		calculateTilesInfluence(tile, gameTiles);
 
@@ -196,7 +198,10 @@ public class GameService {
 				if (data.type == null || data.type != TileType.OPTIONAL) {
 					tile.getGamer().setDucklings(
 							tile.getGamer().getDucklings() - tile.getTileInfluenceNeedToUpgrade().getDucklings());
+
+					calculateTakenInfluence(tile, tileRepository.findByGame(tile.getGame()));
 					tile.setLvl(tile.getLvl() + 1);
+
 				} else {
 					tile.getGamer().setDucklings(tile.getGamer().getDucklings() - tile.getType().getCosts());
 					tile.getGamer()
@@ -361,10 +366,13 @@ public class GameService {
 			List<Tile> tiles = tileRepository.findByGamer(gamer);
 			for (Tile tile : tiles) {
 				Influence tileInfluence = tile.getTileGeneratedInfluence();
-				if (tileInfluence != null) {
+				if (tileInfluence != null) 
 					ducklingsPerRound += tileInfluence.getDucklings();
-
-				}
+				
+				if(tile.getTaxes()!=null)
+				ducklingsPerRound-=tile.getTaxes();
+				if(tile.getAdditionalMoney()!=null)
+				ducklingsPerRound-=tile.getAdditionalMoney();
 			}
 			gamer.setDucklingsPerRound(ducklingsPerRound);
 			gamer.setDucklings(gamer.getDucklings() + ducklingsPerRound);
@@ -372,6 +380,171 @@ public class GameService {
 		gamers = gamerRepository.saveAll(gamers);
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+	}
+
+	private void calculateTakenInfluence(Tile tile, List<Tile> tiles) {
+		Influence tileNeedToUpgrade = tile.getTileInfluenceNeedToUpgrade();
+
+		String[] fieldNames = { "people", "shops", "entertainment", "work", "medicalCare", "services", "goods",
+				"fireSafety", "crimePrevention", "energy", "cleanness", "science" };
+		List<Field> fieldsValues = new ArrayList<>();
+		List<Field> fieldsRanges = new ArrayList<>();
+
+		try {
+			for (int i = 0; i < fieldNames.length; i++) {
+				Field fieldName = tileNeedToUpgrade.getClass().getDeclaredField(fieldNames[i]);
+				fieldName.setAccessible(true);
+				fieldsValues.add(fieldName);
+
+				Field fieldRange = tileNeedToUpgrade.getClass().getDeclaredField(fieldNames[i] + "Range");
+				fieldRange.setAccessible(true);
+				fieldsRanges.add(fieldRange);
+			}
+
+			int i = 0;
+			for (Field field : fieldsValues) {
+				final int index = i;
+				final Long value = (Long) field.get(tileNeedToUpgrade);
+				if (value != null) {
+					List<Tile> possibleTiles = tiles.stream().filter(t -> t.getTileGeneratedInfluence() != null)
+							.filter(t -> {
+								try {
+									return field.get(t.getTileGeneratedInfluence()) != null;
+								} catch (IllegalArgumentException | IllegalAccessException e) {
+									e.printStackTrace();
+								}
+								return false;
+							}).filter(t -> {
+								try {
+									return (Long) fieldsRanges.get(index).get(t.getTileGeneratedInfluence()) >= Math
+											.sqrt(Math.pow(tile.getPosX() - t.getPosX(), 2)
+													+ Math.pow(tile.getPosY() - t.getPosY(), 2));
+								} catch (IllegalArgumentException | IllegalAccessException e) {
+									e.printStackTrace();
+								}
+								return false;
+							})
+							.sorted((t1,
+									t2) -> (int) (Math
+											.sqrt(Math.pow(tile.getPosX() - t1.getPosX(), 2)
+													+ Math.pow(tile.getPosY() - t1.getPosY(), 2))
+											- Math.sqrt(Math.pow(tile.getPosX() - t2.getPosX(), 2)
+													+ Math.pow(tile.getPosY() - t2.getPosY(), 2))))
+							.collect(Collectors.toList());
+
+					Long valueC = value;
+
+					List<Tile> ownerTiles = possibleTiles.stream()
+							.filter(t -> t.getGamer().getId().equals(tile.getGamer().getId()))
+							.collect(Collectors.toList());
+
+					for (Tile ot : ownerTiles) {
+						if (valueC > 0) {
+							Long usedInfluence = (Long) field.get(ot.getUsedInfluence());
+							Long generatedInfluence = (Long) field.get(ot.getTileGeneratedInfluence());
+							Long left = usedInfluence != null ? generatedInfluence - usedInfluence : generatedInfluence;
+							Long used = 0L;
+							if (left <= value) {
+								if (usedInfluence == null) {
+									usedInfluence = value;
+								} else {
+									usedInfluence += value;
+								}
+								used = left;
+								valueC = 0L;
+							} else {
+								if (usedInfluence == null) {
+									usedInfluence = left;
+								} else {
+									usedInfluence += left;
+								}
+								used = valueC;
+								valueC -= left;
+							}
+							field.set(ot.getUsedInfluence(), usedInfluence);
+							ot.setInfluenceGiveTo(ot.getInfluenceGiveTo() + tile.getId().toString() + "|");
+							tile.setInfluenceTakenFrom(tile.getInfluenceTakenFrom() + ot.getId().toString() + "|");
+							updateTileInfluence(ot, tiles, field, fieldsRanges.get(index), used);
+						}
+					}
+					if (valueC > 0) {
+						List<Tile> notOwnerTiles = possibleTiles.stream()
+								.filter(t -> !t.getGamer().getId().equals(tile.getGamer().getId()))
+								.collect(Collectors.toList());
+
+						for (Tile not : notOwnerTiles) {
+							if (valueC > 0) {
+								Long usedInfluence = (Long) field.get(not.getUsedInfluence());
+								Long generatedInfluence = (Long) field.get(not.getTileGeneratedInfluence());
+								Long left = usedInfluence != null ? generatedInfluence - usedInfluence
+										: generatedInfluence;
+								Long used = 0L;
+								if (left <= valueC) {
+									used = left;
+									if (usedInfluence == null) {
+										usedInfluence = value;
+									} else {
+										usedInfluence += value;
+									}
+									valueC -= left;
+								} else {
+									used = valueC;
+									if (usedInfluence == null) {
+										usedInfluence = left;
+									} else {
+										usedInfluence += left;
+									}
+									valueC = 0L;
+								}
+								field.set(not.getUsedInfluence(), usedInfluence);
+								Long aditionalMoney = not.getAdditionalMoney() == null ? 0L : not.getAdditionalMoney();
+								Long taxes = tile.getTaxes()==null?0L:tile.getTaxes();
+								tile.setLvl(tile.getLvl() + 1);
+								not.setAdditionalMoney(
+										aditionalMoney + tile.getTileGeneratedInfluence().getDucklings() / 10 * used);
+										tile.setTaxes(
+											taxes + tile.getTileGeneratedInfluence().getDucklings() / 10 * used);
+
+								tile.setLvl(tile.getLvl() - 1);
+								not.setInfluenceGiveTo(not.getInfluenceGiveTo() + tile.getId().toString() + "|");
+								tile.setInfluenceTakenFrom(tile.getInfluenceTakenFrom() + not.getId().toString() + "|");
+							}
+						}
+
+					}
+
+				}
+				i++;
+			}
+			tileRepository.saveAll(tiles);
+			tileRepository.save(tile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void updateTileInfluence(Tile tile, List<Tile> tiles, Field field, Field fieldRange, Long diff) {
+		List<Tile> tilesInRange = tiles.stream().filter(t -> {
+			try {
+				return Math.sqrt(Math.pow(tile.getPosX() - t.getPosX(), 2)
+						+ Math.pow(tile.getPosY() - t.getPosY(), 2)) <= (Long) fieldRange
+								.get(tile.getTileGeneratedInfluence());
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}).collect(Collectors.toList());
+
+		for (Tile t : tilesInRange) {
+			try {
+				Long influence = (Long) field.get(t.getInfluence());
+				if(influence!=null)
+				field.set(t.getInfluence(), influence - diff);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

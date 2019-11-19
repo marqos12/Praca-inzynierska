@@ -73,7 +73,7 @@ class TileDetailsComponent extends Component {
         ).then(response => {
 
             let lvlNpoint = `Poziom: ${response.lvl}  Punkty: ${response.points}`;
-            let outcomes = `${getOutcomes(response.outcomeInfluence)}`;
+            let outcomes = `${getOutcomes(response.outcomeInfluence, response.summaryDucklings)}`;
 
             if ((response.needToUppgrade != null || this.props.actualGame.tileDetails.name == "OPTIONAL_1" || this.props.actualGame.tileDetails.name == "ROAD_STRAIGHT_1") && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id) {
                 let canBeUpgraded = false;
@@ -205,7 +205,7 @@ class TileDetailsComponent extends Component {
             response.json()
         ).then(response => {
             let modernizeCost = response.buildCosts;
-            let modernizeProfit = getOutcomes(response.outcomeInfluence)
+            let modernizeProfit = getOutcomes(response.outcomeInfluence, response.summaryDucklings)
             let modernizeName = translateTileName(way + "_1")
 
             this.setState(Object.assign({}, this.state, {

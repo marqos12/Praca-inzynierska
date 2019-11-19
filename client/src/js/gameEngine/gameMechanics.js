@@ -238,13 +238,14 @@ export function translateTileName(tileName) {
     }
 }
 
-export function getOutcomes(influence) {
+export function getOutcomes(influence, summaryDucklings) {
     let incomes = "";
     let incomesCounter = 1;
     if (influence) {
         incomes += "Korzyści: "
         if (influence.ducklings) { incomes += `ducklingsy: ${influence.ducklings}d;`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if(summaryDucklings&&summaryDucklings!=influence.ducklings){ incomes += `(${summaryDucklings}d)`; incomesCounter++; }
+        if (incomesCounter >= 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.people) {
             incomes += ` ludzie: ${influence.people}/ ${influence.peopleRange};`; incomesCounter++;
             /*let circle = new Phaser.GameObjects.Ellipse(this.scene,0,0,influence.peopleRange*this.tile.displayWidth,influence.peopleRange*this.tile.displayWidth,0xff0000,0.2);this.influenceField.push(circle)*/

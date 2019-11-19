@@ -189,7 +189,7 @@ public class LobbyService {
 
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatingGame);
 
-		Tile startTile = new Tile(null, null, game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L, new Influence());
+		Tile startTile = new Tile(null, null, game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L, new Influence(), new Influence(),"","",0L, 0L);
 
 		tileRepository.save(startTile);
 

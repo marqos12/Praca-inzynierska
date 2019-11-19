@@ -25,6 +25,8 @@ public class DataExchange {
 	public Long points;
 	public Long buildCosts;
 	public Long deconstructionCosts;
+	public Influence usedInfluence;
+	public Long summaryDucklings;
 
 	public DataExchange() {
 	}

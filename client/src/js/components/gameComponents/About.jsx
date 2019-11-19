@@ -40,7 +40,7 @@ class AboutComponent extends Component {
                         <img src="assets/inzynier.png"/>
                         <br/>
                         <p>Moje Miasto to przeglądarkowa gra planszowa z elementami strategii ekonomicznej. Zadaniem gracza jest rozwój miasta, za pomocą gotowych elementów (płytek z budynkami).</p>
-                        <p>Płytki powinny być układane zgodnie z dopasowaniem terenu. O dokładnych zasadach i przebiegu gry możesz poczytać <a className="subtitleBtn noBorder" href="assets/manual.pdf"  target="_blank">tutaj</a></p>
+                        <p>Płytki powinny być układane zgodnie z dopasowaniem terenu. O dokładnych zasadach i przebiegu gry możesz poczytać <a className="subtitleBtn noBorder" href="assets/manual.pdf"  target="_blank"   >tutaj</a></p>
                         <br/>
                         <img src="assets/rozgrywka.jpg"/>
                         <br />
@@ -55,6 +55,6 @@ class AboutComponent extends Component {
             </div>
         );
     }
-}
+}   
 const About = connect(mapStateToProps, mapDispatchToProps)(AboutComponent);
 export default About;

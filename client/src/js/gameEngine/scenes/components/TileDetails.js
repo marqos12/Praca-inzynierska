@@ -51,6 +51,7 @@ export class TileDetails {
         ).then(response => {
             this.details = response;
             this.tileDetails()
+            this.move();
         })
 
         this.move();
@@ -201,6 +202,7 @@ export class TileDetails {
                         });
                         this.scene.add.existing(this.destroyButton);
                     }
+                    this.move();
                 })
             }
         });
@@ -314,7 +316,7 @@ export class TileDetails {
     tileDetails() {
 
         this.tileName.text += `\n\nPoziom: ${this.details.lvl} \t Punkty: ${this.details.points}` +
-            `\n\n${getOutcomes(this.details.outcomeInfluence)}`;
+            `\n\n${getOutcomes(this.details.outcomeInfluence, this.details.summaryDucklings)}`;
 
         if ((this.details.needToUppgrade != null || this.tile.name == "OPTIONAL_1" || this.tile.name == "ROAD_STRAIGHT_1") && this.scene.state.actualGame.meGamer.id == this.tile.owner.id) {
             let a = getNeedToUpgrade(this.details.incomeInfluence, this.details.needToUppgrade, this.scene.state.actualGame.meGamer.ducklings, this.canBeUpgrated);
@@ -365,6 +367,7 @@ export class TileDetails {
                     console.log('TileDetails 267 przycisk budowania placu budowy', response.buildCosts, this.scene.state.actualGame.meGamer.ducklings, response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings)
                     if (response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings)
                         this.showUpgradeButton = true;
+                        this.move();
                 })
 
             });

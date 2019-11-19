@@ -110,6 +110,9 @@ public class GameRESTController {
 		dataExchange.needToUppgrade = tile.getTileInfluenceNeedToUpgrade();
 		dataExchange.points = tile.getType().getPoints()*tile.getLvl()*tile.getLvl();
 		dataExchange.lvl = tile.getLvl();
+		dataExchange.usedInfluence = tile.getUsedInfluence();
+		if(tile.getTileGeneratedInfluence()!=null)
+		dataExchange.summaryDucklings = tile.getTileGeneratedInfluence().getDucklings()+(tile.getAdditionalMoney()==null?0L:tile.getAdditionalMoney())-(tile.getTaxes()==null?0L:tile.getTaxes());
 		return dataExchange;
 	}
 	
@@ -123,7 +126,6 @@ public class GameRESTController {
 		dataExchange.outcomeInfluence = tile.getTileGeneratedInfluence();
 		dataExchange.buildCosts = type.getCosts()*lvl*lvl;
 		dataExchange.deconstructionCosts = dataExchange.buildCosts/2;
-		
 		return dataExchange;
 	}	
 }

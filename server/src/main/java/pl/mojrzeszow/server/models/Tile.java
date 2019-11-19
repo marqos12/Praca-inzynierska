@@ -48,12 +48,22 @@ public class Tile {
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Influence influence;
 
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Influence usedInfluence;
+
+	String influenceTakenFrom;
+	String influenceGiveTo;
+	Long additionalMoney;
+	Long taxes;
+
 	public Tile() {
 		this.influence = new Influence();
+		this.usedInfluence = new Influence();
 	}
 
 	public Tile(Long id, @NotBlank Gamer gamer, @NotBlank Game game, @NotBlank TileType type, @NotBlank int model,
-			@NotBlank int angle, @NotBlank int lvl, @NotBlank Long posX, @NotBlank Long posY, Influence influence) {
+			@NotBlank int angle, @NotBlank int lvl, @NotBlank Long posX, @NotBlank Long posY, Influence influence,
+			Influence usedInfluence, String influenceTakenFrom, String influenceGiveTo, Long additionalMoney,Long taxes) {
 		super();
 		this.id = id;
 		this.gamer = gamer;
@@ -66,6 +76,11 @@ public class Tile {
 		this.posY = posY;
 		this.influence = influence;
 		this.generalType = type.getGeneralType();
+		this.usedInfluence = usedInfluence;
+		this.influenceTakenFrom = influenceTakenFrom;
+		this.influenceGiveTo = influenceGiveTo;
+		this.additionalMoney = additionalMoney;
+		this.taxes=taxes;
 	}
 
 	public List<TileEdgeType> getSortedEdgeTypes() {
@@ -108,37 +123,37 @@ public class Tile {
 			if (lvl == 1) {
 				influence.ducklings = 400L;
 				influence.points = 20L;
-				influence.shops = 1L;
+				influence.shops = 5L;
 				influence.shopsRange = 3L;
 			} else if (lvl == 2) {
 				influence.ducklings = 800L;
 				influence.points = 50L;
-				influence.shops = 2L;
+				influence.shops = 20L;
 				influence.shopsRange = 5L;
 			} else {
 				influence.ducklings = 5000L;
 				influence.points = 100L;
-				influence.shops = 10L;
+				influence.shops = 100L;
 				influence.shopsRange = 6L;
 			}
 			break;
 		case HOSPITAL:
 			influence.ducklings = -200L;
 			influence.points = 30L;
-			influence.medicalCare = 1L;
+			influence.medicalCare = 10L;
 			influence.medicalCareRange = 10L;
 			break;
 		case FIRE_HOUSE:
 			influence.ducklings = -200L;
 			influence.points = 30L;
-			influence.fireSafety = 1L;
+			influence.fireSafety = 5L;
 			influence.fireSafetyRange = 15L;
 			break;
 
 		case POLICE_STATION:
 			influence.ducklings = -200L;
 			influence.points = 30L;
-			influence.crimePrevention = 1L;
+			influence.crimePrevention = 5L;
 			influence.crimePreventionRange = 10L;
 			break;
 
@@ -146,12 +161,12 @@ public class Tile {
 			if (lvl == 1) {
 				influence.ducklings = -200L;
 				influence.points = 30L;
-				influence.science = 1L;
+				influence.science = 5L;
 				influence.scienceRange = 10L;
 			} else {
 				influence.ducklings = -10000L;
 				influence.points = 300L;
-				influence.science = 10L;
+				influence.science = 100L;
 				influence.scienceRange = 100L;
 			}
 			break;
@@ -159,14 +174,14 @@ public class Tile {
 		case GARBAGE_DUMP:
 			influence.ducklings = -100L;
 			influence.points = 30L;
-			influence.cleanness = 1L;
+			influence.cleanness = 10L;
 			influence.cleannessRange = 10L;
 			break;
 
 		case SEWAGE_FARM:
 			influence.ducklings = -200L;
 			influence.points = 30L;
-			influence.cleanness = 1L;
+			influence.cleanness = 10L;
 			influence.cleannessRange = 15L;
 			break;
 
@@ -198,23 +213,23 @@ public class Tile {
 		case RESTAURANT:
 			influence.ducklings = 300L;
 			influence.points = 30L;
-			influence.entertainment = 1L;
+			influence.entertainment = 5L;
 			influence.entertainmentRange = 5L;
-			influence.services = 1L;
+			influence.services = 2L;
 			influence.servicesRange = 5L;
 			break;
 
 		case PARK:
 			influence.ducklings = -300L;
 			influence.points = 30L;
-			influence.entertainment = 1L;
+			influence.entertainment = 5L;
 			influence.entertainmentRange = 10L;
 			break;
 
 		case CHURCH:
 			influence.ducklings = -200L;
 			influence.points = 30L;
-			influence.entertainment = 1L;
+			influence.entertainment = 5L;
 			influence.entertainmentRange = 5L;
 			break;
 
@@ -244,7 +259,7 @@ public class Tile {
 		case OPTIONAL:
 			influence = null;
 			break;
-		
+
 		}
 
 		return influence;
@@ -261,7 +276,7 @@ public class Tile {
 				influence.shops = 1L;
 				influence.entertainment = 2L;
 				influence.work = 2L;
-				influence.cleanness=1L;
+				influence.cleanness = 1L;
 			} else if (lvl == 2) {
 				influence.ducklings = 1000L;
 				influence.shops = 5L;
@@ -456,6 +471,46 @@ public class Tile {
 
 	public void setGeneralType(String generalType) {
 		this.generalType = generalType;
+	}
+
+	public Influence getUsedInfluence() {
+		return usedInfluence;
+	}
+
+	public void setUsedInfluence(Influence usedInfluence) {
+		this.usedInfluence = usedInfluence;
+	}
+
+	public String getInfluenceTakenFrom() {
+		return influenceTakenFrom;
+	}
+
+	public void setInfluenceTakenFrom(String influenceTakenFrom) {
+		this.influenceTakenFrom = influenceTakenFrom;
+	}
+
+	public String getInfluenceGiveTo() {
+		return influenceGiveTo;
+	}
+
+	public void setInfluenceGiveTo(String influenceGiveTo) {
+		this.influenceGiveTo = influenceGiveTo;
+	}
+
+	public Long getAdditionalMoney() {
+		return additionalMoney;
+	}
+
+	public void setAdditionalMoney(Long additionalMoney) {
+		this.additionalMoney = additionalMoney;
+	}
+
+	public Long getTaxes() {
+		return taxes;
+	}
+
+	public void setTaxes(Long taxes) {
+		this.taxes = taxes;
 	}
 
 }
