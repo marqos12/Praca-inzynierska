@@ -105,7 +105,9 @@ public class GameService {
 	public void saveTile(DataExchange data) {
 		Gamer gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
 		gamer.setWithTile(false);
-
+		
+		gamer.getGame().setLastActivity(LocalDateTime.now());
+		gameRepository.save(gamer.getGame());
 		List<Tile> gameTiles = tileRepository.findByGame(gamer.getGame());
 
 		Tile tile = new Tile(null, gamer, gamer.getGame(), data.getType(), 1, data.getAngle().intValue(), 1,

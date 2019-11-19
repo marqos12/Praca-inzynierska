@@ -53,6 +53,7 @@ public class Game {
 
 	private LocalDateTime RTSLastRoundTime;
 	private Long rtsInterval;
+	private LocalDateTime lastActivity;
 
 	public Game() {
 	}
@@ -74,7 +75,7 @@ public class Game {
 
 	public Game(Long id, @NotNull User author, @NotNull boolean ended, @NotNull boolean started, @NotNull boolean isRTS,
 			@NotNull Long gameLimit, @NotNull Long elapsed, Boolean inProgress, Long gamersCount, Long gamersCountLimit,
-			boolean privateGame, GameEndType gameEndType, Long startTime,Long rtsInterval) {
+			boolean privateGame, GameEndType gameEndType, Long startTime,Long rtsInterval,LocalDateTime lastActivity) {
 		this.id = id;
 		this.author = author;
 		this.ended = ended;
@@ -89,6 +90,7 @@ public class Game {
 		this.endType = gameEndType;
 		this.startTime = startTime;
 		this.rtsInterval = rtsInterval;
+		this.lastActivity = lastActivity;
 	}
 
 	public Long getId() {
@@ -209,5 +211,13 @@ public class Game {
 
 	public void setRtsInterval(Long rtsInterval) {
 		this.rtsInterval = rtsInterval;
+	}
+
+	public LocalDateTime getLastActivity() {
+		return lastActivity;
+	}
+
+	public void setLastActivity(LocalDateTime lastActivity) {
+		this.lastActivity = lastActivity;
 	}
 }
