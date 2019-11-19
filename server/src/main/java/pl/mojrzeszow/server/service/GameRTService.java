@@ -13,7 +13,7 @@ import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.repositories.GameRepository;
 
 @Component
-public class GameRTSService {
+public class GameRTService {
 
 
 	@Autowired
