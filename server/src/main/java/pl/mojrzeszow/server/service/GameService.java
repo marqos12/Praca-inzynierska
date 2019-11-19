@@ -122,30 +122,34 @@ public class GameService {
 		gamer = gamerRepository.save(gamer);
 		List<Tile> newTiles = new ArrayList<Tile>();
 		newTiles.add(tile);
+		if (!gamer.getGame().isRTS()) {
+			Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(),
+					gamer.getOrdinalNumber() + 1L);
+			if (nextGamer == null) {
+				Game game = gamer.getGame();
+				// game.setElapsed(game.getElapsed() + 1);
+				/*
+				 * if(game.getElapsed() >= game.getGameLimit()){ game.setEnded(true); }
+				 */
+				checkEnding(game);
+				gameRepository.save(game);
+				this.newRound(game);
+				simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+						new GameMessage<Game>(MessageType.GAME_UPDATE, game));
+				nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), 1L);
+			}
 
-		Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), gamer.getOrdinalNumber() + 1L);
-		if (nextGamer == null) {
-			Game game = gamer.getGame();
-			// game.setElapsed(game.getElapsed() + 1);
-			/*
-			 * if(game.getElapsed() >= game.getGameLimit()){ game.setEnded(true); }
-			 */
-			checkEnding(game);
-			gameRepository.save(game);
-			this.newRound(game);
-			simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
-					new GameMessage<Game>(MessageType.GAME_UPDATE, game));
-			nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), 1L);
+			TileType randomTileType = getRandomTileTypeForGame(nextGamer.getGame());
+
+			nextGamer.setWithTile(true);
+			nextGamer.setNewTileType(randomTileType);
+			nextGamer = gamerRepository.save(nextGamer);
+			simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
+					new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
+		List<Gamer> gamers = this.gamerRepository.findByGame(nextGamer.getGame());
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + nextGamer.getGame().getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 		}
-
-		TileType randomTileType = getRandomTileTypeForGame(nextGamer.getGame());
-
-		nextGamer.setWithTile(true);
-		nextGamer.setNewTileType(randomTileType);
-		nextGamer = gamerRepository.save(nextGamer);
-		simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
-				new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
-
 		gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
 		simpMessagingTemplate.convertAndSendToUser(gamer.getSessionId(), "/reply",
 				new GameMessage<Gamer>(MessageType.ME_GAMER, gamer));
@@ -153,12 +157,9 @@ public class GameService {
 		simpMessagingTemplate.convertAndSend("/topic/game/game/" + gamer.getGame().getId(),
 				new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
 
-		List<Gamer> gamers = this.gamerRepository.findByGame(nextGamer.getGame());
-		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + nextGamer.getGame().getId(),
-				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
 	}
 
-	private Game checkEnding(Game game) {
+	public Game checkEnding(Game game) {
 		List<Gamer> gamers = gamerRepository.findByGame(game);
 		game.setElapsed(game.getElapsed() + 1);
 		switch (game.getEndType()) {
@@ -366,13 +367,13 @@ public class GameService {
 			List<Tile> tiles = tileRepository.findByGamer(gamer);
 			for (Tile tile : tiles) {
 				Influence tileInfluence = tile.getTileGeneratedInfluence();
-				if (tileInfluence != null) 
+				if (tileInfluence != null)
 					ducklingsPerRound += tileInfluence.getDucklings();
-				
-				if(tile.getTaxes()!=null)
-				ducklingsPerRound-=tile.getTaxes();
-				if(tile.getAdditionalMoney()!=null)
-				ducklingsPerRound-=tile.getAdditionalMoney();
+
+				if (tile.getTaxes() != null)
+					ducklingsPerRound -= tile.getTaxes();
+				if (tile.getAdditionalMoney() != null)
+					ducklingsPerRound -= tile.getAdditionalMoney();
 			}
 			gamer.setDucklingsPerRound(ducklingsPerRound);
 			gamer.setDucklings(gamer.getDucklings() + ducklingsPerRound);
@@ -380,6 +381,38 @@ public class GameService {
 		gamers = gamerRepository.saveAll(gamers);
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+	}
+
+	public void newRoundRTSMode(Game game) {
+		List<Gamer> gamers = this.gamerRepository.findByGame(game);
+		checkEnding(game);
+		for (Gamer gamer : gamers) {
+			Long ducklingsPerRound = 0L;
+			List<Tile> tiles = tileRepository.findByGamer(gamer);
+			for (Tile tile : tiles) {
+				Influence tileInfluence = tile.getTileGeneratedInfluence();
+				if (tileInfluence != null)
+					ducklingsPerRound += tileInfluence.getDucklings();
+
+				if (tile.getTaxes() != null)
+					ducklingsPerRound -= tile.getTaxes();
+				if (tile.getAdditionalMoney() != null)
+					ducklingsPerRound -= tile.getAdditionalMoney();
+			}
+			gamer.setDucklingsPerRound(ducklingsPerRound);
+			gamer.setDucklings(gamer.getDucklings() + ducklingsPerRound);
+
+			gamer.setWithTile(true);
+			gamer.setNewTileType(getRandomTileTypeForGame(gamer.getGame()));
+			simpMessagingTemplate.convertAndSendToUser(gamer.getSessionId(), "/reply",
+					new GameMessage<TileType>(MessageType.NEW_TILE, gamer.getNewTileType()));
+
+		}
+		gamers = gamerRepository.saveAll(gamers);
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+				new GameMessage<Game>(MessageType.GAME_UPDATE, game));
 	}
 
 	private void calculateTakenInfluence(Tile tile, List<Tile> tiles) {
@@ -498,12 +531,11 @@ public class GameService {
 								}
 								field.set(not.getUsedInfluence(), usedInfluence);
 								Long aditionalMoney = not.getAdditionalMoney() == null ? 0L : not.getAdditionalMoney();
-								Long taxes = tile.getTaxes()==null?0L:tile.getTaxes();
+								Long taxes = tile.getTaxes() == null ? 0L : tile.getTaxes();
 								tile.setLvl(tile.getLvl() + 1);
 								not.setAdditionalMoney(
 										aditionalMoney + tile.getTileGeneratedInfluence().getDucklings() / 10 * used);
-										tile.setTaxes(
-											taxes + tile.getTileGeneratedInfluence().getDucklings() / 10 * used);
+								tile.setTaxes(taxes + tile.getTileGeneratedInfluence().getDucklings() / 10 * used);
 
 								tile.setLvl(tile.getLvl() - 1);
 								not.setInfluenceGiveTo(not.getInfluenceGiveTo() + tile.getId().toString() + "|");
@@ -539,8 +571,8 @@ public class GameService {
 		for (Tile t : tilesInRange) {
 			try {
 				Long influence = (Long) field.get(t.getInfluence());
-				if(influence!=null)
-				field.set(t.getInfluence(), influence - diff);
+				if (influence != null)
+					field.set(t.getInfluence(), influence - diff);
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}

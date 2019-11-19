@@ -32,7 +32,9 @@ class NewGameComponent extends Component {
             loopPrevent: false,
             endType: "ROUND_LIMIT",
             firstLoad: false,
-            gamersLimit: 4
+            gamersLimit: 4,
+            rtsInterval:20,
+            edited:false,
         };
 
         this.loopPrevent = false;
@@ -73,13 +75,14 @@ class NewGameComponent extends Component {
 
     updateGame() {
         let game = this.props.actualGame.game;
-        const { privateGame, isRts, gameLimit, endType, gamersLimit } = this.state;
+        const { privateGame, isRts, gameLimit, endType, gamersLimit, rtsInterval } = this.state;
         game.privateGame = privateGame;
         game.rts = isRts;
         game.gameLimit = gameLimit;
         game.endType = endType;
         game.gamersCountLimit = gamersLimit;
-
+        game.rtsInterval = rtsInterval;
+        this.setState({edited:false})
         console.log("newGame 80", game)
         this.props.wsSendMessage({
             channel: "/lobby/updateGame", payload: game
@@ -135,7 +138,8 @@ class NewGameComponent extends Component {
                     gameLimit: this.props.actualGame.game.gameLimit,
                     endType: this.props.actualGame.game.endType,
                     firstLoad: true,
-                    gamersLimit: this.props.actualGame.game.gamersCountLimit
+                    gamersLimit: this.props.actualGame.game.gamersCountLimit,
+                    rtsInterval:this.props.actualGame.game.rtsInterval
                 }))
             }
 
@@ -146,7 +150,8 @@ class NewGameComponent extends Component {
     }
 
     handleChange(event) {
-        this.setState({ [event.target.id]: event.target.value });
+        this.setState({ [event.target.id]: event.target.value,
+        edited:true });
         if (event.target.id == 'endType')
             this.setState({ 'gameLimit': this.getEndTypeRange(event.target.value).default });
     }
@@ -172,7 +177,7 @@ class NewGameComponent extends Component {
 
     render() {
 
-        const { privateGame, isRts, gameLimit, ready, canStart, endType, gamersLimit } = this.state;
+        const { privateGame, isRts, gameLimit, ready, canStart, endType, gamersLimit,rtsInterval,edited } = this.state;
         const limitValues = this.getEndTypeRange();
         return (
             <div className="container">
@@ -204,7 +209,7 @@ class NewGameComponent extends Component {
                                                     <input id="privateGame" type="checkbox" name="privateGame" checked={privateGame} onChange={this.checkboxHandleChange} />
                                                     <span className="slider round"></span>
                                                 </label>
-                                                <label for="privateGame">Gra prywatna</label>
+                                                <label for="privateGame">Gra {!privateGame?"publiczna":"prywatna"}</label>
                                             </div>
                                         </div>
                                         <div className="column field">
@@ -223,6 +228,20 @@ class NewGameComponent extends Component {
                                         </div>
 
                                     </div>
+
+                                {isRts?<div>
+                                    <div className="field">
+                                        <div className="control">
+                                            <label class="label">Częstotliwość następnej rundy: <b>{rtsInterval}</b></label>
+                                            <input className="input is-medium is-info" type="number" placeholder="Limit gry" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
+                                        </div>
+                                    </div>
+
+                                    <div className="slidecontainer">
+                                        <input type="range" min="3"max="120" className="slider" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
+                                    </div>
+                                    </div>
+                                    :""}
 
                                     <div className="separator">Limit gry</div>
 
@@ -251,7 +270,7 @@ class NewGameComponent extends Component {
                                     <br />
                                     <br />
 
-                                    <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.updateGame}>Aktualizuj </a>
+                                    <a className="button is-large  is-link is-rounded is-fullwidth" disabled={edited?"":"disabled"} onClick={this.updateGame}>Aktualizuj </a>
 
                                     <h3>Kod do bezpośredniego dołączenia: {this.props.actualGame.game.id}</h3>
 

@@ -50,6 +50,7 @@ export function menuMiddleware(getState, dispatch, action) {
         console.log("ogólny", resp);
         switch (resp.type) {
           case "NEW_TILE":
+            dispatch(gameMyNewTile(null))
             dispatch(gameMyNewTile(resp.payload))
             break;
           case "ME_GAMER":

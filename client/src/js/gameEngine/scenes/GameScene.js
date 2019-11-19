@@ -267,41 +267,20 @@ export default class GameScene extends Phaser.Scene {
     }
 
     if (this.state.actualGame.myNewTile && !this.newTile) {
-      this.newTile = new Tile(
-        this,
-        window.innerWidth,
-        window.innerHeight,
-        this.state.actualGame.myNewTile + "_1",
-        -1
-      )
-      this.newTile.fixed = false;
-      this.newTile.generalType = getTileGeneralType(this.state.actualGame.myNewTile);
-      this.newTile.makeScale(0.5)
-      this.newTile.setPosition(
-        window.innerWidth - this.newTile.displayWidth * 1.25,
-        window.innerHeight - this.newTile.displayWidth * 1.25)
-      this.input.setDraggable(this.newTile)
-
-      this.add.existing(this.newTile.setDepth(101))
-
-
-      this.newTileCard = new Phaser.GameObjects.Sprite(
-        this,
-        this.newTile.x + this.newTile.displayWidth / 2,
-        this.newTile.y + this.newTile.displayWidth / 2,
-        "newTileBackground");
-      this.newTileCard.setDisplaySize(
-        this.newTile.displayWidth * 1.5,
-        this.newTile.displayWidth * 1.5
-      );
-      this.add.existing(this.newTileCard.setDepth(100))
-
-      let fontConf = { fontFamily: '"Roboto"', fontSize: "16px" };
-      this.newTileName = new Phaser.GameObjects.Text(this, this.newTile.x, this.newTile.y - 23,  translateTileName(this.state.actualGame.myNewTile+"_1"), fontConf)
-      this.newTileName.setDepth(101)
-      this.add.existing(this.newTileName);
+      this.dispayMyNewTile();
 
     } else if (!this.state.actualGame.myNewTile && this.newTile) {
+
+
+      if (this.newTileCard) {
+        this.newTileCard.destroy();
+        this.newTileCard = null;
+      }
+      if (this.newTileName) {
+        this.newTileName.destroy();
+        this.newTileName = null;
+      }
+
       this.newTile.destroy();
       this.newTile = null;
 
@@ -311,21 +290,56 @@ export default class GameScene extends Phaser.Scene {
       this.possibleHihglights = [];
       store.dispatch(gameTileInGoodPlace({ status: false, tile: null }));
     }
-    if (this.state.actualGame.rotateTile){
-      let tile = this.tiles.filter(t=>t.id==this.state.actualGame.tileDetails.id)
-      tile = tile[tile.length-1]
+    if (this.state.actualGame.rotateTile) {
+      let tile = this.tiles.filter(t => t.id == this.state.actualGame.tileDetails.id)
+      tile = tile[tile.length - 1]
       tile.rotate();
       store.dispatch(gameTileRotated());
       store.dispatch(gameShowTileDetails(tile))
-    } 
-    
-    if (this.state.actualGame.restoreTileAngle){
-      let tile = this.tiles.filter(t=>t.id==this.state.actualGame.tileDetails.id)[0]  
+    }
+
+    if (this.state.actualGame.restoreTileAngle) {
+      let tile = this.tiles.filter(t => t.id == this.state.actualGame.tileDetails.id)[0]
       tile.setAngle_My(this.state.actualGame.tileOriginalAngle);
       store.dispatch(gameTileRotateRestored());
     }
   }
 
+  dispayMyNewTile() {
+    this.newTile = new Tile(
+      this,
+      window.innerWidth,
+      window.innerHeight,
+      this.state.actualGame.myNewTile + "_1",
+      -1
+    )
+    this.newTile.fixed = false;
+    this.newTile.generalType = getTileGeneralType(this.state.actualGame.myNewTile);
+    this.newTile.makeScale(0.5)
+    this.newTile.setPosition(
+      window.innerWidth - this.newTile.displayWidth * 1.25,
+      window.innerHeight - this.newTile.displayWidth * 1.25)
+    this.input.setDraggable(this.newTile)
+
+    this.add.existing(this.newTile.setDepth(101))
+
+
+    this.newTileCard = new Phaser.GameObjects.Sprite(
+      this,
+      this.newTile.x + this.newTile.displayWidth / 2,
+      this.newTile.y + this.newTile.displayWidth / 2,
+      "newTileBackground");
+    this.newTileCard.setDisplaySize(
+      this.newTile.displayWidth * 1.5,
+      this.newTile.displayWidth * 1.5
+    );
+    this.add.existing(this.newTileCard.setDepth(100))
+
+    let fontConf = { fontFamily: '"Roboto"', fontSize: "16px" };
+    this.newTileName = new Phaser.GameObjects.Text(this, this.newTile.x, this.newTile.y - 23, translateTileName(this.state.actualGame.myNewTile + "_1"), fontConf)
+    this.newTileName.setDepth(101)
+    this.add.existing(this.newTileName);
+  }
 
   highlightPossiblePlaces() {
     this.possibleHihglights.forEach(highlight => highlight.destroy())

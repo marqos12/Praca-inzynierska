@@ -1,5 +1,7 @@
 package pl.mojrzeszow.server.models;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -49,6 +51,9 @@ public class Game {
 
 	private boolean privateGame;
 
+	private LocalDateTime RTSLastRoundTime;
+	private Long rtsInterval;
+
 	public Game() {
 	}
 
@@ -64,11 +69,12 @@ public class Game {
 		this.gamersCount = 0L;
 		this.inProgress = false;
 		this.endType = GameEndType.ROUND_LIMIT;
+		this.rtsInterval=20L;
 	}
 
 	public Game(Long id, @NotNull User author, @NotNull boolean ended, @NotNull boolean started, @NotNull boolean isRTS,
 			@NotNull Long gameLimit, @NotNull Long elapsed, Boolean inProgress, Long gamersCount, Long gamersCountLimit,
-			boolean privateGame, GameEndType gameEndType, Long startTime) {
+			boolean privateGame, GameEndType gameEndType, Long startTime,Long rtsInterval) {
 		this.id = id;
 		this.author = author;
 		this.ended = ended;
@@ -82,6 +88,7 @@ public class Game {
 		this.privateGame = privateGame;
 		this.endType = gameEndType;
 		this.startTime = startTime;
+		this.rtsInterval = rtsInterval;
 	}
 
 	public Long getId() {
@@ -186,5 +193,21 @@ public class Game {
 
 	public void setStartTime(Long startTime) {
 		this.startTime = startTime;
+	}
+
+	public LocalDateTime getRTSLastRoundTime() {
+		return RTSLastRoundTime;
+	}
+
+	public void setRTSLastRoundTime(LocalDateTime rTSLastRoundTime) {
+		RTSLastRoundTime = rTSLastRoundTime;
+	}
+
+	public Long getRtsInterval() {
+		return rtsInterval;
+	}
+
+	public void setRtsInterval(Long rtsInterval) {
+		this.rtsInterval = rtsInterval;
 	}
 }
