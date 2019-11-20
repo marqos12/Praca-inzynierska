@@ -35,7 +35,7 @@ public class GameRTService {
         List<Game> games = gameRepository.findByStartedTrueAndIsRTSTrueAndEndedFalse();
         List<Game> newGames = games.stream().filter(g->g.getRTSLastRoundTime()==null).collect(Collectors.toList());
         List<Game> otherGames = games.stream().filter(g->g.getRTSLastRoundTime()!=null&&ChronoUnit.SECONDS.between(g.getRTSLastRoundTime(), LocalDateTime.now())>=g.getRtsInterval()).collect(Collectors.toList());
-        List<Game>unactiveGames = games.stream().filter(g->g.getRTSLastRoundTime()!=null&&ChronoUnit.MINUTES.between(g.getLastActivity(), LocalDateTime.now())>=10).collect(Collectors.toList());
+        List<Game> unactiveGames = games.stream().filter(g->g.getRTSLastRoundTime()!=null&&ChronoUnit.MINUTES.between(g.getRTSLastRoundTime(), LocalDateTime.now())>=10).collect(Collectors.toList());
         for(Game game: newGames){
             game.setRTSLastRoundTime(LocalDateTime.now());
             gameService.newRoundRTSMode(game);

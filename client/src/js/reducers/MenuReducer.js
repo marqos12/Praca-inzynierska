@@ -145,6 +145,9 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === WS_GAME_JOINED) {
+    if(state.actualGame.aliveMessageTimer)
+    clearInterval(state.actualGame.aliveMessageTimer);
+    console.log("MenuReducer 148 timer ",action.payload.interval)
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload.game,
@@ -156,8 +159,7 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === WS_GAME_DISCONNECTED) {
-    clearInterval(state.actualGame.aliveMessageTimer);
-    
+    console.log("MenuReducer czszczenie timera ")
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: null,

@@ -105,7 +105,7 @@ public class GameService {
 	public void saveTile(DataExchange data) {
 		Gamer gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
 		gamer.setWithTile(false);
-		
+
 		gamer.getGame().setLastActivity(LocalDateTime.now());
 		gameRepository.save(gamer.getGame());
 		List<Tile> gameTiles = tileRepository.findByGame(gamer.getGame());
@@ -125,32 +125,7 @@ public class GameService {
 		List<Tile> newTiles = new ArrayList<Tile>();
 		newTiles.add(tile);
 		if (!gamer.getGame().isRTS()) {
-			Gamer nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(),
-					gamer.getOrdinalNumber() + 1L);
-			if (nextGamer == null) {
-				Game game = gamer.getGame();
-				// game.setElapsed(game.getElapsed() + 1);
-				/*
-				 * if(game.getElapsed() >= game.getGameLimit()){ game.setEnded(true); }
-				 */
-				checkEnding(game);
-				gameRepository.save(game);
-				this.newRound(game);
-				simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
-						new GameMessage<Game>(MessageType.GAME_UPDATE, game));
-				nextGamer = gamerRepository.findByGameAndOrdinalNumber(gamer.getGame(), 1L);
-			}
-
-			TileType randomTileType = getRandomTileTypeForGame(nextGamer.getGame());
-
-			nextGamer.setWithTile(true);
-			nextGamer.setNewTileType(randomTileType);
-			nextGamer = gamerRepository.save(nextGamer);
-			simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
-					new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
-		List<Gamer> gamers = this.gamerRepository.findByGame(nextGamer.getGame());
-		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + nextGamer.getGame().getId(),
-				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+			nextTurn(gamer);
 		}
 		gamer = gamerRepository.findById(data.getGamerId()).orElse(null);
 		simpMessagingTemplate.convertAndSendToUser(gamer.getSessionId(), "/reply",
@@ -158,6 +133,57 @@ public class GameService {
 
 		simpMessagingTemplate.convertAndSend("/topic/game/game/" + gamer.getGame().getId(),
 				new GameMessage<List<Tile>>(MessageType.NEW_TILE, newTiles));
+
+	}
+
+	private Gamer findnextGamer(Game game, Gamer currentGamer) {
+		List<Gamer> gamers = gamerRepository.findByGame(game);
+		
+		List<Gamer> aliveGamers = gamers.stream().filter(g -> g.getStatus().equals("t"))
+				//.sorted((g1, g2) -> (int) (g1.getOrdinalNumber() - g2.getOrdinalNumber()))
+				.collect(Collectors.toList());
+		try {
+			Gamer nextGamer = aliveGamers.stream().filter(g -> g.getOrdinalNumber() > currentGamer.getOrdinalNumber())
+					.findFirst().orElse(aliveGamers.get(0));
+			return nextGamer;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public void nextTurn(Gamer gamer){
+		Gamer nextGamer = findnextGamer(gamer.getGame(), gamer);
+		if (nextGamer == null) {
+			gamer.getGame().setEnded(true);
+			gameRepository.save(gamer.getGame());
+		} else if (nextGamer.getOrdinalNumber() <= gamer.getOrdinalNumber()) {
+			Game game = gamer.getGame();
+			// game.setElapsed(game.getElapsed() + 1);
+			/*
+			 * if(game.getElapsed() >= game.getGameLimit()){ game.setEnded(true); }
+			 */
+			checkEnding(game);
+			gameRepository.save(game);
+			this.newRound(game);
+			simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
+					new GameMessage<Game>(MessageType.GAME_UPDATE, game));
+			// nextGamer =
+			// gamerRepository.findByGameAndOrdinalNumberAndStatusContaining(gamer.getGame(),
+			// 1L, "t");
+			// while(nextGamer)
+		}
+		if (nextGamer != null) {
+			TileType randomTileType = getRandomTileTypeForGame(nextGamer.getGame());
+
+			nextGamer.setWithTile(true);
+			nextGamer.setNewTileType(randomTileType);
+			nextGamer = gamerRepository.save(nextGamer);
+			simpMessagingTemplate.convertAndSendToUser(nextGamer.getSessionId(), "/reply",
+					new GameMessage<TileType>(MessageType.NEW_TILE, randomTileType));
+			List<Gamer> gamers = this.gamerRepository.findByGame(nextGamer.getGame());
+			simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + nextGamer.getGame().getId(),
+					new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+		}
 
 	}
 
@@ -318,7 +344,7 @@ public class GameService {
 	}
 
 	private TileType getRandomTileTypeForGame(Game game) {
-
+try{
 		List<Tile> tiles = tileRepository.findByGame(game);
 
 		List<TileEdgeType> possibleEdgeTypes = new ArrayList<>();
@@ -360,6 +386,8 @@ public class GameService {
 		}
 
 		return randomTileType;
+	}catch(Exception e){}
+	return null;
 	}
 
 	private void newRound(Game game) {

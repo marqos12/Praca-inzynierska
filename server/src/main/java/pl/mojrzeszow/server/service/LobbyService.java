@@ -33,6 +33,8 @@ public class LobbyService {
 
 	@Autowired
 	private GamerRepository gamerRepository;
+	@Autowired
+	private GameService gameService;
 
 	@Autowired
 	private TileRepository tileRepository;
@@ -167,6 +169,9 @@ public class LobbyService {
 		exactGamer.setReady(gamer.isReady());
 
 		this.gamerRepository.save(exactGamer);
+
+		if(status!="t" &&!exactGamer.getGame().isRTS()&&exactGamer.getGame().isStarted()&&!exactGamer.getGame().isEnded())
+		 	gameService.nextTurn(exactGamer);
 
 		List<Gamer> gamers = this.gamerRepository.findByGame(gamer.getGame());
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + gamer.getGame().getId(),

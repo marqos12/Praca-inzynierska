@@ -90,6 +90,8 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(wsConnectGame(resp.payload.game));
             break;
           case "GAME_LEFT":
+            clearInterval(getState().actualGame.aliveMessageTimer);
+            console.log("MenuMiddleware 94 czszczenie timera ")
             dispatch(wsGameDisconnected());
             break;
           case "GAME_JOINED":
@@ -175,6 +177,9 @@ export function menuMiddleware(getState, dispatch, action) {
 
   if (action.type === WS_GAME_DISCONNECT) {
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: null }));
+    
+    clearInterval(getState().actualGame.aliveMessageTimer);
+    console.log("MenuMiddleware 182 czszczenie timera ")
     dispatch(wsSendMessage({
       channel: "/lobby/leaveGame", payload: {
         gamerId: getState().actualGame.meGamer.id
