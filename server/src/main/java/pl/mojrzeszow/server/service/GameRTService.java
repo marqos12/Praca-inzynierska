@@ -10,7 +10,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import pl.mojrzeszow.server.models.Game;
+import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.repositories.GameRepository;
+import pl.mojrzeszow.server.repositories.GamerRepository;
 
 @Component
 public class GameRTService {
@@ -19,8 +21,14 @@ public class GameRTService {
 	@Autowired
     private GameRepository gameRepository;
     
+	@Autowired
+    private GamerRepository gamerRepository;
+    
     @Autowired 
     private GameService gameService;
+    
+    @Autowired 
+    private LobbyService lobbyService;
 
     @Scheduled(fixedRate = 3000)
     public void RTSGamesLoop() {
@@ -42,6 +50,19 @@ public class GameRTService {
         gameRepository.saveAll(unactiveGames);
         gameRepository.saveAll(newGames);
         gameRepository.saveAll(otherGames);
+    }
+    
+    @Scheduled(fixedRate = 30000)
+    public void aliveCheck() {
+        List<Gamer> notLiveGamers = gamerRepository.findByNotificationBetweenAndStatusNot(LocalDateTime.now().minusMinutes(2),LocalDateTime.now().minusMinutes(1), "d");
+        List<Gamer> deadGamers = gamerRepository.findByNotificationLessThanAndStatusNot(LocalDateTime.now().minusMinutes(2), "d");
+
+        for(Gamer gamer:notLiveGamers){
+            lobbyService.gamerStatusUpdate(gamer,"n");
+        }
+        for(Gamer gamer:deadGamers){
+            lobbyService.gamerStatusUpdate(gamer,"d");
+        }
     }
 
 }

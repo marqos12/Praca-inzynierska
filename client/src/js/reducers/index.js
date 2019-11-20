@@ -32,7 +32,8 @@ const initialState = {
     rotateTile:false,
     tileOriginalAngle:null,
     restoreTileAngle:false,
-    alone:false
+    alone:false,
+    aliveMessageTimer:null
   },
   origin: ""
 };

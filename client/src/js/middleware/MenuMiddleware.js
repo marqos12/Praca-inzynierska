@@ -75,12 +75,18 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(wsGameCreated(resp.payload));
             dispatch(wsConnectGame(resp.payload));
             break;
-            case "GAME_ALONE_CREATED":
-              dispatch(wsAloneGameCreated(resp.payload));
-              dispatch(wsConnectGame(resp.payload));
-              break;
+          case "GAME_ALONE_CREATED":
+            dispatch(wsAloneGameCreated(resp.payload));
+            dispatch(wsConnectGame(resp.payload));
+            break;
           case "ME_GAMER":
-            dispatch(wsGameJoined(resp.payload));
+            let interval = setInterval(() => {
+              console.log("MenuMiddleware 90",resp.payload,getState())
+                dispatch(wsSendMessage({
+                  channel: "/lobby/iAmAlive", payload: resp.payload
+              }))
+            }, 30000)
+            dispatch(wsGameJoined({...resp.payload,interval:interval}));
             dispatch(wsConnectGame(resp.payload.game));
             break;
           case "GAME_LEFT":

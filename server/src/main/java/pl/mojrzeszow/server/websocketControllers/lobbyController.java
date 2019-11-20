@@ -61,7 +61,7 @@ public class lobbyController {
 
 	@MessageMapping("/statusUpdate")
 	public GameMessage<Gamer> gamerStatusUpdate(@Payload Gamer gamer) {
-		return lobbyService.gamerStatusUpdate(gamer);
+		return lobbyService.gamerStatusUpdate(gamer,"t");
 	}
 
 	@MessageMapping("/startGame")
@@ -72,6 +72,11 @@ public class lobbyController {
 	@MessageMapping("/kickGamer")
 	public void kickGamer(@Payload DataExchange gamerData) {
 		 lobbyService.kickGamer(gamerData);
+	}
+	
+	@MessageMapping("/iAmAlive")
+	public void iAmAlive(@Payload DataExchange gamerData) {
+		 lobbyService.iAmAlive(gamerData);
 	}
 
 }

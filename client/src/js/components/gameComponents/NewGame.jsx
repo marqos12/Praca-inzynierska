@@ -157,7 +157,8 @@ class NewGameComponent extends Component {
     }
 
     checkboxHandleChange(event) {
-        this.setState({ [event.target.id]: event.target.checked });
+        this.setState({ [event.target.id]: event.target.checked ,
+            edited:true});
     }
 
     getEndTypeRange(endType = this.state.endType) {
@@ -310,7 +311,7 @@ class NewGameComponent extends Component {
                                 <tbody>
                                     {this.props.actualGame.gamers.map((gamer, index) => {
                                         return <tr key={index} >
-                                            <td>{gamer.status ? <img src="assets/smail.gif" className="statusImg" /> : <img src="assets/noSmail.gif" className="statusImg" />}</td>
+                                            <td>{gamer.status=="t" ? <img src="assets/smail.gif" className="statusImg" /> : gamer.status=="n"?<img src="assets/noSmail.gif" className="statusImg" />: <img src="assets/sad.gif" className="statusImg" />}</td>
                                             <td><b>{gamer.user.username}</b></td>
                                             <td>{gamer.ready ? <img src="assets/check.png" className="statusImg" /> : ""}</td>
                                             {this.props.actualGame.amIAuthor ?

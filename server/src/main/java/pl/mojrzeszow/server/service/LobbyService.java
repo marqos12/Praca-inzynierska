@@ -55,7 +55,7 @@ public class LobbyService {
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_CREATED, game);
 		return gameMessage;
 	}
-	
+
 	public GameMessage<Game> createAloneGame(DataExchange userId) {
 
 		User user = userRepository.findById(userId.getId()).orElse(null);
@@ -95,6 +95,7 @@ public class LobbyService {
 				exists = true;
 				gamer = existGamer;
 				gamer.setSessionId(gamersData.getSessionId());
+				gamer.setStatus("t");
 				break;
 			}
 		}
@@ -159,10 +160,10 @@ public class LobbyService {
 		return gameMessage;
 	}
 
-	public GameMessage<Gamer> gamerStatusUpdate(Gamer gamer) {
+	public GameMessage<Gamer> gamerStatusUpdate(Gamer gamer,String status) {
 
 		Gamer exactGamer = this.gamerRepository.findById(gamer.getId()).orElse(gamer);
-		exactGamer.setStatus(gamer.isStatus());
+		exactGamer.setStatus(status);
 		exactGamer.setReady(gamer.isReady());
 
 		this.gamerRepository.save(exactGamer);
@@ -189,7 +190,8 @@ public class LobbyService {
 
 		List<Gamer> gamers = this.gamerRepository.findByGame(updatingGame);
 
-		Tile startTile = new Tile(null, null, game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L, new Influence(), new Influence(),"","",0L, 0L);
+		Tile startTile = new Tile(null, null, game, TileType.ROAD_ACCESS_DOUBLE, 1, 0, 1, 0L, 0L, new Influence(),
+				new Influence(), "", "", 0L, 0L);
 
 		tileRepository.save(startTile);
 
@@ -234,5 +236,13 @@ public class LobbyService {
 
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<List<Gamer>>(MessageType.GAMERS_STATUS_UPDATE, gamers));
+	}
+
+	public void iAmAlive(DataExchange gamerData) {
+		Gamer gamer = gamerRepository.findById(gamerData.id).orElse(null);
+		gamer.setNotification(LocalDateTime.now());
+		gamerRepository.save(gamer);
+		gamerStatusUpdate(gamer,"t");
+
 	}
 }

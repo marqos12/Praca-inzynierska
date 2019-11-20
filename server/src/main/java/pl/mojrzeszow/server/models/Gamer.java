@@ -1,5 +1,6 @@
 package pl.mojrzeszow.server.models;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -33,10 +34,9 @@ public class Gamer {
 	private String sessionId;
 	
 	@NotNull
-	private Date notification;
+	private LocalDateTime notification;
 	
-	@NotNull
-	private boolean status;
+	private String status;
 		
 	private boolean ready;
 	
@@ -64,8 +64,8 @@ public class Gamer {
 		this.user = user;
 		this.game = game;
 		this.sessionId = sessionId;
-		this.notification = new Date();
-		this.status = true;
+		this.notification = LocalDateTime.now();
+		this.status = "t";
 		this.ready = false;
 		this.ordinalNumber = 0L;
 		this.points = 0L;
@@ -76,8 +76,8 @@ public class Gamer {
 
 
 
-	public Gamer(Long id, @NotNull User user, @NotNull Game game, String sessionId, @NotNull Date notification,
-			@NotNull boolean status, boolean ready, @NotNull Long ordinalNumber, @NotNull Long points,
+	public Gamer(Long id, @NotNull User user, @NotNull Game game, String sessionId,  LocalDateTime notification,
+			@NotNull String status, boolean ready, @NotNull Long ordinalNumber, @NotNull Long points,
 			@NotNull Long ducklings, Boolean withTile, TileType newTileType,Long ducklingsPerRound) {
 		this.id = id;
 		this.user = user;
@@ -127,19 +127,19 @@ public class Gamer {
 		this.sessionId = sessionId;
 	}
 
-	public Date getNotification() {
+	public LocalDateTime getNotification() {
 		return notification;
 	}
 
-	public void setNotification(Date notification) {
+	public void setNotification(LocalDateTime notification) {
 		this.notification = notification;
 	}
 
-	public boolean isStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(boolean status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 

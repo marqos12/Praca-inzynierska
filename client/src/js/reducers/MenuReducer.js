@@ -149,12 +149,15 @@ export function menuReducer(state, action) {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload.game,
         meGamer: action.payload,
-        amIAuthor: action.payload.game.author.id == action.payload.user.id
+        amIAuthor: action.payload.game.author.id == action.payload.user.id,
+        aliveMessageTimer:action.payload.interval
       })
     });
   }
 
   if (action.type === WS_GAME_DISCONNECTED) {
+    clearInterval(state.actualGame.aliveMessageTimer);
+    
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: null,
