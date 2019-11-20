@@ -150,7 +150,7 @@ export function menuReducer(state, action) {
   if (action.type === CHAT_GAME_MESSAGE) {
     return Object.assign({}, state, {
       chats: Object.assign({}, state.chats, {
-        gameChatMessages: state.gameChatMessages.concat([action.payload])
+        gameChatMessages: state.chats.gameChatMessages.concat([action.payload])
       })
     });
   }

@@ -29,6 +29,7 @@ import {
   beenKickedOut,
   wsAloneGameCreated,
   chatGlobalMessage,
+  chatGameMessage,
 } from "../actions/index";
 import { gameNewTileToDisplay, gameMyNewTile, gameMeGamerUpdate } from "../actions/gameActions";
 
@@ -182,6 +183,7 @@ export function menuMiddleware(getState, dispatch, action) {
     let chatSubscription = stompClient.subscribe("/topic/chat/game/" + action.payload.id, resp => {
       resp = JSON.parse(resp.body)
       console.log("menuMiddleware 180 in game czat", resp)
+      dispatch(chatGameMessage(resp))
       
     });
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: subscription }))

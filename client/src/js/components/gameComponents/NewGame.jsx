@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
 import { wsConnect, wsOpenTestCanal, wsSendTestMessage, wsSendMessage, wsGameDisconnect } from "../../actions/index";
+import GameChat from "./GameChat.jsx";
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -330,10 +331,10 @@ class NewGameComponent extends Component {
                             <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.leaveGame()}>Wyjdź z gry</a>
 
                             
-                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.chatTest}>test czatu</a>
                         </div>
                         : <div></div>}
                 </div>
+                <GameChat/>
             </div>
         );
     }
