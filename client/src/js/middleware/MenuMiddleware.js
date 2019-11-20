@@ -28,6 +28,7 @@ import {
   wsGameUpdated,
   beenKickedOut,
   wsAloneGameCreated,
+  chatGlobalMessage,
 } from "../actions/index";
 import { gameNewTileToDisplay, gameMyNewTile, gameMeGamerUpdate } from "../actions/gameActions";
 
@@ -40,6 +41,7 @@ export function menuMiddleware(getState, dispatch, action) {
 
     stompClient.debug = null
     stompClient.connect({}, function (frame) {
+      console.log("połączenie WS");
       var url = stompClient.ws._transport.url;
       url = url.split("/")
       let sessionId = url[url.length - 2];
@@ -98,6 +100,11 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(gameNewTileToDisplay(resp.payload));
             break;
         }
+      });
+      stompClient.subscribe('/topic/chat/global', x => {
+        let resp = JSON.parse(x.body)
+        console.log("MenuMiddleware 105 chat controller",resp)
+        dispatch(chatGlobalMessage(resp))
       });
       return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
     });
@@ -172,11 +179,18 @@ export function menuMiddleware(getState, dispatch, action) {
           break;
       }
     });
+    let chatSubscription = stompClient.subscribe("/topic/chat/game/" + action.payload.id, resp => {
+      resp = JSON.parse(resp.body)
+      console.log("menuMiddleware 180 in game czat", resp)
+      
+    });
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: subscription }))
+    dispatch(wsChannelSubscription({ channel: "GAME_CHAT_CHANNEL", subscription: chatSubscription }))
   }
 
   if (action.type === WS_GAME_DISCONNECT) {
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: null }));
+    dispatch(wsChannelSubscription({ channel: "GAME_CHAT_CHANNEL", subscription: null }))
     
     clearInterval(getState().actualGame.aliveMessageTimer);
     console.log("MenuMiddleware 182 czszczenie timera ")

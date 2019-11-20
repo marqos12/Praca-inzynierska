@@ -30,6 +30,8 @@ import {
     SET_ORIGIN,
     BEEN_KICKED_OUT,
     WS_ALONE_GAME_CREATED,
+    CHAT_GLOBAL_MESSAGE,
+    CHAT_GAME_MESSAGE,
 } from "../constants/action-types";
 
 export function wsConnect() {
@@ -156,4 +158,12 @@ export function setOrigin(payload) {
 
 export function beenKickedOut(payload) {
     return { type: BEEN_KICKED_OUT, payload };
+}
+
+export function chatGlobalMessage(payload) {
+    return { type: CHAT_GLOBAL_MESSAGE, payload };
+}
+
+export function chatGameMessage(payload) {
+    return { type: CHAT_GAME_MESSAGE, payload };
 }

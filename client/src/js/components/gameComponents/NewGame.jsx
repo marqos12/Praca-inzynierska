@@ -43,6 +43,8 @@ class NewGameComponent extends Component {
         this.leaveGame = this.leaveGame.bind(this);
         this.updateGame = this.updateGame.bind(this);
         this.kickGamer = this.kickGamer.bind(this);
+        this.chatTest = this.chatTest.bind(this);
+
 
 
     }
@@ -176,6 +178,9 @@ class NewGameComponent extends Component {
         }
     }
 
+    chatTest() {
+        this.props.wsSendMessage({ channel: "/chat/game", payload: { user:this.props.auth.usser, message:"Test komunikacji", gameId:this.props.actualGame.game.id } })
+    }
     render() {
 
         const { privateGame, isRts, gameLimit, ready, canStart, endType, gamersLimit,rtsInterval,edited } = this.state;
@@ -323,6 +328,9 @@ class NewGameComponent extends Component {
                             <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.setReady()}>{ready ? "Nie gotowy" : "Gotowy"}</a>
                             {(this.props.actualGame.amIAuthor) ? <a className="button is-large  is-link is-rounded is-fullwidth " disabled={(canStart) ? "" : "disabled"} onClick={() => this.startGame()}>Rozpocznij grę</a> : <span></span>}
                             <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.leaveGame()}>Wyjdź z gry</a>
+
+                            
+                        <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.chatTest}>test czatu</a>
                         </div>
                         : <div></div>}
                 </div>

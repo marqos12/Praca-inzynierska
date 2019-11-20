@@ -5,6 +5,7 @@ import javax.validation.constraints.NotBlank;
 import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Influence;
+import pl.mojrzeszow.server.models.User;
 
 public class DataExchange {
 
@@ -18,6 +19,8 @@ public class DataExchange {
 	public Long angle;
 	public TileType type;
 	public Gamer gamer;
+	public User user;
+	public String message;
 	public long lvl;
 	public Influence incomeInfluence;
 	public Influence outcomeInfluence;
@@ -27,6 +30,7 @@ public class DataExchange {
 	public Long deconstructionCosts;
 	public Influence usedInfluence;
 	public Long summaryDucklings;
+	public String time;
 
 	public DataExchange() {
 	}

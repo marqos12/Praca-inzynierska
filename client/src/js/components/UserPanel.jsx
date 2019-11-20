@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
 import { wsConnect, wsOpenTestCanal, wsSendTestMessage, wsSendMessage, setHistory, logout } from "../actions/index";
+import GllobalChat from "./gameComponents/GlobalChat.jsx";
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -35,6 +36,7 @@ class HomeComponent extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.logout = this.logout.bind(this);
         this.createNewAloneGame = this.createNewAloneGame.bind(this);
+        this.chatTest = this.chatTest.bind(this);
     }
 
     createNewGame() {
@@ -47,8 +49,8 @@ class HomeComponent extends Component {
     }
 
     componentDidMount() {
-        if (!this.props.ws.client)
-            this.props.wsConnect();
+        //if (!this.props.ws.client)
+           // this.props.wsConnect();
 
     }
 
@@ -59,6 +61,7 @@ class HomeComponent extends Component {
     }
 
     componentDidUpdate() {
+
         if (this.props.actualGame.game != null)
         if(!this.props.actualGame.alone)
             this.props.history.push("/game/" + this.props.actualGame.game.id)
@@ -73,6 +76,10 @@ class HomeComponent extends Component {
 
     handleChange(event) {
         this.setState({ [event.target.id]: event.target.value });
+    }
+    
+    chatTest() {
+        this.props.wsSendMessage({ channel: "/chat/global", payload: { user:this.props.auth.user, message:"Test komunikacji" } })
     }
 
     render() {
@@ -89,9 +96,12 @@ class HomeComponent extends Component {
                         {/*<NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
                         <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>*/}
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Wyloguj</a>
+                       
+                        
                     </div>
 
                 </div>
+                <GllobalChat/>
             </div>
         );
     }

@@ -1,0 +1,63 @@
+@import "../variables";
+
+.chat{
+    position:fixed;
+    background-color: $card-background-color;
+    border-radius: 10px;
+    border:2px solid $card-border-color;
+    bottom:10px;
+    right:10px;
+    width:300px;
+
+    .head{
+        background-color: #5d8FBD;
+        border-radius: 10px;
+        color:white;
+        text-align: center;
+
+        h3{
+            display: inline;
+        }
+        img{
+            width:20px;
+            height:20px;
+            margin-left: 10px;
+            position: relative;
+            top:5px;
+        }
+    }
+
+    .expanded{
+        .messages{
+            height: 400px;
+            overflow-y: scroll;
+
+            .message{
+                border-radius: 10px;
+                background-color:#defffd;
+                color: black;
+                margin:3px;
+                padding:3px;
+
+                .author{
+                    font-weight: 600;
+                }
+                .message{
+
+                }
+            }
+        }
+        .messageInput{
+            max-width: 230px;
+            min-width: 230px;
+            margin:5px;
+            display: inline;
+
+        }
+            img{
+                position: relative;
+                top:20px;
+            }
+
+    }
+}

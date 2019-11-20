@@ -17,7 +17,9 @@ import {
   LOGOUT,
   SET_ORIGIN,
   BEEN_KICKED_OUT,
-  WS_ALONE_GAME_CREATED
+  WS_ALONE_GAME_CREATED,
+  CHAT_GLOBAL_MESSAGE,
+  CHAT_GAME_MESSAGE
 } from "../constants/action-types";
 
 export function menuReducer(state, action) {
@@ -132,6 +134,23 @@ export function menuReducer(state, action) {
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload
+      })
+    });
+  }
+
+  if (action.type === CHAT_GLOBAL_MESSAGE) {
+    console.log("MenuReducer 141",action)
+    return Object.assign({}, state, {
+      chats: Object.assign({}, state.chats, {
+        globalChatMessages: state.chats.globalChatMessages.concat([action.payload])
+      })
+    });
+  }
+  
+  if (action.type === CHAT_GAME_MESSAGE) {
+    return Object.assign({}, state, {
+      chats: Object.assign({}, state.chats, {
+        gameChatMessages: state.gameChatMessages.concat([action.payload])
       })
     });
   }

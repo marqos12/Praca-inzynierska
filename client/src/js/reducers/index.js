@@ -35,7 +35,11 @@ const initialState = {
     alone:false,
     aliveMessageTimer:null
   },
-  origin: ""
+  origin: "",
+  chats:{
+    globalChatMessages:[],
+    gameChatMessages:[]
+  }
 };
 
 function rootReducer(state = initialState, action) {
