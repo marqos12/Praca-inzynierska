@@ -113,7 +113,7 @@ export function menuMiddleware(getState, dispatch, action) {
   }
 
   if (action.type === REGISTER) {
-    fetch(getState().origin + "/api/auth/signup", {
+    fetch(/*getState().origin + */"/api/auth/signup", {
       method: 'POST',
       cache: 'no-cache',
       credentials: 'same-origin',
@@ -131,7 +131,7 @@ export function menuMiddleware(getState, dispatch, action) {
   }
 
   if (action.type === LOGIN) {
-    fetch(getState().origin + "/api/auth/signin", {
+    fetch(/*getState().origin +*/ "/api/auth/signin", {
       method: 'POST',
       cache: 'no-cache',
       credentials: 'same-origin',
