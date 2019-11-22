@@ -2,7 +2,9 @@ package pl.mojrzeszow.server.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -41,9 +43,10 @@ public class LobbyService {
 
 	@Autowired
 	UserRepository userRepository;
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	public GameMessage<List<Game>> getAllgames(String message) {
-		List<Game> games = this.gameRepository.findByPrivateGameFalseAndStartedFalse();
+		List<Game> games = this.gameRepository.findByPrivateGameFalseAndStartedFalse().stream().sorted((g1,g2)->(int)(g2.getId()-g1.getId())).collect(Collectors.toList());
 		GameMessage<List<Game>> gameMessage = new GameMessage<List<Game>>(MessageType.GAME_LIST_UPDATED, games);
 		return gameMessage;
 	}
@@ -72,11 +75,14 @@ public class LobbyService {
 	public GameMessage<Game> updateGame(Game game) {
 		game = gameRepository.save(game);
 
-		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
+		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse().stream().sorted((g1,g2)->(int)(g2.getId()-g1.getId())).collect(Collectors.toList());;
 
 		simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<Game>(MessageType.GAME_UPDATE, game));
+
+
+		
 
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_UPDATE, game);
 		return gameMessage;
@@ -92,12 +98,15 @@ public class LobbyService {
 		boolean exists = false;
 		Gamer gamer = null;
 
+
+
 		for (Gamer existGamer : gamers) {
 			if (existGamer.getUser().getId().equals(gamersData.getUserId())) {
 				exists = true;
 				gamer = existGamer;
 				gamer.setSessionId(gamersData.getSessionId());
 				gamer.setStatus("t");
+				sendGameChatSystemMessage(game, "Gracz "+gamer.getUser().getUsername()+" dołączył ponownie");
 				break;
 			}
 		}
@@ -109,8 +118,14 @@ public class LobbyService {
 				gameRepository.save(game);
 				List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
 				simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
+
+				
+				sendGameChatSystemMessage(game,"Gracz "+gamer.getUser().getUsername()+" dołączył");
 			}
 		}
+
+		
+
 		GameMessage<Gamer> gameMessage = null;
 		if (gamer != null) {
 			gamer = gamerRepository.save(gamer);
@@ -142,6 +157,9 @@ public class LobbyService {
 
 		}
 
+		
+		sendGameChatSystemMessage(game ,"Gracz "+gamer.getUser().getUsername()+" Rozłączył się");
+		
 		gamerRepository.delete(gamer);
 		game.setGamersCount(game.getGamersCount() - 1);
 		gameRepository.save(game);
@@ -165,6 +183,10 @@ public class LobbyService {
 	public GameMessage<Gamer> gamerStatusUpdate(Gamer gamer,String status) {
 
 		Gamer exactGamer = this.gamerRepository.findById(gamer.getId()).orElse(gamer);
+
+		if(!exactGamer.getStatus().equals(status))sendGameChatSystemMessage(gamer.getGame(),"Gracz "+gamer.getUser().getUsername()+" zmienił status");
+		if(exactGamer.isReady()!=gamer.isReady())sendGameChatSystemMessage(gamer.getGame(),"Gracz "+gamer.getUser().getUsername()+" zmienił gotowość");
+
 		exactGamer.setStatus(status);
 		exactGamer.setReady(gamer.isReady());
 
@@ -182,6 +204,8 @@ public class LobbyService {
 	}
 
 	public void startGame(Game game) {
+
+		sendGameChatSystemMessage(game,"Rozpoczęcie gry");
 
 		Game updatingGame = this.gameRepository.findById(game.getId()).orElse(null);
 		updatingGame.setStarted(game.isStarted());
@@ -212,6 +236,7 @@ public class LobbyService {
 	public void kickGamer(DataExchange gamerData) {
 		Gamer gamer = gamerRepository.findById(gamerData.getId()).orElse(null);
 		Game game = gamer.getGame();
+		sendGameChatSystemMessage(gamer.getGame(),"Gracz "+gamer.getUser().getUsername()+" został wyproszony ze stołu");
 
 		List<Gamer> gamers2 = this.gamerRepository.findByGame(game);
 		if (game.getAuthor().equals(gamer.getUser())) {
@@ -249,5 +274,15 @@ public class LobbyService {
 		gamerRepository.save(gamer);
 		gamerStatusUpdate(gamer,"t");
 
+	}
+
+	public void sendGameChatSystemMessage(Game game, String messageString){
+		DataExchange message = new DataExchange();
+		message.user = new User();
+		message.user.setUsername("System");
+		message.message =messageString;
+		message.gameId=game.getId();
+		message.time = LocalDateTime.now().format(formatter);
+		simpMessagingTemplate.convertAndSend("/topic/chat/game/"+message.gameId,message);
 	}
 }

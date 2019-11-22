@@ -24,7 +24,7 @@ class GameChatComponent extends Component {
         super();
         this.state = {
             message:"",
-            expanded:true,
+            expanded:false,
             newMessages:false,
             messageCount:0,
         }
@@ -32,6 +32,11 @@ class GameChatComponent extends Component {
         this.handleChange=this.handleChange.bind(this);
         this.sendMessage=this.sendMessage.bind(this);
         this.toggle=this.toggle.bind(this);
+        this.handleKeyPress=this.handleKeyPress.bind(this);
+    }
+
+    componentDidMount(){
+        console.log(this.props.inGame)
     }
 
     componentDidUpdate() {
@@ -67,7 +72,6 @@ class GameChatComponent extends Component {
     }
     handleChange(event) {
         this.setState({ [event.target.id]: event.target.value });
-       
     }
 
     sendMessage(){
@@ -79,11 +83,21 @@ class GameChatComponent extends Component {
     toggle(){
         this.setState({expanded:!this.state.expanded});
     }
+
+    handleKeyPress (event)  {
+        if(event.key === 'Enter'){
+          this.sendMessage();
+        }
+      }
+
     render() {
         const { gameChatMessages } = this.props.chats;
         const{message,expanded,newMessages}=this.state;
+        const inGame = this.props.inGame
         return (
-            <div className="chat">
+            <div>
+            {!inGame||expanded?
+            <div className={"chat "+(inGame?"inGame":"")}>
 
                 <div className="head" onClick={this.toggle}>
                     <h3>Czat gry</h3>
@@ -93,19 +107,25 @@ class GameChatComponent extends Component {
                 {expanded?<div className="expanded">
                     <div className="messages" id="messageList" onScroll={this.scrollPos}>
                         {gameChatMessages.map((message, index) => {
-                            return <div key={index} className="message">
+                            return <div key={index} className={(message.user.username=='System'?"systemMssage ":"message")}>
                                 <p className="author"><span style={{color:this.getUserColor(message.user.username)}}>{message.user.username}</span> {message.time} </p>
                                 <p className="content">{message.message}  </p>
                             </div>
                         })}
                     </div>
                     <div className="messageinput">
-                        <textarea className="textarea messageInput" rows="2"placeholder="Wpisz coś..."  id="message" value={message} onChange={this.handleChange}></textarea>
+                        <textarea className="textarea messageInput" rows="2"placeholder="Wpisz coś..."  id="message" value={message} onChange={this.handleChange} onKeyPress={this.handleKeyPress}></textarea>
                        
                     <img src="assets/send.png" onClick={this.sendMessage} />
                     </div>
                 </div>:""}
             </div>
+            :
+            <div className="hud_card inGameChat" onClick={this.toggle}>
+                <img src="assets/chat.png" />
+                {newMessages?<img src="assets/achtung.gif" />:""}
+            </div>
+            }</div>
         );
     }
 }

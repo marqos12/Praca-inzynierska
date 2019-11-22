@@ -23,7 +23,7 @@ class GlobalChatComponent extends Component {
         super();
         this.state = {
             message:"",
-            expanded:true,
+            expanded:false,
             newMessages:false,
             messageCount:0,
         }
@@ -31,6 +31,7 @@ class GlobalChatComponent extends Component {
         this.handleChange=this.handleChange.bind(this);
         this.sendMessage=this.sendMessage.bind(this);
         this.toggle=this.toggle.bind(this);
+        this.handleKeyPress=this.handleKeyPress.bind(this);
     }
 
     componentDidUpdate() {
@@ -78,6 +79,16 @@ class GlobalChatComponent extends Component {
     toggle(){
         this.setState({expanded:!this.state.expanded});
     }
+
+    
+
+    handleKeyPress (event)  {
+        if(event.key === 'Enter'){
+          this.sendMessage();
+        }
+      }
+
+
     render() {
         const { globalChatMessages } = this.props.chats;
         const{message,expanded,newMessages}=this.state;
@@ -99,7 +110,7 @@ class GlobalChatComponent extends Component {
                         })}
                     </div>
                     <div className="messageinput">
-                        <textarea className="textarea messageInput" rows="2"placeholder="Wpisz coś..."  id="message" value={message} onChange={this.handleChange}></textarea>
+                        <textarea className="textarea messageInput" rows="2"placeholder="Wpisz coś..."  id="message" value={message} onChange={this.handleChange} onKeyPress={this.handleKeyPress}> </textarea>
                        
                     <img src="assets/send.png" onClick={this.sendMessage} />
                     </div>

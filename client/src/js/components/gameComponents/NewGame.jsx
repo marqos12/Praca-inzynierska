@@ -334,7 +334,7 @@ class NewGameComponent extends Component {
                         </div>
                         : <div></div>}
                 </div>
-                <GameChat/>
+                <GameChat inGame={false}/>
             </div>
         );
     }

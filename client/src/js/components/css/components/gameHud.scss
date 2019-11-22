@@ -202,6 +202,14 @@ $resources-tab-height:fit-content;
             right:10vw;
         }
     }
+
+    .inGameChat{
+        position: absolute;
+        top:150px;
+        left:10px;
+        border-radius: 50px;
+
+    }
 }
 
 .inGameMenu{

@@ -6,6 +6,7 @@ import GameComponent from "./GameComponent.jsx";
 import { gameWsGameJoin, gameMyNewTile } from "../actions/gameActions.js";
 import { wsSendMessage, wsGameDisconnect } from "../actions/index.js";
 import TileDetails from "../components/gameComponents/TileDetails.jsx";
+import GameChat from "../components/gameComponents/GameChat.jsx";
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -221,7 +222,10 @@ class MainGameComponent extends Component {
                             <TileDetails />
                         </div> : <div></div>
                     }
+                    <div >
+                    <GameChat inGame={true}/>
 
+                    </div>
                 </div>
                 {openMenu ? <div className="inGameMenu">
 

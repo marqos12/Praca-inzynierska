@@ -139,7 +139,6 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === CHAT_GLOBAL_MESSAGE) {
-    console.log("MenuReducer 141",action)
     return Object.assign({}, state, {
       chats: Object.assign({}, state.chats, {
         globalChatMessages: state.chats.globalChatMessages.concat([action.payload])
@@ -166,7 +165,6 @@ export function menuReducer(state, action) {
   if (action.type === WS_GAME_JOINED) {
     if(state.actualGame.aliveMessageTimer)
     clearInterval(state.actualGame.aliveMessageTimer);
-    console.log("MenuReducer 148 timer ",action.payload.interval)
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload.game,
@@ -178,13 +176,15 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === WS_GAME_DISCONNECTED) {
-    console.log("MenuReducer czszczenie timera ")
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: null,
         gamers: [],
         amIAuthor: false,
         meGamer: null
+      }),
+      chats: Object.assign({}, state.chats, {
+        gameChatMessages: []
       })
     });
   }
