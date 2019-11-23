@@ -5,7 +5,7 @@ import Login from "./auth/Login.jsx";
 import Registration from "./auth/Registration.jsx";
 import UserPanel from "./UserPanel.jsx";
 import { Route, withRouter } from 'react-router-dom';
-import { setCookiesService, setHistory, wsConnect, setAuthFromCookies, setOrigin } from "../actions/index";
+import { setCookiesService, setHistory, wsConnect, setAuthFromCookies, setOrigin, setAloneGame } from "../actions/index";
 import "./css/main.scss";
 import { withCookies, Cookies } from 'react-cookie';
 
@@ -39,6 +39,9 @@ class App extends Component {
   }
   componentDidMount() {
     this.props.setOrigin(window.location.href.split("/#")[0])
+    console.log("App 42",window.location.href)
+    if(window.location.href.includes("alone"))
+      this.props.setAloneGame(true);
   }
 
   componentDidUpdate() {
@@ -84,7 +87,8 @@ function mapDispatchToProps(dispatch) {
     setCookiesService: payload => dispatch(setCookiesService(payload)),
     setHistory: payload => dispatch(setHistory(payload)),
     wsSendMessage: payload => dispatch(wsSendMessage(payload)),
-    setAuthFromCookies: payload => dispatch(setAuthFromCookies(payload))
+    setAuthFromCookies: payload => dispatch(setAuthFromCookies(payload)),
+    setAloneGame:payload=>dispatch(setAloneGame(payload)),
   };
 }
 

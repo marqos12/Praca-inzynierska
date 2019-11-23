@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.validation.constraints.*;
  
 public class SignUpForm {
-    @NotBlank
+   
     @Size(min = 3, max = 50)
     private String name;
  
@@ -13,7 +13,7 @@ public class SignUpForm {
     @Size(min = 3, max = 50)
     private String username;
  
-    @NotBlank
+
     @Size(max = 60)
     @Email
     private String email;

@@ -20,11 +20,14 @@
             display: inline;
         }
         img{
-            width:20px;
+            //width:20px;
             height:20px;
             margin-left: 10px;
             position: relative;
             top:5px;
+        }
+        .close{
+            left:50px;
         }
     }
 
@@ -32,7 +35,7 @@
         .messages{
             height: 400px;
             max-height: 50vh;
-            overflow-y: scroll;
+            overflow-y: auto;
 
             .message{
                 border-radius: 10px;
@@ -43,9 +46,6 @@
 
                 .author{
                     font-weight: 600;
-                }
-                .message{
-
                 }
             }
             .systemMssage{

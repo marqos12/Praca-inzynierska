@@ -84,12 +84,12 @@ export function menuMiddleware(getState, dispatch, action) {
             break;
           case "ME_GAMER":
             let interval = setInterval(() => {
-              console.log("MenuMiddleware 90",resp.payload,getState())
-                dispatch(wsSendMessage({
-                  channel: "/lobby/iAmAlive", payload: resp.payload
+              console.log("MenuMiddleware 90", resp.payload, getState())
+              dispatch(wsSendMessage({
+                channel: "/lobby/iAmAlive", payload: resp.payload
               }))
             }, 30000)
-            dispatch(wsGameJoined({...resp.payload,interval:interval}));
+            dispatch(wsGameJoined({ ...resp.payload, interval: interval }));
             dispatch(wsConnectGame(resp.payload.game));
             break;
           case "GAME_LEFT":
@@ -104,7 +104,7 @@ export function menuMiddleware(getState, dispatch, action) {
       });
       stompClient.subscribe('/topic/chat/global', x => {
         let resp = JSON.parse(x.body)
-        console.log("MenuMiddleware 105 chat controller",resp)
+        console.log("MenuMiddleware 105 chat controller", resp)
         dispatch(chatGlobalMessage(resp))
       });
       return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
@@ -132,8 +132,17 @@ export function menuMiddleware(getState, dispatch, action) {
       },
       body: JSON.stringify(action.payload),
     })
-      .then(response => response.json()).then(response => {
-        return dispatch(registered(response));
+      .then(response => {
+        console.log('MenuMiddleware 136', response);
+        if (response.status != 200) {
+          dispatch(registrationFailed(response.json()));
+          return "";
+        }
+        else return response.json()
+      }).then(response => {
+        console.log('MenuMiddleware 138', response, response.status == 200)
+        if (response)
+          return dispatch(registered(response));
       })
       .catch(response => {
         return dispatch(registrationFailed(response));
@@ -184,7 +193,7 @@ export function menuMiddleware(getState, dispatch, action) {
       resp = JSON.parse(resp.body)
       console.log("menuMiddleware 180 in game czat", resp)
       dispatch(chatGameMessage(resp))
-      
+
     });
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: subscription }))
     dispatch(wsChannelSubscription({ channel: "GAME_CHAT_CHANNEL", subscription: chatSubscription }))
@@ -193,7 +202,7 @@ export function menuMiddleware(getState, dispatch, action) {
   if (action.type === WS_GAME_DISCONNECT) {
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: null }));
     dispatch(wsChannelSubscription({ channel: "GAME_CHAT_CHANNEL", subscription: null }))
-    
+
     clearInterval(getState().actualGame.aliveMessageTimer);
     console.log("MenuMiddleware 182 czszczenie timera ")
     dispatch(wsSendMessage({

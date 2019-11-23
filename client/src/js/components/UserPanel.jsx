@@ -62,8 +62,9 @@ class HomeComponent extends Component {
 
     componentDidUpdate() {
 
+
         if (this.props.actualGame.game != null)
-        if(!this.props.actualGame.alone)
+        if(!this.props.actualGame.alone )
             this.props.history.push("/game/" + this.props.actualGame.game.id)
             else 
             this.props.history.push("/alone/" + this.props.actualGame.game.id)

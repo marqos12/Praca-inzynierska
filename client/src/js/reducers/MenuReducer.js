@@ -19,7 +19,8 @@ import {
   BEEN_KICKED_OUT,
   WS_ALONE_GAME_CREATED,
   CHAT_GLOBAL_MESSAGE,
-  CHAT_GAME_MESSAGE
+  CHAT_GAME_MESSAGE,
+  SET_ALONE_GAME
 } from "../constants/action-types";
 
 export function menuReducer(state, action) {
@@ -31,6 +32,7 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === REGISTERED) {
+    console.log("rejestracja udana")
     return Object.assign({}, state, {
       auth: Object.assign({}, state.auth, {
         registerSuccess: true, registerFailed: false
@@ -39,6 +41,7 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === REGISTRATION_FAILED) {
+    console.log("rejestracja nieudana")
     return Object.assign({}, state, {
       auth: Object.assign({}, state.auth, {
         registerSuccess: false, registerFailed: true
@@ -202,6 +205,14 @@ export function menuReducer(state, action) {
         gamers: [],
         amIAuthor: false,
         meGamer: null
+      })
+    });
+  }
+
+  if (action.type === SET_ALONE_GAME) {
+    return Object.assign({}, state, {
+      actualGame:  Object.assign({}, state.actualGame, {
+        alone: action.payload
       })
     });
   }

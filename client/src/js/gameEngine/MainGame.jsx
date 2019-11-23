@@ -110,8 +110,8 @@ class MainGameComponent extends Component {
         })
     }
 
-    leaveGame(){
-        
+    leaveGame() {
+
         this.props.wsGameDisconnect();
     }
 
@@ -133,27 +133,27 @@ class MainGameComponent extends Component {
             if (minutes < 10) minutes = "0" + minutes;
             if (seconds < 10) seconds = "0" + seconds;
 
-            if(actualGame.game.endType=="TIME_LIMIT"){
+            if (actualGame.game.endType == "TIME_LIMIT") {
                 limitMinutes = Math.floor((actualGame.game.gameLimit - actualGame.game.startTime) / 60);
                 limitSeconds = Math.floor((actualGame.game.gameLimit - actualGame.game.startTime) % 60)
                 if (limitMinutes < 10) limitMinutes = "0" + limitMinutes;
                 if (limitSeconds < 10) limitSeconds = "0" + limitSeconds;
             }
         }
-        return { minutes: minutes, seconds: seconds, limitMinutes: limitMinutes, limitSeconds: limitSeconds  }
+        return { minutes: minutes, seconds: seconds, limitMinutes: limitMinutes, limitSeconds: limitSeconds }
     }
 
-    getGamersResult(){
+    getGamersResult() {
         let tab = [];
         let rankPoint = this.props.actualGame.gamers.sort((x, y) => { return y.points - x.points })
         let rankDucklings = this.props.actualGame.gamers.sort((x, y) => { return y.ducklings - x.ducklings })
-        for(let i = 0; i < rankPoint.length;i++){
-            tab.push({points:rankPoint[i],ducklings:rankDucklings[i]})
+        for (let i = 0; i < rankPoint.length; i++) {
+            tab.push({ points: rankPoint[i], ducklings: rankDucklings[i] })
         }
         return tab;
     }
 
-    continueGame(){
+    continueGame() {
         let game = this.props.actualGame.game;
         game.endType = "ENDLESS";
         game.ended = false;
@@ -223,7 +223,9 @@ class MainGameComponent extends Component {
                         </div> : <div></div>
                     }
                     <div >
-                    <GameChat inGame={true}/>
+                        {actualGame.alone ?
+                            <GameChat inGame={true} />
+                            : ""}
 
                     </div>
                 </div>
@@ -236,7 +238,7 @@ class MainGameComponent extends Component {
                             <div className="onSmallVisible menuTimer">
                                 <div>
                                     <img src="assets/timer.png"></img>
-                                    Upłynęło czasu: {timer.minutes}:{timer.seconds}{actualGame.game.endType=="TIME_LIMIT"?<span>({timer.limitMinutes}:{timer.limitSeconds})</span>:""}
+                                    Upłynęło czasu: {timer.minutes}:{timer.seconds}{actualGame.game.endType == "TIME_LIMIT" ? <span>({timer.limitMinutes}:{timer.limitSeconds})</span> : ""}
                                 </div>
                                 <div>
                                     <img src="assets/left.png"></img>
@@ -257,28 +259,28 @@ class MainGameComponent extends Component {
                     <div className="container">
                         <div className="menuContent">
                             <div className="buttonList">
-                            <h1 className="gameTitle">Gra zakończona!</h1>
+                                <h1 className="gameTitle">Gra zakończona!</h1>
                                 <h3 className="gameTitle">Wyniki:</h3>
-                            <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-                                <thead>
-                                    <tr>
-                                        <th>Pozycja</th>
-                                        <th>Punkty</th>
-                                        <th>Ducklingsy</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="gameResult">
-                                    {result.map((row, index) => {
-                                        return <tr key={index} >
-                                            <td >{index + 1}</td>
-                                            <td >{row.points.user.username}</td>
-                                            <td >{row.ducklings.user.username}</td>                                            
+                                <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                                    <thead>
+                                        <tr>
+                                            <th>Pozycja</th>
+                                            <th>Punkty</th>
+                                            <th>Ducklingsy</th>
                                         </tr>
-                                    })}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="gameResult">
+                                        {result.map((row, index) => {
+                                            return <tr key={index} >
+                                                <td >{index + 1}</td>
+                                                <td >{row.points.user.username}</td>
+                                                <td >{row.ducklings.user.username}</td>
+                                            </tr>
+                                        })}
+                                    </tbody>
+                                </table>
 
-                                {actualGame.amIAuthor?<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.continueGame}>Kontynuuj</a>:""}
+                                {actualGame.amIAuthor ? <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.continueGame}>Kontynuuj</a> : ""}
                                 {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>*/}
                                 <NavLink to="/panel" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</NavLink>

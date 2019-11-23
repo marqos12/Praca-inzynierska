@@ -81,7 +81,9 @@ class GameChatComponent extends Component {
     }
 
     toggle(){
-        this.setState({expanded:!this.state.expanded});
+        this.setState({
+            newMessages:false,
+            expanded:!this.state.expanded});
     }
 
     handleKeyPress (event)  {
@@ -103,6 +105,7 @@ class GameChatComponent extends Component {
                     <h3>Czat gry</h3>
                     <img src="assets/chat.png" />
                     {newMessages?<img src="assets/achtung.gif" />:""}
+                    {expanded?<img className="close" src="assets/close.png" onClick={this.sendMessage} />:""}
                 </div>
                 {expanded?<div className="expanded">
                     <div className="messages" id="messageList" onScroll={this.scrollPos}>

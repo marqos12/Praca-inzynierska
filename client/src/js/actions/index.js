@@ -32,6 +32,7 @@ import {
     WS_ALONE_GAME_CREATED,
     CHAT_GLOBAL_MESSAGE,
     CHAT_GAME_MESSAGE,
+    SET_ALONE_GAME,
 } from "../constants/action-types";
 
 export function wsConnect() {
@@ -166,4 +167,8 @@ export function chatGlobalMessage(payload) {
 
 export function chatGameMessage(payload) {
     return { type: CHAT_GAME_MESSAGE, payload };
+}
+
+export function setAloneGame(payload) {
+    return { type: SET_ALONE_GAME, payload };
 }

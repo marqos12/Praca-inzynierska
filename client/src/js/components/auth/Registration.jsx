@@ -21,7 +21,8 @@ class RegistrationComponent extends Component {
             email: "",
             password: "",
             confirmPassword: "",
-            samePassword:true
+            errorMessage: "",
+            samePassword: true
         };
         this.handleChange = this.handleChange.bind(this);
         this.register = this.register.bind(this);
@@ -30,16 +31,36 @@ class RegistrationComponent extends Component {
         this.setState({ [event.target.id]: event.target.value });
     }
 
+    validateEmail(email) {
+        var re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+        return re.test(String(email).toLowerCase());
+    }
+
     register() {
         const { username, email, password, confirmPassword } = this.state;
-        if(password==confirmPassword)
-        this.props.register({ username: username, email: email, password: password, role: ["user", "pm"], name: 'stefan' })
-        else 
-        this.setState({samePassword: false });
+
+        if (password != confirmPassword)
+            this.setState({ errorMessage: "Podane hasła muszą być takie same!" })
+        else if (password.length < 6)
+            this.setState({ errorMessage: "Podano zbyt krótkie hasło!" })
+        else if (password.length > 40)
+            this.setState({ errorMessage: "Podano zbyt długie hasło!" })
+        else if (username.length < 3)
+            this.setState({ errorMessage: "Podano zbyt krótki login!" })
+        else if (username.length > 50)
+            this.setState({ errorMessage: "Podano zbyt długi login!" })
+        /*else if (!this.validateEmail(email))
+            this.setState({ errorMessage: "Podano niepoprawny adres e-mail!" })*/
+        else
+        {
+            this.props.register({ username: username, email: email, password: password, role: ["user", "pm"], name: 'stefan' })
+            this.setState({ errorMessage: "" })
+        }
+
     }
     render() {
         const { auth } = this.props
-        const { username, email, password, confirmPassword, samePassword } = this.state;
+        const { username, email, password, confirmPassword, errorMessage } = this.state;
         return (
             <div className="container">
                 <div className="menuContent">
@@ -47,7 +68,7 @@ class RegistrationComponent extends Component {
                     <form >
                         <div className="buttonList">
                             <div className="field">
-                                <label className="label">Login</label>
+                                <label className="label">Login *</label>
                                 <div className="control has-icons-left">
                                     <input className="input is-link is-rounded is-large" type="text" placeholder="Login" id="username" value={username} onChange={this.handleChange} />
                                     <span className="icon is-small is-left">
@@ -65,7 +86,7 @@ class RegistrationComponent extends Component {
                                 </div>
                             </div>
                             <div className="field">
-                                <label className="label">Hasło</label>
+                                <label className="label">Hasło *</label>
                                 <div className="control has-icons-left">
                                     <input className="input is-link is-rounded is-large" type="password" placeholder="Hasło" id="password" value={password} onChange={this.handleChange} />
                                     <span className="icon is-small is-left">
@@ -74,7 +95,7 @@ class RegistrationComponent extends Component {
                                 </div>
                             </div>
                             <div className="field">
-                                <label className="label">Powtórz hasło</label>
+                                <label className="label">Powtórz hasło *</label>
                                 <div className="control has-icons-left">
                                     <input className="input is-link is-rounded is-large" type="password" placeholder="Powtórz hasło" id="confirmPassword" value={confirmPassword} onChange={this.handleChange} />
                                     <span className="icon is-small is-left">
@@ -83,8 +104,8 @@ class RegistrationComponent extends Component {
                                 </div>
                             </div>
                             <div className="subTitle">
-                                {!samePassword &&
-                                    <p>Podane hasła muszą być takie same!</p>
+                                {errorMessage &&
+                                    <p>{errorMessage}</p>
                                 }
                                 {auth.registerSuccess &&
                                     <p>Rejestracja udana!</p>
@@ -95,7 +116,7 @@ class RegistrationComponent extends Component {
                                 {auth.registerSuccess ?
                                     <NavLink to="/login" type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.login}>Zaloguj się</NavLink>
                                     :
-                                    <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.register}>Zarejestruj się</a> 
+                                    <a type="button" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.register}>Zarejestruj się</a>
                                 }
                                 Masz już konto? <NavLink to="/login" className="subtitleBtn noBorder">Zaloguj się</NavLink>&nbsp;
                             lub <NavLink to="/#" className="subtitleBtn noBorder">Powróć do strony głównej</NavLink>
