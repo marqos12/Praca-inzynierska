@@ -84,7 +84,7 @@ export function menuMiddleware(getState, dispatch, action) {
             break;
           case "ME_GAMER":
             let interval = setInterval(() => {
-              console.log("MenuMiddleware 90", resp.payload, getState())
+              //console.log("MenuMiddleware 90", resp.payload, getState())
               dispatch(wsSendMessage({
                 channel: "/lobby/iAmAlive", payload: resp.payload
               }))

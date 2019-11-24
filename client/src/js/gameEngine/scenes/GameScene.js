@@ -232,6 +232,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   stateChanged() {
+    console.log("GameScene 235",store, this)
     if (!this.gameConnected && this.state.ws.client && this.state.actualGame.game) {
       this.gameConnected = true;
       store.dispatch(gameWsGameJoined(this.state.actualGame.game));
@@ -250,15 +251,18 @@ export default class GameScene extends Phaser.Scene {
         tile2.makeScale(this.myScale);
         tile2.move(tile.posX, tile.posY);
         let oldTile = this.tiles.filter(t => t.id == tile.id);
+        console.log("GameScene254",oldTile)
         if (oldTile.length > 0) {
           oldTile[0].destroy2();
-          oldTile[0] = null
+          let index = this.tiles.indexOf(oldTile[0]);
+          this.tiles.splice(index,1);
         }
 
         this.tiles.push(tile2);
         this.tiles = this.tiles.filter(t => t.id != tile.id || t.name == tile.type + "_" + tile.lvl);
         this.add.existing(tile2.setDepth(2));
         tile2.highlightNewTile();
+        console.log("GameScene 264",this.tiles)
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
       if (this.newTile && !this.newTileCard) {

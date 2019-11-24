@@ -223,7 +223,7 @@ class MainGameComponent extends Component {
                         </div> : <div></div>
                     }
                     <div >
-                        {actualGame.alone ?
+                        {!actualGame.alone ?
                             <GameChat inGame={true} />
                             : ""}
 
@@ -286,6 +286,7 @@ class MainGameComponent extends Component {
                                 <NavLink to="/panel" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</NavLink>
                             </div>
                         </div>
+                        <GameChat inGame={false} />
                     </div>
                 </div> : <div></div>}
             </div>

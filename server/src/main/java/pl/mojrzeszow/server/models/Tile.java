@@ -272,13 +272,13 @@ public class Tile {
 		switch (this.type) {
 		case HOUSE:
 			if (lvl == 1) {
-				influence.ducklings = 250L;
+				influence.ducklings = 5000L;
 				influence.shops = 1L;
 				influence.entertainment = 2L;
 				influence.work = 2L;
 				influence.cleanness = 1L;
 			} else if (lvl == 2) {
-				influence.ducklings = 1000L;
+				influence.ducklings = 15000L;
 				influence.shops = 5L;
 				influence.entertainment = 3L;
 				influence.medicalCare = 1L;
@@ -289,13 +289,13 @@ public class Tile {
 			break;
 		case SHOP:
 			if (lvl == 1) {
-				influence.ducklings = 1000L;
+				influence.ducklings = 5000L;
 				influence.people = 10L;
 				influence.goods = 1L;
 				influence.crimePrevention = 1L;
 			} else if (lvl == 2) {
-				influence.ducklings = 4000L;
-				influence.people = 30L;
+				influence.ducklings = 40000L;
+				influence.people = 150L;
 				influence.fireSafety = 1L;
 				influence.goods = 15L;
 			} else {

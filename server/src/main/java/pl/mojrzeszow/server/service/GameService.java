@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -138,20 +137,23 @@ public class GameService {
 
 	private Gamer findnextGamer(Game game, Gamer currentGamer) {
 		List<Gamer> gamers = gamerRepository.findByGame(game);
-		
+
 		List<Gamer> aliveGamers = gamers.stream().filter(g -> g.getStatus().equals("t"))
-				//.sorted((g1, g2) -> (int) (g1.getOrdinalNumber() - g2.getOrdinalNumber()))
+				 .sorted((g1, g2) -> (int) (g1.getOrdinalNumber() - g2.getOrdinalNumber()))
 				.collect(Collectors.toList());
 		try {
-			Gamer nextGamer = aliveGamers.stream().filter(g -> g.getOrdinalNumber() > currentGamer.getOrdinalNumber())
-					.findFirst().orElse(aliveGamers.get(0));
-			return nextGamer;
+			List<Gamer> nextGamers = aliveGamers.stream()
+					.filter(g -> g.getOrdinalNumber() > currentGamer.getOrdinalNumber())
+					.sorted((g1, g2) -> (int) (g1.getOrdinalNumber() - g2.getOrdinalNumber())).collect(Collectors.toList());// .findFirst().orElse(aliveGamers.get(0));
+			if (nextGamers.size() == 0)
+				return aliveGamers.get(0);
+			return nextGamers.get(0);
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	public void nextTurn(Gamer gamer){
+	public void nextTurn(Gamer gamer) {
 		Gamer nextGamer = findnextGamer(gamer.getGame(), gamer);
 		if (nextGamer == null) {
 			gamer.getGame().setEnded(true);
@@ -174,7 +176,7 @@ public class GameService {
 		}
 		if (nextGamer != null) {
 			TileType randomTileType = getRandomTileTypeForGame(nextGamer.getGame());
-
+			nextGamer = findnextGamer(gamer.getGame(), gamer);
 			nextGamer.setWithTile(true);
 			nextGamer.setNewTileType(randomTileType);
 			nextGamer = gamerRepository.save(nextGamer);
@@ -209,9 +211,9 @@ public class GameService {
 		case TIME_LIMIT:
 			LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochSecond(game.getGameLimit()),
 					ZoneId.systemDefault());
-			System.out.println(time);
-			System.out.println(LocalDateTime.now());
-			System.out.println(time.isBefore(LocalDateTime.now()));
+			// System.out.println(time);
+			// System.out.println(LocalDateTime.now());
+			// System.out.println(time.isBefore(LocalDateTime.now()));
 			if (time.isBefore(LocalDateTime.now()))
 				game.setEnded(true);
 			break;
@@ -255,7 +257,7 @@ public class GameService {
 		}
 
 		else {
-			System.out.println("GameService 223");
+			// System.out.println("GameService 223");
 			tile.setAngle(data.angle.intValue());
 		}
 		Tile tile2 = tileRepository.save(tile);
@@ -344,50 +346,51 @@ public class GameService {
 	}
 
 	private TileType getRandomTileTypeForGame(Game game) {
-try{
-		List<Tile> tiles = tileRepository.findByGame(game);
+		try {
+			List<Tile> tiles = tileRepository.findByGame(game);
 
-		List<TileEdgeType> possibleEdgeTypes = new ArrayList<>();
+			List<TileEdgeType> possibleEdgeTypes = new ArrayList<>();
 
-		for (Tile tile : tiles) {
-			List<TileEdgeType> sortedEdges = tile.getSortedEdgeTypes();
-			if (!tiles.stream().filter(t -> tile.getPosX() - 1 == t.getPosX() && tile.getPosY() == t.getPosY())
-					.findFirst().isPresent())
-				possibleEdgeTypes.add(sortedEdges.get(0));
+			for (Tile tile : tiles) {
+				List<TileEdgeType> sortedEdges = tile.getSortedEdgeTypes();
+				if (!tiles.stream().filter(t -> tile.getPosX() - 1 == t.getPosX() && tile.getPosY() == t.getPosY())
+						.findFirst().isPresent())
+					possibleEdgeTypes.add(sortedEdges.get(0));
 
-			if (!tiles.stream().filter(t -> tile.getPosX() == t.getPosX() && tile.getPosY() - 1 == t.getPosY())
-					.findFirst().isPresent())
-				possibleEdgeTypes.add(sortedEdges.get(1));
+				if (!tiles.stream().filter(t -> tile.getPosX() == t.getPosX() && tile.getPosY() - 1 == t.getPosY())
+						.findFirst().isPresent())
+					possibleEdgeTypes.add(sortedEdges.get(1));
 
-			if (!tiles.stream().filter(t -> tile.getPosX() + 1 == t.getPosX() && tile.getPosY() == t.getPosY())
-					.findFirst().isPresent())
-				possibleEdgeTypes.add(sortedEdges.get(2));
+				if (!tiles.stream().filter(t -> tile.getPosX() + 1 == t.getPosX() && tile.getPosY() == t.getPosY())
+						.findFirst().isPresent())
+					possibleEdgeTypes.add(sortedEdges.get(2));
 
-			if (!tiles.stream().filter(t -> tile.getPosX() == t.getPosX() && tile.getPosY() + 1 == t.getPosY())
-					.findFirst().isPresent())
-				possibleEdgeTypes.add(sortedEdges.get(3));
+				if (!tiles.stream().filter(t -> tile.getPosX() == t.getPosX() && tile.getPosY() + 1 == t.getPosY())
+						.findFirst().isPresent())
+					possibleEdgeTypes.add(sortedEdges.get(3));
 
-		}
-
-		// Long countRoad = possibleEdgeTypes.stream().filter(et ->
-		// et.equals(TileEdgeType.ROAD)).count();
-		Long countAccess = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ACCESS)).count();
-
-		TileType randomTileType = null;
-
-		if (countAccess <= 2) {
-			randomTileType = tileTypeService.getRandomRoadAccessTileType();
-		} else {
-			if (Math.random() >= 0.5) {
-				randomTileType = tileTypeService.getRandomEndTileType();
-			} else {
-				randomTileType = tileTypeService.getRandomRoadTileType();
 			}
-		}
 
-		return randomTileType;
-	}catch(Exception e){}
-	return null;
+			// Long countRoad = possibleEdgeTypes.stream().filter(et ->
+			// et.equals(TileEdgeType.ROAD)).count();
+			Long countAccess = possibleEdgeTypes.stream().filter(et -> et.equals(TileEdgeType.ACCESS)).count();
+
+			TileType randomTileType = null;
+
+			if (countAccess <= 2) {
+				randomTileType = tileTypeService.getRandomRoadAccessTileType();
+			} else {
+				if (Math.random() >= 0.5) {
+					randomTileType = tileTypeService.getRandomEndTileType();
+				} else {
+					randomTileType = tileTypeService.getRandomRoadTileType();
+				}
+			}
+
+			return randomTileType;
+		} catch (Exception e) {
+		}
+		return null;
 	}
 
 	private void newRound(Game game) {
@@ -570,6 +573,7 @@ try{
 								tile.setLvl(tile.getLvl() - 1);
 								not.setInfluenceGiveTo(not.getInfluenceGiveTo() + tile.getId().toString() + "|");
 								tile.setInfluenceTakenFrom(tile.getInfluenceTakenFrom() + not.getId().toString() + "|");
+								updateTileInfluence(not, tiles, field, fieldsRanges.get(index), used);
 							}
 						}
 
@@ -601,8 +605,10 @@ try{
 		for (Tile t : tilesInRange) {
 			try {
 				Long influence = (Long) field.get(t.getInfluence());
-				if (influence != null)
+				if (influence != null) {
+					System.out.println("GameService 606 " + diff);
 					field.set(t.getInfluence(), influence - diff);
+				}
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}

@@ -39,6 +39,7 @@ export function getTileSortedEdges(tileType, angle) {
 
 export function getPossiblePlaces(tiles, newTile) {
     //let newTile = tiles.pop();
+    console.log("gameMechanics42",newTile,newTile.generalType)
     let newTileEdges = getTileSortedEdges(newTile.generalType, 0);
 
     let initPossiblePos = [];
@@ -51,7 +52,7 @@ export function getPossiblePlaces(tiles, newTile) {
         for (let i = 0; i < 4; i++) {
             let j = 0;
             tileEdges.forEach(edge => {
-                if (newTileEdges[i] == edge && edge != GREEN) {
+                if (newTileEdges[i] == edge && edge != GREEN&&!((newTile.generalType!="END_TILE"&&newTile.generalType!="OPTIONAL")&&edge=="ACCESS") ) {
                     initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
                 }
                 j++
@@ -431,4 +432,11 @@ export function getWayOfUpgrade(tile) {
         case "ROAD_CURVE_1":
             return ["ROAD_STRAIGHT_1", "ROAD_ACCESS_SINGLE_1", "ROAD_CROSS_SINGLE_1", "ROAD_ACCESS_DOUBLE_1", "ROAD_CROSS_DOUBLE_1", "ROAD_CURVE_1"];
     }
+    
+}
+export function getTileOwnerName(tile){
+    if(tile.owner)
+        return tile.owner.user.username
+    else 
+    return "system"
 }

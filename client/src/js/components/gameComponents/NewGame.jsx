@@ -277,7 +277,7 @@ class NewGameComponent extends Component {
                                     <br />
                                     <br />
 
-                                    <a className="button is-large  is-link is-rounded is-fullwidth" disabled={edited?"":"disabled"} onClick={this.updateGame}>Aktualizuj </a>
+                                    <a className="button is-large  is-link is-rounded is-fullwidth" disabled={edited?"":"disabled"} onClick={this.updateGame}>Zatwierdź ustawienia</a>
 
                                     <h3>Kod do bezpośredniego dołączenia: {this.props.actualGame.game.id}</h3>
 

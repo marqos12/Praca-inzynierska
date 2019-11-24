@@ -1,4 +1,4 @@
-import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade } from "../../gameMechanics";
+import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade, getTileOwnerName } from "../../gameMechanics";
 import store from "../../../store";
 import { gameUpdateTile } from "../../../actions/gameActions";
 import { Tile } from "./Tile";
@@ -34,7 +34,7 @@ export class TileDetails {
         });
         scene.add.existing(this.background);
 
-        this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + translateTileName(tile.name), fontConf)
+        this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + translateTileName(tile.name) + "\nWłaściciel: " + getTileOwnerName(tile), fontConf)
         this.tileName.setDepth(111);
         this.tileName.setOrigin(0, 0);
         scene.add.existing(this.tileName);
@@ -89,11 +89,13 @@ export class TileDetails {
         this.rotateButton.setInteractive();
         this.rotateButton.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown()) {
-                this.rotated = true;
                 this.tile.rotate();
-                this.tileName.text = "Nazwa: " + translateTileName(this.tile.name);
-                this.tileName.text += "\n\nObracanie płytki"
-                this.createSubmitRotationButtons();
+                if (!this.rotated) {
+                    this.tileName.text = "Nazwa: " + translateTileName(this.tile.name) + "\nWłaściciel: " + getTileOwnerName(this.tile);
+                    this.tileName.text += "\n\nObracanie płytki"
+                    this.createSubmitRotationButtons();
+                }
+                this.rotated = true;
                 this.move();
             }
         });
@@ -132,7 +134,8 @@ export class TileDetails {
         this.rotateConform.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown()) {
                 store.dispatch(gameUpdateTile({ id: this.tile.id, angle: this.tile.angle }));
-                this.destroy();
+                let closeTileDetails = new CustomEvent('closeTileDetails', { detail: this });
+                dispatchEvent(closeTileDetails);
             }
         });
         this.scene.add.existing(this.rotateConform);
@@ -151,7 +154,7 @@ export class TileDetails {
                     this.showUpgradeDetails = false;
                     this.waysOfUpgrade.forEach(w => { w.destroy(0) });
                     this.waysOfUpgrade = [];
-                    this.tileName.text = "Nazwa: " + translateTileName(this.tile.name);
+                    this.tileName.text = "Nazwa: " + translateTileName(this.tile.name) + "\nWłaściciel: " + getTileOwnerName(this.tile);
                     this.tileDetails()
                     this.showUpgradeButton = true;
                     if (this.destroyButton) { this.destroyButton.destroy(); this.destroyButton = null; }
@@ -176,7 +179,7 @@ export class TileDetails {
         this.buldozerButton.setInteractive();
         this.buldozerButton.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown()) {
-                this.tileName.text = "Nazwa: " + translateTileName(this.tile.name);
+                this.tileName.text = "Nazwa: " + translateTileName(this.tile.name) + "\nWłaściciel: " + getTileOwnerName(this.tile);
                 fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + this.tile.name.slice(0, -2) + "/1").then(response =>
                     response.json()
                 ).then(response => {
@@ -237,10 +240,10 @@ export class TileDetails {
         this.rotateButton.destroy();
         if (this.rotated) {
             this.returnRotation();
-            this.cancelRotation.destroy();
-            this.rotateBigButton.destroy();
-            this.rotateConform.destroy();
         }
+        if (this.cancelRotation) this.cancelRotation.destroy();
+        if (this.rotateBigButton) this.rotateBigButton.destroy();
+        if (this.rotateConform) this.rotateConform.destroy();
 
         this.tileName.destroy();
         this.closeButton.destroy();
@@ -364,10 +367,11 @@ export class TileDetails {
                     response.json()
                 ).then(response => {
                     this.upgradeDetails.text += `\nWymagane do budowy:\n${response.buildCosts} d\n${getOutcomes(response.outcomeInfluence)}`;
-                    console.log('TileDetails 267 przycisk budowania placu budowy', response.buildCosts, this.scene.state.actualGame.meGamer.ducklings, response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings)
+        
+
                     if (response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings)
                         this.showUpgradeButton = true;
-                        this.move();
+                    this.move();
                 })
 
             });

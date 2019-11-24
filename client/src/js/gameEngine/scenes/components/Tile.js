@@ -120,8 +120,11 @@ export class Tile extends Phaser.GameObjects.Sprite {
                         }
                     }
                     else {
+                        setTimeout(() => {
+                            setTimeout(() => { this.clicked = false; }, 500) 
                         this.clicked = true;
-                        setTimeout(() => { this.clicked = false; }, 500)
+                            //this.clicked = false; 
+                        }, 50)
                     }
                 }
             }

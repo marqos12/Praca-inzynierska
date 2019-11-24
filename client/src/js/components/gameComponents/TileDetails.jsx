@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
 import { wsConnect, wsOpenPrivateCanals, wsSendMessage } from "../../actions/index";
-import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade } from "../../gameEngine/gameMechanics";
+import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade, getTileOwnerName } from "../../gameEngine/gameMechanics";
 import { gameShowTileDetails, gameUpdateTile, gameRotateTile, gameRestoreTileRotate } from "../../actions/gameActions";
 
 function mapDispatchToProps(dispatch) {
@@ -61,7 +61,6 @@ class TileDetailsComponent extends Component {
 
 
     componentDidMount() {
-
         this.setState(Object.assign({}, this.state, {
             canBeDestroyed: (this.props.actualGame.tileDetails.name != "OPTIONAL_1" && this.props.actualGame.tileDetails.name != "ROAD_STRAIGHT_1")
                 && this.props.actualGame.tileDetails.owner && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id,
@@ -264,6 +263,8 @@ class TileDetailsComponent extends Component {
                 {!modernizeMode ?
                     <div>
                         <p>Nazwa: {translateTileName(actualGame.tileDetails.name)}</p>
+                        <p>Właściciel: {getTileOwnerName(actualGame.tileDetails)}</p>
+                        
                         <br />
                         {!destroyMode ?
                             <div>
@@ -327,7 +328,7 @@ class TileDetailsComponent extends Component {
                         {this.getWaysOfModernize().length == 1 ?
                             <div class="modernizeWay">
                                 <p>Nazwa: {modernizeName}</p>
-                                <p>Wymagane do budowy: {modernizeCost}</p>
+                                <p>Wymagane do budowy: {modernizeCost}d</p>
                                 <p>Korzyści: {modernizeProfit}</p>
                                 {modernizeCost <= actualGame.meGamer.ducklings ?
                                     <a className="button is-large  is-link is-rounded is-fullwidth upgradeButton" onClick={this.build}>Wybuduj</a>

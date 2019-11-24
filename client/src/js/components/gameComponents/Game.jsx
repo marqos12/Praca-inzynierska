@@ -233,7 +233,7 @@ class GameComponent extends Component {
                                     <br />
                                     <br />
 
-                                    <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.updateGame}>Aktualizuj </a>
+                                    <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.updateGame}>Zatwierdź ustawienia </a>
 
 
 
