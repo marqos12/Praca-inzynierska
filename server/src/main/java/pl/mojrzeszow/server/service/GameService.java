@@ -510,22 +510,22 @@ public class GameService {
 							Long generatedInfluence = (Long) field.get(ot.getTileGeneratedInfluence());
 							Long left = usedInfluence != null ? generatedInfluence - usedInfluence : generatedInfluence;
 							Long used = 0L;
-							if (left <= value) {
-								if (usedInfluence == null) {
-									usedInfluence = value;
-								} else {
-									usedInfluence += value;
-								}
-								used = left;
-								valueC = 0L;
-							} else {
+							if (left <= valueC) {
 								if (usedInfluence == null) {
 									usedInfluence = left;
 								} else {
 									usedInfluence += left;
 								}
+								used = left;
+								valueC = valueC - left;
+							} else {
+								if (usedInfluence == null) {
+									usedInfluence = valueC;
+								} else {
+									usedInfluence += valueC;
+								}
 								used = valueC;
-								valueC -= left;
+								valueC = 0L;
 							}
 							field.set(ot.getUsedInfluence(), usedInfluence);
 							ot.setInfluenceGiveTo(ot.getInfluenceGiveTo() + tile.getId().toString() + "|");

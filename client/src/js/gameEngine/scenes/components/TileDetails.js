@@ -35,7 +35,7 @@ export class TileDetails {
         scene.add.existing(this.background);
 
         this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + translateTileName(tile.name) + "\nWłaściciel: " + getTileOwnerName(tile), fontConf)
-        this.tileName.setDepth(111);
+        this.tileName.setDepth(112);
         this.tileName.setOrigin(0, 0);
         scene.add.existing(this.tileName);
 
@@ -319,7 +319,7 @@ export class TileDetails {
     tileDetails() {
 
         this.tileName.text += `\n\nPoziom: ${this.details.lvl} \t Punkty: ${this.details.points}` +
-            `\n\n${getOutcomes(this.details.outcomeInfluence, this.details.summaryDucklings)}`;
+            `\n\n${getOutcomes(this.details.outcomeInfluence, this.details.summaryDucklings, this.details.usedInfluence)}`;
 
         if ((this.details.needToUppgrade != null || this.tile.name == "OPTIONAL_1" || this.tile.name == "ROAD_STRAIGHT_1") && this.scene.state.actualGame.meGamer.id == this.tile.owner.id) {
             let a = getNeedToUpgrade(this.details.incomeInfluence, this.details.needToUppgrade, this.scene.state.actualGame.meGamer.ducklings, this.canBeUpgrated);

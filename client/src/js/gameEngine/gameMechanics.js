@@ -239,7 +239,7 @@ export function translateTileName(tileName) {
     }
 }
 
-export function getOutcomes(influence, summaryDucklings) {
+export function getOutcomes(influence, summaryDucklings, usedInfluence) {
     let incomes = "";
     let incomesCounter = 1;
     if (influence) {
@@ -248,31 +248,31 @@ export function getOutcomes(influence, summaryDucklings) {
         if(summaryDucklings&&summaryDucklings!=influence.ducklings){ incomes += `(${summaryDucklings}d)`; incomesCounter++; }
         if (incomesCounter >= 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.people) {
-            incomes += ` ludzie: ${influence.people}/ ${influence.peopleRange};`; incomesCounter++;
+            incomes += ` ludzie: ${influence.people} ${usedInfluence&&usedInfluence.people?`[${influence.people-usedInfluence.people})`:""}/ ${influence.peopleRange};`; incomesCounter++;
             /*let circle = new Phaser.GameObjects.Ellipse(this.scene,0,0,influence.peopleRange*this.tile.displayWidth,influence.peopleRange*this.tile.displayWidth,0xff0000,0.2);this.influenceField.push(circle)*/
         }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.shops) { incomes += ` sklep: ${influence.shops}/ ${influence.shopsRange};`; incomesCounter++; }
+        if (influence.shops) { incomes += ` sklep: ${influence.shops} ${usedInfluence&&usedInfluence.shops?`[${influence.shops-usedInfluence.shops}]`:""}/ ${influence.shopsRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.work) { incomes += ` praca: ${influence.work}/ ${influence.workRange};`; incomesCounter++; }
+        if (influence.work) { incomes += ` praca: ${influence.work} ${usedInfluence&&usedInfluence.work?`[${influence.work-usedInfluence.work}]`:""}/ ${influence.workRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.services) { incomes += ` usługi: ${influence.services}/ ${influence.servicesRange};`; incomesCounter++; }
+        if (influence.services) { incomes += ` usługi: ${influence.services} ${usedInfluence&&usedInfluence.services?`[${influence.services-usedInfluence.services}]`:""}/ ${influence.servicesRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.goods) { incomes += ` dobra: ${influence.goods}/ ${influence.goodsRange};`; incomesCounter++; }
+        if (influence.goods) { incomes += ` dobra: ${influence.goods} ${usedInfluence&&usedInfluence.goods?`[${influence.goods-usedInfluence.goods}]`:""}/ ${influence.goodsRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.entertainment) { incomes += ` rozrywka: ${influence.entertainment}/ ${influence.entertainmentRange};`; incomesCounter++; }
+        if (influence.entertainment) { incomes += ` rozrywka: ${influence.entertainment} ${usedInfluence&&usedInfluence.entertainment?`[${influence.entertainment-usedInfluence.entertainment}]`:""}/ ${influence.entertainmentRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.cleanness) { incomes += ` czystość: ${influence.cleanness}/ ${influence.cleannessRange};`; incomesCounter++; }
+        if (influence.cleanness) { incomes += ` czystość: ${influence.cleanness} ${usedInfluence&&usedInfluence.cleanness?`[${influence.cleanness-usedInfluence.cleanness}]`:""}/ ${influence.cleannessRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.crimePrevention) { incomes += ` bezpieczeństwo: ${influence.crimePrevention}/ ${influence.crimePreventionRange};`; incomesCounter++; }
+        if (influence.crimePrevention) { incomes += ` bezpieczeństwo: ${influence.crimePrevention} ${usedInfluence&&usedInfluence.crimePrevention?`[${influence.crimePrevention-usedInfluence.crimePrevention}]`:""}/ ${influence.crimePreventionRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.fireSafety) { incomes += ` PPOŻ: ${influence.fireSafety}/ ${influence.fireSafetyRange};`; incomesCounter++; }
+        if (influence.fireSafety) { incomes += ` PPOŻ: ${influence.fireSafety} ${usedInfluence&&usedInfluence.fireSafety?`[${influence.fireSafety-usedInfluence.fireSafety}]`:""}/ ${influence.fireSafetyRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.medicalCare) { incomes += ` ochrona zdrowia: ${influence.medicalCare}/ ${influence.medicalCareRange};`; incomesCounter++; }
+        if (influence.medicalCare) { incomes += ` ochrona zdrowia: ${influence.medicalCare} ${usedInfluence&&usedInfluence.medicalCare?`[${influence.medicalCare-usedInfluence.medicalCare}]`:""}/ ${influence.medicalCareRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.energy) { incomes += ` energia elektryczna: ${influence.energy}/ ${influence.energyRange};`; incomesCounter++; }
+        if (influence.energy) { incomes += ` energia elektryczna: ${influence.energy} ${usedInfluence&&usedInfluence.energy?`[${influence.energy-usedInfluence.energy}]`:""}/ ${influence.energyRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.science) { incomes += ` nauka: ${influence.science}/ ${influence.scienceRange};`; }
+        if (influence.science) { incomes += ` nauka: ${influence.science} ${usedInfluence&&usedInfluence.science?`[${influence.science-usedInfluence.science}]`:""}/ ${influence.scienceRange};`; }
 
         //this.influenceField.forEach(x => this.scene.add.existing(x));
         //this.move();

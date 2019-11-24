@@ -72,7 +72,7 @@ class TileDetailsComponent extends Component {
         ).then(response => {
 
             let lvlNpoint = `Poziom: ${response.lvl}  Punkty: ${response.points}`;
-            let outcomes = `${getOutcomes(response.outcomeInfluence, response.summaryDucklings)}`;
+            let outcomes = `${getOutcomes(response.outcomeInfluence, response.summaryDucklings, response.usedInfluence)}`;
 
             if ((response.needToUppgrade != null || this.props.actualGame.tileDetails.name == "OPTIONAL_1" || this.props.actualGame.tileDetails.name == "ROAD_STRAIGHT_1") && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id) {
                 let canBeUpgraded = false;
