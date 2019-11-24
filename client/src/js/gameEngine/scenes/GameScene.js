@@ -98,7 +98,7 @@ export default class GameScene extends Phaser.Scene {
       this.unsubscribe();
     })
 
-    addEventListener('draggedTile', (x) => {
+    addEventListener('draggedTile',this.draggedTileEventListener= (x) => {
       this.newTile.makeScale(this.myScale);
       //this.tiles.push(this.newTile);
 
@@ -110,18 +110,18 @@ export default class GameScene extends Phaser.Scene {
       this.highlightPossiblePlaces();
     })
 
-    addEventListener('draggingNewTile', (x) => {
+    addEventListener('draggingNewTile',this.draggingNewTileEventListener= (x) => {
       if (this.tileDetails) {
         this.tileDetails.destroy();
         this.tileDetails = null;
       }
     })
 
-    addEventListener('tileInGoodPlace', (x) => {
+    addEventListener('tileInGoodPlace',this.tileInGoodPlaceEventListener= (x) => {
       store.dispatch(gameTileInGoodPlace({ status: x.detail, tile: this.newTile }));
     })
 
-    addEventListener('showDetails', (x) => {
+    addEventListener('showDetails', this.showDetailsEventListener=(x) => {
       if (window.innerWidth >= 700) {
         if (this.tileDetails) this.tileDetails.destroy();
         this.tileDetails = new TileDetails(this, x.detail);
@@ -132,24 +132,24 @@ export default class GameScene extends Phaser.Scene {
       }
     })
 
-    addEventListener('updatedTile', (x) => {
+    addEventListener('updatedTile',this.updatedTileEventListener= (x) => {
       if (this.tileDetails) this.tileDetails.destroy();
       this.tileDetails = new TileDetails(this, x.detail);
     })
 
-    addEventListener('closeTileDetails', (x) => {
+    addEventListener('closeTileDetails',this.closeTileDetailsEventListener= (x) => {
       if (this.tileDetails) {
         this.tileDetails.destroy();
         this.tileDetails = null;
       }
     })
 
-    addEventListener("wheel", x => this.changeScale(x))
+    addEventListener("wheel",this.wheelEventListener= x => this.changeScale(x))
 
     this.initialized = true;
 
 
-    window.addEventListener('resize', () => {
+    window.addEventListener('resize', this.resizeEventListener=() => {
       this.scale.resize(window.innerWidth, window.innerHeight);
       if (this.newTileCard) {
         this.newTile.setPosition(
@@ -160,6 +160,20 @@ export default class GameScene extends Phaser.Scene {
         this.newTileName.setPosition(this.newTile.x, this.newTile.y - 23);
 
       }
+    });
+
+    console.log("GameScene 164",this.fixedTiles.length)
+    console.log("GameScene 165",this.tiles.length)
+    console.log("GameScene 166",this.tableCenterX)
+    this.events.on('destroy', ()=>{
+      removeEventListener('draggedTile',this.draggedTileEventListener)
+      removeEventListener('draggingNewTile',this.draggingNewTileEventListener)
+      removeEventListener('tileInGoodPlace',this.tileInGoodPlaceEventListener)
+      removeEventListener('showDetails', this.showDetailsEventListener)
+      removeEventListener('updatedTile',this.updatedTileEventListener)
+      removeEventListener('closeTileDetails',this.closeTileDetailsEventListener)
+      removeEventListener("wheel",this.wheelEventListener)
+      window.removeEventListener('resize',this.resizeEventListener)
     });
   }
 
@@ -232,12 +246,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   stateChanged() {
-    console.log("GameScene 235",store, this)
+    console.log("GameScene 235",this)
     if (!this.gameConnected && this.state.ws.client && this.state.actualGame.game) {
       this.gameConnected = true;
       store.dispatch(gameWsGameJoined(this.state.actualGame.game));
     }
     if (this.state.actualGame.tilesToDisplay.length != 0) {
+      console.log("GameScene 241",this.state.actualGame.tilesToDisplay)
       this.state.actualGame.tilesToDisplay.forEach(tile => {
         let tile2 = new Tile(this,
           0,
@@ -407,4 +422,7 @@ export default class GameScene extends Phaser.Scene {
 
     if (this.tileDetails) this.tileDetails.move();
   }
+
+
+
 }

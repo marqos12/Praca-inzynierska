@@ -173,7 +173,9 @@ export function menuReducer(state, action) {
         game: action.payload.game,
         meGamer: action.payload,
         amIAuthor: action.payload.game.author.id == action.payload.user.id,
-        aliveMessageTimer:action.payload.interval
+        aliveMessageTimer:action.payload.interval,
+        tilesDisplayed:[],
+        tilesToDisplay:[],
       })
     });
   }
@@ -184,7 +186,7 @@ export function menuReducer(state, action) {
         game: null,
         gamers: [],
         amIAuthor: false,
-        meGamer: null
+        meGamer: null,
       }),
       chats: Object.assign({}, state.chats, {
         gameChatMessages: []

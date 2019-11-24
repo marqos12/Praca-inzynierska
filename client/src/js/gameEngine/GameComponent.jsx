@@ -41,11 +41,12 @@ class GameComponentComponent extends Component {
         }
 
 
-        new Phaser.Game(config)
+       this.game = new Phaser.Game(config)
     }
 
     componentWillUnmount(){
         this.props.gameWsGameDisconnect();
+        this.game.destroy();
     }
 
     shouldComponentUpdate() {
