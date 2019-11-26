@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
 import { wsConnect, wsOpenTestCanal, wsSendTestMessage, wsSendMessage, setHistory, logout } from "../actions/index";
 import GllobalChat from "./gameComponents/GlobalChat.jsx";
+import { getCookie, setCookie } from "../gameEngine/gameMechanics";
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -44,18 +45,31 @@ class HomeComponent extends Component {
     }
 
     createNewAloneGame() {
-        this.setState({aloneGame:true})
+        this.setState({ aloneGame: true })
         this.props.wsSendMessage({ channel: "/lobby/createAloneGame", payload: { id: this.props.auth.user.id } })
     }
 
     componentDidMount() {
         //if (!this.props.ws.client)
-           // this.props.wsConnect();
+        // this.props.wsConnect();
+        if (getCookie("alertShown") == "") {
+            let openTutorial = setInterval(() => {
+
+                clearInterval(openTutorial);
+            alert("Krótki poradnik jak grać zobaczysz w trakcie pierwszej rozgrywki. Zachęcam do wybrania opcji \"Graj Sam\" w celu wypróbowania gry")
+
+            setCookie("alertShown", true, 1000)
+            }, 500)
+        }
 
     }
 
     logout() {
         this.props.cookies.set('auth', JSON.stringify({}), { path: '/' });
+        
+        setCookie("alertShown", true, -1000)
+        setCookie("tutorialLastShownPage", true, -1000)
+        setCookie("showTutorial", true, -1000)
         this.props.logout();
         this.props.history.push("/");
     }
@@ -64,10 +78,10 @@ class HomeComponent extends Component {
 
 
         if (this.props.actualGame.game != null)
-        if(!this.props.actualGame.alone )
-            this.props.history.push("/game/" + this.props.actualGame.game.id)
-            else 
-            this.props.history.push("/alone/" + this.props.actualGame.game.id)
+            if (!this.props.actualGame.alone)
+                this.props.history.push("/game/" + this.props.actualGame.game.id)
+            else
+                this.props.history.push("/alone/" + this.props.actualGame.game.id)
     }
 
     componentWillMount() {
@@ -78,9 +92,9 @@ class HomeComponent extends Component {
     handleChange(event) {
         this.setState({ [event.target.id]: event.target.value });
     }
-    
+
     chatTest() {
-        this.props.wsSendMessage({ channel: "/chat/global", payload: { user:this.props.auth.user, message:"Test komunikacji" } })
+        this.props.wsSendMessage({ channel: "/chat/global", payload: { user: this.props.auth.user, message: "Test komunikacji" } })
     }
 
     render() {
@@ -93,17 +107,17 @@ class HomeComponent extends Component {
                         <NavLink to="/searchGames" className="button is-large  is-link is-rounded is-fullwidth" >Szukaj gry</NavLink>
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewGame}>Utwórz grę</a>
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewAloneGame}>Graj sam</a>
-                        <a className="button is-large  is-link is-rounded is-fullwidth" href="assets/manual.pdf"  target="_blank">Zobacz poradnik</a>
+                        <a className="button is-large  is-link is-rounded is-fullwidth" href="assets/manual.pdf" target="_blank">Zobacz poradnik</a>
                         <NavLink to="/opinion" className="button is-large  is-link is-rounded is-fullwidth" >Przekaż opinię</NavLink>
                         {/*<NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
                         <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>*/}
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Wyloguj</a>
-                       
-                        
+
+
                     </div>
 
                 </div>
-                <GllobalChat/>
+                <GllobalChat />
             </div>
         );
     }

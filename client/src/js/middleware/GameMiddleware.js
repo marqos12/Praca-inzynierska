@@ -16,7 +16,7 @@ export function GameMiddleware(getState, dispatch, action) {
         let stompClient = getState().ws.client;
         let subscription = stompClient.subscribe("/topic/game/game/" + action.payload.id, resp => {
             resp = JSON.parse(resp.body)
-            console.log("gameMiddleware 17", resp)
+            //console.log("gameMiddleware 17", resp)
             switch (resp.type) {
                 case "NEW_TILE":
                         dispatch(gameNewTileToDisplay(resp.payload));

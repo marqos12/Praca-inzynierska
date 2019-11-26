@@ -163,7 +163,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
 
     destroy2() {
         if (this.highlight) this.highlight.destroy();
-        this.highlightNewTileAfterDrag.destroy()
+        if(this.highlightNewTileAfterDrag)this.highlightNewTileAfterDrag.destroy()
         this.destroy();
     }
 

@@ -3,17 +3,20 @@ import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
 
 import GameComponent from "./GameComponent.jsx";
-import { gameWsGameJoin, gameMyNewTile } from "../actions/gameActions.js";
+import { gameWsGameJoin, gameMyNewTile, tutorialClosed } from "../actions/gameActions.js";
 import { wsSendMessage, wsGameDisconnect } from "../actions/index.js";
 import TileDetails from "../components/gameComponents/TileDetails.jsx";
 import GameChat from "../components/gameComponents/GameChat.jsx";
+import Tutorial from "../components/gameComponents/Tutorial.jsx";
+import { getCookie } from "./gameMechanics.js";
 
 function mapDispatchToProps(dispatch) {
     return {
         gameWsGameJoin: payload => dispatch(gameWsGameJoin(payload)),
         wsSendMessage: payload => dispatch(wsSendMessage(payload)),
         gameMyNewTile: payload => dispatch(gameMyNewTile(payload)),
-        wsGameDisconnect: payload => dispatch(wsGameDisconnect(payload))
+        wsGameDisconnect: payload => dispatch(wsGameDisconnect(payload)),
+        tutorialClosed: payload => dispatch(tutorialClosed(payload)),
     };
 }
 
@@ -35,7 +38,8 @@ class MainGameComponent extends Component {
             userWithtile: null,
             toNextRound: 0,
             refresh: 0,
-            refreshInterval: null
+            refreshInterval: null,
+            startPage: false
         }
         this.commitNewTilePosiotion = this.commitNewTilePosiotion.bind(this)
         this.openMenu = this.openMenu.bind(this)
@@ -43,6 +47,7 @@ class MainGameComponent extends Component {
         this.leaveGame = this.leaveGame.bind(this)
         this.getGamersResult = this.getGamersResult.bind(this)
         this.continueGame = this.continueGame.bind(this)
+        this.openManual = this.openManual.bind(this)
     }
 
     componentDidMount() {
@@ -57,7 +62,13 @@ class MainGameComponent extends Component {
                 this.setState({ refresh: this.state.refresh + 1 })
             }, 1000)
         })
+        if (getCookie("showTutorial") != "true"&&!getCookie("tutorialLastShownPage")|| getCookie("tutorialLastShownPage")< -1) {
+            let openTutorial = setInterval(() => {
 
+                clearInterval(openTutorial);
+                this.setState({ startPage: 0 })
+            }, 500)
+        }
     }
     componentWillUnmount() {
         clearInterval(this.state.refreshInterval);
@@ -93,6 +104,10 @@ class MainGameComponent extends Component {
 
 
         }
+        if (this.props.actualGame.closeTutorial) {
+            this.setState({ startPage: false }),
+                this.props.tutorialClosed();
+        }
 
     }
 
@@ -101,6 +116,24 @@ class MainGameComponent extends Component {
         dataExchange.gamerId = this.props.actualGame.meGamer.id;
         this.props.gameMyNewTile(null)
         this.props.wsSendMessage({ channel: "/game/saveTile", payload: dataExchange });
+
+        if (getCookie("showTutorial") != "true") {
+            if (getCookie("tutorialLastShownPage") < 4) {
+                let openTutorial = setInterval(() => {
+
+                    clearInterval(openTutorial);
+                    this.setState({ startPage: 4 })
+                }, 500)
+            }
+            else if (getCookie("tutorialLastShownPage") < 9) {
+                let openTutorial = setInterval(() => {
+
+                    clearInterval(openTutorial);
+                    this.setState({ startPage: 9 })
+                }, 500)
+            }
+        }
+
     }
 
     openMenu() {
@@ -163,9 +196,13 @@ class MainGameComponent extends Component {
         })
     }
 
+    openManual(){
+        this.setState({ startPage: -1 })
+    }
+
     render() {
         const { actualGame, } = this.props;
-        const { openMenu } = this.state
+        const { openMenu, startPage } = this.state
         const timer = this.getTimer(actualGame)
         const result = this.getGamersResult();
         return (
@@ -174,6 +211,9 @@ class MainGameComponent extends Component {
                 <div className="hud">
                     <div className="hud_card menuButton" onClick={this.openMenu}>
                         <img src="assets/menuB.png"></img>
+                    </div>
+                    <div className="hud_card menuButton manualButton" onClick={this.openManual}>
+                        <img src="assets/manual.png"></img>
                     </div>
                     <div className="hud_card timer">
                         <img src="assets/timer.png"></img>
@@ -293,6 +333,9 @@ class MainGameComponent extends Component {
                         <GameChat inGame={false} />
                     </div>
                 </div> : <div></div>}
+
+                {!(startPage === false) ? <Tutorial startPage={startPage} /> : ""}
+
             </div>
         );
     }

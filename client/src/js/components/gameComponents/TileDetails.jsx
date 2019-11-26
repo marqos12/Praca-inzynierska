@@ -67,7 +67,7 @@ class TileDetailsComponent extends Component {
             canBeRotated: this.props.actualGame.tileDetails.owner && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id
         }))
 
-        fetch(window.location.href.split("#")[0] + "api/game/tile/" + this.props.actualGame.tileDetails.id).then(response =>
+        fetch( "api/game/tile/" + this.props.actualGame.tileDetails.id).then(response =>
             response.json()
         ).then(response => {
 
@@ -108,7 +108,7 @@ class TileDetailsComponent extends Component {
     }
 
     destroy() {
-        fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + this.props.actualGame.tileDetails.name.slice(0, -2) + "/1").then(response =>
+        fetch("api/game/tile/rebuild/" + this.props.actualGame.tileDetails.name.slice(0, -2) + "/1").then(response =>
             response.json()
         ).then(response => {
 
@@ -200,7 +200,7 @@ class TileDetailsComponent extends Component {
             modernizePage: 0
         }))
 
-        fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + way + "/1").then(response =>
+        fetch("api/game/tile/rebuild/" + way + "/1").then(response =>
             response.json()
         ).then(response => {
             let modernizeCost = response.buildCosts;

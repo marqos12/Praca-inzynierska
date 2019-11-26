@@ -43,7 +43,6 @@ class OpinionComponent extends Component {
               this.setState({ sended: true,
             user:this.props.auth.user, })
             statel.user = this.props.auth.user
-            console.log(statel)
         fetch("/api/game/opinion", {
             method: 'POST',
             cache: 'no-cache',

@@ -33,7 +33,8 @@ const initialState = {
     tileOriginalAngle:null,
     restoreTileAngle:false,
     alone:false,
-    aliveMessageTimer:null
+    aliveMessageTimer:null,
+    closeTutorial:false
   },
   origin: "",
   chats:{

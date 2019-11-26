@@ -60,6 +60,10 @@ $resources-tab-height:fit-content;
             position: relative;
         }
     }
+
+    .manualButton{
+        top: 240px;
+    }
     
     .newTile{
         right: 0;
@@ -254,6 +258,113 @@ $resources-tab-height:fit-content;
     position: absolute;
     
 }
+
+.tutorial{
+    z-index: 120;
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    text-align: justify;
+    background-color: rgba(93, 143, 189, 0.815);
+
+    .container{
+       
+        overflow: auto;
+    }
+    .menuContent{
+          padding-bottom:220px;  
+          
+    }
+
+
+    .buttons{
+        position: absolute;
+        bottom:20px;
+        width:600px;
+        max-width: 90%;
+
+        div{
+            width:50%;
+            float: left;
+            margin-top:20px;
+
+            a{
+                width: 80%;
+                margin: 0 auto; 
+            }
+        }
+
+        .left{
+
+        }
+        .right{
+
+        }
+    }
+}
+
+.checkContainer {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  
+  
+   input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  }
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+  }
+  
+  .checkContainer:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
+  
+  .checkContainer input:checked ~ .checkmark {
+    background-color: rgb(182, 7, 7);
+  }
+  
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  .checkContainer input:checked ~ .checkmark:after {
+    display: block;
+  }
+  
+  .checkContainer .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
 
 
 @media screen and (max-width: 1800px) {

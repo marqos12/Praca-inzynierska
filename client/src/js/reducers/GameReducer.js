@@ -1,4 +1,4 @@
-import { GAME_TILE_UPDATE, GAME_NEW_TILE_TO_DISPLAY, GAME_NEW_TILE_DISPLAYED, GAME_MY_NEW_TILE, GAME_MY_NEW_TILE_DISPLAYED, GAME_TILE_IN_GOOD_PLACE, GAME_ME_GAMER_UPDATE, SHOW_TILE_DETAILS, ROTATE_TILE, TILE_ROTATED, RESTORE_TILE_ROTATE, TILE_ROTATE_RESTORED } from "../constants/game-action-types";
+import { GAME_TILE_UPDATE, GAME_NEW_TILE_TO_DISPLAY, GAME_NEW_TILE_DISPLAYED, GAME_MY_NEW_TILE, GAME_MY_NEW_TILE_DISPLAYED, GAME_TILE_IN_GOOD_PLACE, GAME_ME_GAMER_UPDATE, SHOW_TILE_DETAILS, ROTATE_TILE, TILE_ROTATED, RESTORE_TILE_ROTATE, TILE_ROTATE_RESTORED, CLOSE_TUTORIAL, TUTORIAL_CLOSED } from "../constants/game-action-types";
 import { wsConnectGame } from "../actions";
 
 export function gameReducer(state, action){
@@ -92,6 +92,22 @@ export function gameReducer(state, action){
       actualGame: Object.assign({}, state.actualGame, {
         restoreTileAngle:false,
         tileOriginalAngle:null,    
+      })
+    });
+  }
+  
+  if (action.type === CLOSE_TUTORIAL) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        closeTutorial:true,  
+      })
+    });
+  }
+  
+  if (action.type === TUTORIAL_CLOSED) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        closeTutorial:false,  
       })
     });
   }

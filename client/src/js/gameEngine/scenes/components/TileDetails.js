@@ -180,7 +180,7 @@ export class TileDetails {
         this.buldozerButton.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown()) {
                 this.tileName.text = "Nazwa: " + translateTileName(this.tile.name) + "\nWłaściciel: " + getTileOwnerName(this.tile);
-                fetch( this.tile.name.slice(0, -2) + "/1").then(response =>
+                fetch( "api/game/tile/rebuild/" +this.tile.name.slice(0, -2) + "/1").then(response =>
                     response.json()
                 ).then(response => {
                     this.tileName.text += `\n\nWyburzenie kosztować będzie ${response.deconstructionCosts} d \n\nCzy na pewno chcesz wyburzyć budynek:\n\t ${translateTileName(this.tile.name)}`;

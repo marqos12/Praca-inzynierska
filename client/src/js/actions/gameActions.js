@@ -15,7 +15,9 @@ import {
     ROTATE_TILE,
     TILE_ROTATED,
     RESTORE_TILE_ROTATE,
-    TILE_ROTATE_RESTORED
+    TILE_ROTATE_RESTORED,
+    CLOSE_TUTORIAL,
+    TUTORIAL_CLOSED
 } from "../constants/game-action-types";
 
 
@@ -81,4 +83,12 @@ export function gameRestoreTileRotate(payload) {
 
 export function gameTileRotateRestored(payload) {
     return { type: TILE_ROTATE_RESTORED, payload };
+}
+
+export function closeTutorial(payload) {
+    return { type: CLOSE_TUTORIAL, payload };
+}
+
+export function tutorialClosed(payload) {
+    return { type: TUTORIAL_CLOSED, payload };
 }
