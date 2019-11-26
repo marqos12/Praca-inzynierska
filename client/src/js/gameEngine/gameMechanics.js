@@ -38,8 +38,6 @@ export function getTileSortedEdges(tileType, angle) {
 }
 
 export function getPossiblePlaces(tiles, newTile) {
-    //let newTile = tiles.pop();
-    console.log("gameMechanics42",newTile,newTile.generalType)
     let newTileEdges = getTileSortedEdges(newTile.generalType, 0);
 
     let initPossiblePos = [];
@@ -274,8 +272,6 @@ export function getOutcomes(influence, summaryDucklings, usedInfluence) {
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.science) { incomes += ` nauka: ${influence.science} ${usedInfluence&&usedInfluence.science?`[${influence.science-usedInfluence.science}]`:""}/ ${influence.scienceRange};`; }
 
-        //this.influenceField.forEach(x => this.scene.add.existing(x));
-        //this.move();
     }
     return incomes;
 }
@@ -287,7 +283,6 @@ export function getNeedToUpgrade(incomeInfluence, needToUpgrade, ducklings) {
         incomes = "Wymagane do awansu: ";
         let incomesCounter = 0;
 
-        console.log("gameMechanics 281", incomeInfluence, needToUpgrade, ducklings)
 
         if (needToUpgrade.ducklings) {
             incomes += `\n ducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++;
@@ -358,7 +353,6 @@ export function getNeedToUpgrade(incomeInfluence, needToUpgrade, ducklings) {
 }
 
 export function getWayOfUpgrade(tile) {
-    console.log(tile)
     switch (tile.name) {
         case "HOUSE_1":
             return ["HOUSE_2"];

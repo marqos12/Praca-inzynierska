@@ -161,10 +161,7 @@ export default class GameScene extends Phaser.Scene {
 
       }
     });
-
-    console.log("GameScene 164",this.fixedTiles.length)
-    console.log("GameScene 165",this.tiles.length)
-    console.log("GameScene 166",this.tableCenterX)
+    
     this.events.on('destroy', ()=>{
       removeEventListener('draggedTile',this.draggedTileEventListener)
       removeEventListener('draggingNewTile',this.draggingNewTileEventListener)
@@ -246,13 +243,11 @@ export default class GameScene extends Phaser.Scene {
   }
 
   stateChanged() {
-    console.log("GameScene 235",this)
     if (!this.gameConnected && this.state.ws.client && this.state.actualGame.game) {
       this.gameConnected = true;
       store.dispatch(gameWsGameJoined(this.state.actualGame.game));
     }
     if (this.state.actualGame.tilesToDisplay.length != 0) {
-      console.log("GameScene 241",this.state.actualGame.tilesToDisplay)
       this.state.actualGame.tilesToDisplay.forEach(tile => {
         let tile2 = new Tile(this,
           0,
@@ -266,7 +261,6 @@ export default class GameScene extends Phaser.Scene {
         tile2.makeScale(this.myScale);
         tile2.move(tile.posX, tile.posY);
         let oldTile = this.tiles.filter(t => t.id == tile.id);
-        console.log("GameScene254",oldTile)
         if (oldTile.length > 0) {
           oldTile[0].destroy2();
           let index = this.tiles.indexOf(oldTile[0]);
@@ -277,7 +271,6 @@ export default class GameScene extends Phaser.Scene {
         this.tiles = this.tiles.filter(t => t.id != tile.id || t.name == tile.type + "_" + tile.lvl);
         this.add.existing(tile2.setDepth(2));
         tile2.highlightNewTile();
-        console.log("GameScene 264",this.tiles)
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
       if (this.newTile && !this.newTileCard) {

@@ -113,7 +113,6 @@ export class Tile extends Phaser.GameObjects.Sprite {
                             }
                         }
                         else {
-                            console.log("Tile 113", pointer)
                             let draggedTile = new CustomEvent('showDetails', { detail: this });
                             dispatchEvent(draggedTile);
 

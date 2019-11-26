@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
+import pl.mojrzeszow.server.models.Opinion;
 import pl.mojrzeszow.server.models.Tile;
 import pl.mojrzeszow.server.models.User;
 import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.repositories.GameRepository;
 import pl.mojrzeszow.server.repositories.GamerRepository;
+import pl.mojrzeszow.server.repositories.OpinionRepository;
 import pl.mojrzeszow.server.repositories.TileRepository;
 import pl.mojrzeszow.server.repositories.UserRepository;
 
@@ -33,6 +35,8 @@ public class GameRESTController {
 
 	@Autowired
 	private GamerRepository gamerRepository;
+	@Autowired
+	private OpinionRepository opinionRepository;
 
 	@Autowired
 	UserRepository userRepository;
@@ -128,4 +132,15 @@ public class GameRESTController {
 		dataExchange.deconstructionCosts = dataExchange.buildCosts/2;
 		return dataExchange;
 	}	
+
+	@PostMapping("/opinion")
+	private Opinion sendOpinion(@RequestBody Opinion opinion) {
+
+		return opinionRepository.save(opinion);
+	}
+	@GetMapping("/opinion")
+	private List<Opinion> getOpinion() {
+
+		return opinionRepository.findAll();
+	}
 }

@@ -80,7 +80,6 @@ class GameComponent extends Component {
         game.endType = endType;
         game.gamersCountLimit = gamersLimit;
 
-        console.log("newGame 80", game)
         this.props.wsSendMessage({
             channel: "/lobby/updateGame", payload: game
         })

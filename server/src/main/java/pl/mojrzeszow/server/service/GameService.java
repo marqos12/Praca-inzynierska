@@ -211,9 +211,6 @@ public class GameService {
 		case TIME_LIMIT:
 			LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochSecond(game.getGameLimit()),
 					ZoneId.systemDefault());
-			// System.out.println(time);
-			// System.out.println(LocalDateTime.now());
-			// System.out.println(time.isBefore(LocalDateTime.now()));
 			if (time.isBefore(LocalDateTime.now()))
 				game.setEnded(true);
 			break;
@@ -257,7 +254,6 @@ public class GameService {
 		}
 
 		else {
-			// System.out.println("GameService 223");
 			tile.setAngle(data.angle.intValue());
 		}
 		Tile tile2 = tileRepository.save(tile);
@@ -606,7 +602,6 @@ public class GameService {
 			try {
 				Long influence = (Long) field.get(t.getInfluence());
 				if (influence != null) {
-					System.out.println("GameService 606 " + diff);
 					field.set(t.getInfluence(), influence - diff);
 				}
 			} catch (IllegalArgumentException | IllegalAccessException e) {

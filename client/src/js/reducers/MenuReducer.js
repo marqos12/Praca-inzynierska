@@ -32,7 +32,6 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === REGISTERED) {
-    console.log("rejestracja udana")
     return Object.assign({}, state, {
       auth: Object.assign({}, state.auth, {
         registerSuccess: true, registerFailed: false
@@ -41,7 +40,6 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === REGISTRATION_FAILED) {
-    console.log("rejestracja nieudana")
     return Object.assign({}, state, {
       auth: Object.assign({}, state.auth, {
         registerSuccess: false, registerFailed: true

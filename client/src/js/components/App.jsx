@@ -14,6 +14,7 @@ import SearchGame from "./gameComponents/SearchGame.jsx";
 import Game from "./gameComponents/Game.jsx";
 import MainGame from "../gameEngine/MainGame.jsx";
 import About from "./gameComponents/About.jsx";
+import Opinion from "./gameComponents/OpinionForm.jsx";
 
 class App extends Component {
   constructor(props) {
@@ -39,7 +40,6 @@ class App extends Component {
   }
   componentDidMount() {
     this.props.setOrigin(window.location.href.split("/#")[0])
-    console.log("App 42",window.location.href)
     if(window.location.href.includes("alone"))
       this.props.setAloneGame(true);
   }
@@ -69,6 +69,7 @@ class App extends Component {
             <Route exact path="/searchGames" component={SearchGame} />
             <Route exact path="/alone/:id" component={Game} />
             <Route exact path="/game/:id" component={NewGame} />
+            <Route exact path="/opinion" component={Opinion} />
           </div>
           :
           <div className="game">

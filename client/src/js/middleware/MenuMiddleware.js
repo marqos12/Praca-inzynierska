@@ -42,7 +42,6 @@ export function menuMiddleware(getState, dispatch, action) {
 
     stompClient.debug = null
     stompClient.connect({}, function (frame) {
-      console.log("połączenie WS");
       var url = stompClient.ws._transport.url;
       url = url.split("/")
       let sessionId = url[url.length - 2];
@@ -50,7 +49,7 @@ export function menuMiddleware(getState, dispatch, action) {
       //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
       stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
         let resp = JSON.parse(x.body)
-        console.log("ogólny", resp);
+        //console.log("ogólny", resp);
         switch (resp.type) {
           case "NEW_TILE":
             dispatch(gameMyNewTile(null))
@@ -69,7 +68,7 @@ export function menuMiddleware(getState, dispatch, action) {
 
         let resp = JSON.parse(x.body)
 
-        console.log("moja zwrotka menuMiddleware 58 ", resp)
+        //console.log("moja zwrotka menuMiddleware 58 ", resp)
         switch (resp.type) {
           case "GAME_LIST_UPDATED":
             dispatch(wsGotGamesList(resp.payload));
@@ -94,7 +93,6 @@ export function menuMiddleware(getState, dispatch, action) {
             break;
           case "GAME_LEFT":
             clearInterval(getState().actualGame.aliveMessageTimer);
-            console.log("MenuMiddleware 94 czszczenie timera ")
             dispatch(wsGameDisconnected());
             break;
           case "GAME_JOINED":
@@ -104,7 +102,7 @@ export function menuMiddleware(getState, dispatch, action) {
       });
       stompClient.subscribe('/topic/chat/global', x => {
         let resp = JSON.parse(x.body)
-        console.log("MenuMiddleware 105 chat controller", resp)
+        //console.log("MenuMiddleware 105 chat controller", resp)
         dispatch(chatGlobalMessage(resp))
       });
       return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
@@ -133,14 +131,13 @@ export function menuMiddleware(getState, dispatch, action) {
       body: JSON.stringify(action.payload),
     })
       .then(response => {
-        console.log('MenuMiddleware 136', response);
+        //console.log('MenuMiddleware 136', response);
         if (response.status != 200) {
           dispatch(registrationFailed(response.json()));
           return "";
         }
         else return response.json()
       }).then(response => {
-        console.log('MenuMiddleware 138', response, response.status == 200)
         if (response)
           return dispatch(registered(response));
       })
@@ -176,7 +173,7 @@ export function menuMiddleware(getState, dispatch, action) {
     let stompClient = getState().ws.client;
     let subscription = stompClient.subscribe("/topic/lobby/game/" + action.payload.id, resp => {
       resp = JSON.parse(resp.body)
-      console.log("menuMiddleware 134", resp)
+     // console.log("menuMiddleware 134", resp)
       switch (resp.type) {
         case "GAMERS_STATUS_UPDATE":
           dispatch(wsGamersStatusUpdate(resp.payload));
@@ -191,7 +188,7 @@ export function menuMiddleware(getState, dispatch, action) {
     });
     let chatSubscription = stompClient.subscribe("/topic/chat/game/" + action.payload.id, resp => {
       resp = JSON.parse(resp.body)
-      console.log("menuMiddleware 180 in game czat", resp)
+     // console.log("menuMiddleware 180 in game czat", resp)
       dispatch(chatGameMessage(resp))
 
     });
@@ -204,7 +201,6 @@ export function menuMiddleware(getState, dispatch, action) {
     dispatch(wsChannelSubscription({ channel: "GAME_CHAT_CHANNEL", subscription: null }))
 
     clearInterval(getState().actualGame.aliveMessageTimer);
-    console.log("MenuMiddleware 182 czszczenie timera ")
     dispatch(wsSendMessage({
       channel: "/lobby/leaveGame", payload: {
         gamerId: getState().actualGame.meGamer.id
@@ -216,7 +212,7 @@ export function menuMiddleware(getState, dispatch, action) {
     let stompClient = getState().ws.client;
     let subscription = stompClient.subscribe("/topic/lobby/allGames", resp => {
       resp = JSON.parse(resp.body)
-      console.log("menuMiddleware 134", resp)
+     // console.log("menuMiddleware 134", resp)
       dispatch(wsGotGamesList(resp));
     });
     dispatch(wsChannelSubscription({ channel: "GAME_LIST_CHANNEL", subscription: subscription }))

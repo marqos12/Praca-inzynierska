@@ -36,7 +36,6 @@ class GameChatComponent extends Component {
     }
 
     componentDidMount(){
-        console.log(this.props.inGame)
     }
 
     componentDidUpdate() {

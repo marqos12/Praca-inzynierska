@@ -283,6 +283,10 @@ class MainGameComponent extends Component {
                                 {actualGame.amIAuthor ? <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.continueGame}>Kontynuuj</a> : ""}
                                 {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>*/}
+                                <br />
+                                <p className="whiteText">Jeżeli gra Ci się spodobała, przekaż mi proszę swoją opinię, abym mógł ją ciągle ulepszać :) </p>
+                                <NavLink to="/opinion" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame} >Przekaż opinię</NavLink>
+                                <br />
                                 <NavLink to="/panel" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</NavLink>
                             </div>
                         </div>

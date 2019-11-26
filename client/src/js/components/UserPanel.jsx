@@ -94,6 +94,7 @@ class HomeComponent extends Component {
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewGame}>Utwórz grę</a>
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewAloneGame}>Graj sam</a>
                         <a className="button is-large  is-link is-rounded is-fullwidth" href="assets/manual.pdf"  target="_blank">Zobacz poradnik</a>
+                        <NavLink to="/opinion" className="button is-large  is-link is-rounded is-fullwidth" >Przekaż opinię</NavLink>
                         {/*<NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
                         <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>*/}
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Wyloguj</a>

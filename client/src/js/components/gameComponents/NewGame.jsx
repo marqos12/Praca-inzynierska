@@ -86,7 +86,6 @@ class NewGameComponent extends Component {
         game.gamersCountLimit = gamersLimit;
         game.rtsInterval = rtsInterval;
         this.setState({edited:false})
-        console.log("newGame 80", game)
         this.props.wsSendMessage({
             channel: "/lobby/updateGame", payload: game
         })
