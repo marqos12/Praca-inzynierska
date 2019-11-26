@@ -32,7 +32,8 @@ class GameComponent extends Component {
             loopPrevent: false,
             endType: "ROUND_LIMIT",
             firstLoad: false,
-            gamersLimit: 4
+            gamersLimit: 4,
+            rtsInterval:20
         };
 
         this.loopPrevent = false;
@@ -79,6 +80,7 @@ class GameComponent extends Component {
         game.gameLimit = gameLimit;
         game.endType = endType;
         game.gamersCountLimit = gamersLimit;
+        game.rtsInterval = rtsInterval;
 
         this.props.wsSendMessage({
             channel: "/lobby/updateGame", payload: game
@@ -134,7 +136,8 @@ class GameComponent extends Component {
                     gameLimit: this.props.actualGame.game.gameLimit,
                     endType: this.props.actualGame.game.endType,
                     firstLoad: true,
-                    gamersLimit: this.props.actualGame.game.gamersCountLimit
+                    gamersLimit: this.props.actualGame.game.gamersCountLimit,
+                    rtsInterval:this.props.actualGame.game.rtsInterval
                 }))
             }
 
@@ -171,7 +174,7 @@ class GameComponent extends Component {
 
     render() {
 
-        const { privateGame, isRts, gameLimit, ready, canStart, endType, gamersLimit } = this.state;
+        const { privateGame, isRts, gameLimit, ready, canStart, endType, rtsInterval } = this.state;
         const limitValues = this.getEndTypeRange();
         return (
             <div className="container">
@@ -215,6 +218,21 @@ class GameComponent extends Component {
                                         </div>
 
                                     </div>
+
+
+                                    {isRts?<div>
+                                    <div className="field">
+                                        <div className="control">
+                                            <label class="label">Częstotliwość następnej rundy: <b>{rtsInterval}</b></label>
+                                            <input className="input is-medium is-info" type="number" placeholder="Limit gry" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
+                                        </div>
+                                    </div>
+
+                                    <div className="slidecontainer">
+                                        <input type="range" min="3"max="120" className="slider" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
+                                    </div>
+                                    </div>
+                                    :""}
 
                                     <div className="separator">Limit gry</div>
 

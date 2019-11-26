@@ -181,6 +181,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("rotateButton", 'assets/rotate.png');
     this.load.image("rotateBigButton", 'assets/rotateButton.png');
     this.load.image("saveButton", 'assets/saveBtn.png');
+    this.load.image("tileHighlight", 'assets/tileHighlight.png');
 
     this.load.image("backButton", 'assets/backB.png');
     this.load.image("buldozerButton", 'assets/buldozer.png');
@@ -227,6 +228,9 @@ export default class GameScene extends Phaser.Scene {
         if (this.newTile && !this.newTileCard) {
           this.newTile.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           this.newTile.y -= this.origDragPoint.y - this.input.activePointer.position.y;
+          
+          this.newTile.highlightNewTileAfterDrag.setPosition( this.newTile.x-this.tileWidth*0.1,this.newTile.y-this.tileWidth*0.1);
+        
         }
 
         this.tableCenterX -= this.origDragPoint.x - this.input.activePointer.position.x;
@@ -293,7 +297,7 @@ export default class GameScene extends Phaser.Scene {
         this.newTileName = null;
       }
 
-      this.newTile.destroy();
+      this.newTile.destroy2();
       this.newTile = null;
 
       this.possiblePlaces = [];
