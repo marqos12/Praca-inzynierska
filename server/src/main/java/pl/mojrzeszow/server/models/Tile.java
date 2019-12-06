@@ -1,7 +1,7 @@
 package pl.mojrzeszow.server.models;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List; 
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -167,7 +167,7 @@ public class Tile {
 				influence.ducklings = -10000L;
 				influence.points = 300L;
 				influence.science = 100L;
-				influence.scienceRange = 100L;
+				influence.scienceRange = 20L;
 			}
 			break;
 
@@ -187,7 +187,7 @@ public class Tile {
 
 		case FACTORY:
 			influence.ducklings = 1000L;
-			influence.points = 30L;
+			influence.points = 50L;
 			influence.work = 20L;
 			influence.workRange = 15L;
 			influence.goods = 10L;
@@ -196,7 +196,7 @@ public class Tile {
 
 		case OFFICE_BUILDING:
 			influence.ducklings = 1000L;
-			influence.points = 30L;
+			influence.points = 50L;
 			influence.work = 20L;
 			influence.workRange = 15L;
 			influence.services = 10L;
@@ -213,9 +213,9 @@ public class Tile {
 		case RESTAURANT:
 			influence.ducklings = 300L;
 			influence.points = 30L;
-			influence.entertainment = 5L;
+			influence.entertainment = 10L;
 			influence.entertainmentRange = 5L;
-			influence.services = 2L;
+			influence.services = 5L;
 			influence.servicesRange = 5L;
 			break;
 
@@ -297,7 +297,7 @@ public class Tile {
 				influence.ducklings = 40000L;
 				influence.people = 150L;
 				influence.fireSafety = 1L;
-				influence.goods = 15L;
+				influence.goods = 5L;
 			} else {
 				influence = null;
 			}

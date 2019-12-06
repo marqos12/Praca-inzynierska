@@ -35,16 +35,16 @@ class AboutComponent extends Component {
 
                     <div className="buttonList">
                         
-                        <p>Gra powstała w ramach pracy inżynierskiej studenta <b>Marka Czopora</b> na <b>Politechnice Rzeszowskiej</b>, pod opieką promotora <b>dr inż. Grzegorza Hałdaśa</b></p>
+                        <p>Gra powstała w ramach pracy inżynierskiej studenta <b>Marka Czopora</b> na <b>Politechnice Rzeszowskiej</b>, pod opieką promotora <b>dr&nbsp;inż. Grzegorza Hałdasia, prof. Prz</b>.</p>
                         <br />
                         <img src="assets/inzynier.png"/>
                         <br/>
                         <p>Moje Miasto to przeglądarkowa gra planszowa z elementami strategii ekonomicznej. Zadaniem gracza jest rozwój miasta, za pomocą gotowych elementów (płytek z budynkami).</p>
-                        <p>Płytki powinny być układane zgodnie z dopasowaniem terenu. O dokładnych zasadach i przebiegu gry możesz poczytać <a className="subtitleBtn noBorder" href="assets/manual.pdf"  target="_blank"   >tutaj</a></p>
+                        <p>Płytki powinny być układane zgodnie z dopasowaniem terenu. O&nbsp;dokładnych zasadach i przebiegu gry możesz poczytać <a className="subtitleBtn noBorder" href="assets/manual.pdf"  target="_blank"   >tutaj</a>.</p>
                         <br/>
                         <img src="assets/rozgrywka.jpg"/>
                         <br />
-                        <p>Aplikacja jest przystosowana zarówno dla ekranów komputerów osobistych jak i urządzeń mobilnych. Zabierz więc grę ze sobą w każde miejsce i ciesz się zabawą ze znajomymi!</p>
+                        <p>Aplikacja jest przystosowana zarówno dla ekranów komputerów osobistych jak i urządzeń mobilnych. Zabierz więc grę ze sobą w&nbsp;każde miejsce i ciesz się zabawą ze znajomymi!</p>
                         <br />
                         <img src="assets/rozgrywka-mobilne.jpg"/>
                         <br />

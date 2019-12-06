@@ -34,8 +34,6 @@ public class LobbyService {
 	private GameRepository gameRepository;
 
 	@Autowired
-	private GamerRepository gamerRepository;
-	@Autowired
 	private GameService gameService;
 
 	@Autowired
@@ -45,11 +43,8 @@ public class LobbyService {
 	UserRepository userRepository;
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-	public GameMessage<List<Game>> getAllgames(String message) {
-		List<Game> games = this.gameRepository.findByPrivateGameFalseAndStartedFalse().stream().sorted((g1,g2)->(int)(g2.getId()-g1.getId())).collect(Collectors.toList());
-		GameMessage<List<Game>> gameMessage = new GameMessage<List<Game>>(MessageType.GAME_LIST_UPDATED, games);
-		return gameMessage;
-	}
+	@Autowired
+	private GamerRepository gamerRepository;
 
 	public GameMessage<Game> createGame(DataExchange userId) {
 
@@ -60,6 +55,13 @@ public class LobbyService {
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_CREATED, game);
 		return gameMessage;
 	}
+	
+	public GameMessage<List<Game>> getAllgames(String message) {
+		List<Game> games = this.gameRepository.findByPrivateGameFalseAndStartedFalse().stream().sorted((g1,g2)->(int)(g2.getId()-g1.getId())).collect(Collectors.toList());
+		GameMessage<List<Game>> gameMessage = new GameMessage<List<Game>>(MessageType.GAME_LIST_UPDATED, games);
+		return gameMessage;
+	}
+
 
 	public GameMessage<Game> createAloneGame(DataExchange userId) {
 

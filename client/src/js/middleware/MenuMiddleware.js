@@ -171,7 +171,7 @@ export function menuMiddleware(getState, dispatch, action) {
 
   if (action.type === WS_CONNECT_TO_GAME) {
     let stompClient = getState().ws.client;
-    let subscription = stompClient.subscribe("/topic/lobby/game/" + action.payload.id, resp => {
+    let subscription = stompClient.subscribe(`/topic/lobby/game/${action.payload.id}`, resp => {
       resp = JSON.parse(resp.body)
      // console.log("menuMiddleware 134", resp)
       switch (resp.type) {
@@ -186,7 +186,7 @@ export function menuMiddleware(getState, dispatch, action) {
           break;
       }
     });
-    let chatSubscription = stompClient.subscribe("/topic/chat/game/" + action.payload.id, resp => {
+    let chatSubscription = stompClient.subscribe(`/topic/chat/game/${action.payload.id}`, resp => {
       resp = JSON.parse(resp.body)
      // console.log("menuMiddleware 180 in game czat", resp)
       dispatch(chatGameMessage(resp))

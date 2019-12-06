@@ -101,7 +101,7 @@ class HomeComponent extends Component {
         return (
             <div className="container">
                 <div className="menuContent">
-                    <h1 className="gameTitle">Witaj w grze!  {this.props.auth.user.username}</h1>
+                    <h1 className="gameTitle">Witaj w grze {this.props.auth.user.username}!</h1>
 
                     <div className="buttonList">
                         <NavLink to="/searchGames" className="button is-large  is-link is-rounded is-fullwidth" >Szukaj gry</NavLink>
