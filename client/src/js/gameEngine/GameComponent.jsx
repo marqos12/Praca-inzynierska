@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import GameScene from "./scenes/GameScene";
-import { gameWsGameDisconnect, gameWsGameJoin } from "../actions/gameActions.js";
+import { gameWsGameDisconnect } from "../actions/gameActions.js";
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -41,11 +41,12 @@ class GameComponentComponent extends Component {
         }
 
 
-        new Phaser.Game(config)
+        this.game = new Phaser.Game(config)
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.props.gameWsGameDisconnect();
+        this.game.destroy();
     }
 
     shouldComponentUpdate() {

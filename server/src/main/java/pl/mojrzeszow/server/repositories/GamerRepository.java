@@ -1,5 +1,6 @@
 package pl.mojrzeszow.server.repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,13 @@ import pl.mojrzeszow.server.models.Gamer;
 @Repository
 public interface GamerRepository extends JpaRepository<Gamer, Long> {
 	Optional<Gamer> findById(Long id);
-	List<Gamer> findByGame(Game game);
-	Gamer findByGameAndOrdinalNumber(Game game,Long ordinalNumber);
-}
 
+	List<Gamer> findByGame(Game game);
+
+	Gamer findByGameAndOrdinalNumberAndStatusContaining(Game game, Long ordinalNumber, String status);
+
+	List<Gamer> findByNotificationLessThanAndStatusNot(LocalDateTime notification, String status);
+
+	List<Gamer> findByNotificationBetweenAndStatusNot(LocalDateTime notificationFrom, LocalDateTime notificationTo,
+			String status);
+}

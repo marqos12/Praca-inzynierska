@@ -13,10 +13,7 @@ public class Data implements CommandLineRunner {
 
 	@Autowired
 	private RoleRepository roleRepository;
-/*
-	@Autowired
-	private UserRepository userRepository;
-*/
+
 	@Override
 	public void run(String... args) throws Exception {
 
@@ -34,20 +31,6 @@ public class Data implements CommandLineRunner {
 		} catch (Exception e) {
 
 		}
-		/*
-		 * User u1 = new User("name","user12","user1@gmail.com","user12");
-		 * 
-		 * userRepository.save(u1); User u2 = new
-		 * User("name","user22","user2@gmail.com","user22"); userRepository.save(u2);
-		 */
-
-		/*
-		 * User u1=new User(); u1.setEmail("user111@gmail.com");
-		 * u1.setUsername("user111"); u1.setPassword("user111");
-		 * 
-		 * Role userR = this.roleRepository.findByName(RoleName.ROLE_USER).orElse(null);
-		 * u1.setRole(userR});
-		 */
 
 	}
 }

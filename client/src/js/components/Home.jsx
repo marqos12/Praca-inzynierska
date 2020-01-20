@@ -32,13 +32,12 @@ class HomeComponent extends Component {
         if (this.props.auth.token)
             this.props.history.push("/panel")
     }
-    
+
     render() {
         return (
             <div className="container">
                 <div className="menuContent">
-                    <h1 className="gameTitle">Witaj w grze <span>Moje Miasto</span></h1>
-
+                    <h1 className="gameTitle">Witaj w grze <span>Moje&nbsp;Miasto</span></h1>
                     <div className="buttonList">
                         <NavLink to="/login" className="button is-large  is-link is-rounded is-fullwidth">Zaloguj się!</NavLink>
                         <NavLink to="/registration" className="button is-large  is-link is-rounded is-fullwidth">Zarejestruj</NavLink>

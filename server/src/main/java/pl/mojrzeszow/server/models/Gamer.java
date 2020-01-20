@@ -1,6 +1,6 @@
 package pl.mojrzeszow.server.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,27 +25,26 @@ public class Gamer {
 	@NotNull
 	@ManyToOne
 	private User user;
-	
+
 	@NotNull
 	@ManyToOne
 	private Game game;
 
 	private String sessionId;
-	
+
 	@NotNull
-	private Date notification;
-	
-	@NotNull
-	private boolean status;
-		
+	private LocalDateTime notification;
+
+	private String status;
+
 	private boolean ready;
-	
+
 	@NotNull
 	private Long ordinalNumber;
-	
+
 	@NotNull
 	private Long points;
-	
+
 	@NotNull
 	private Long ducklings;
 	private Long ducklingsPerRound;
@@ -54,18 +53,17 @@ public class Gamer {
 
 	private TileType newTileType;
 
-	
-	public Gamer () {}
-	
-	
-	public Gamer( @NotBlank User user, @NotBlank Game game, String sessionId) {
+	public Gamer() {
+	}
+
+	public Gamer(@NotBlank User user, @NotBlank Game game, String sessionId) {
 		super();
-		
+
 		this.user = user;
 		this.game = game;
 		this.sessionId = sessionId;
-		this.notification = new Date();
-		this.status = true;
+		this.notification = LocalDateTime.now();
+		this.status = "t";
 		this.ready = false;
 		this.ordinalNumber = 0L;
 		this.points = 0L;
@@ -74,11 +72,9 @@ public class Gamer {
 		this.withTile = false;
 	}
 
-
-
-	public Gamer(Long id, @NotNull User user, @NotNull Game game, String sessionId, @NotNull Date notification,
-			@NotNull boolean status, boolean ready, @NotNull Long ordinalNumber, @NotNull Long points,
-			@NotNull Long ducklings, Boolean withTile, TileType newTileType,Long ducklingsPerRound) {
+	public Gamer(Long id, @NotNull User user, @NotNull Game game, String sessionId, LocalDateTime notification,
+			@NotNull String status, boolean ready, @NotNull Long ordinalNumber, @NotNull Long points,
+			@NotNull Long ducklings, Boolean withTile, TileType newTileType, Long ducklingsPerRound) {
 		this.id = id;
 		this.user = user;
 		this.game = game;
@@ -93,7 +89,6 @@ public class Gamer {
 		this.newTileType = newTileType;
 		this.ducklingsPerRound = ducklingsPerRound;
 	}
-	
 
 	public Long getId() {
 		return id;
@@ -127,19 +122,19 @@ public class Gamer {
 		this.sessionId = sessionId;
 	}
 
-	public Date getNotification() {
+	public LocalDateTime getNotification() {
 		return notification;
 	}
 
-	public void setNotification(Date notification) {
+	public void setNotification(LocalDateTime notification) {
 		this.notification = notification;
 	}
 
-	public boolean isStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(boolean status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -198,6 +193,5 @@ public class Gamer {
 	public void setDucklingsPerRound(Long ducklingsPerRound) {
 		this.ducklingsPerRound = ducklingsPerRound;
 	}
-	
-	
+
 }

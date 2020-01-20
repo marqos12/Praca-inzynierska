@@ -1,22 +1,223 @@
 @import "../variables";
 
-.container{padding-top: 50px;}
+.container {
+  padding-top: 50px;
+}
 
-.menuContent{
-    background-color: $card-background-color;
-    border-radius: 30px;
-    border:2px solid $card-border-color;
-      
-    padding-bottom: 50px;
-    height:80vh;
+.menuContent {
+  background-color: $card-background-color;
+  border-radius: 30px;
+  border: 2px solid $card-border-color;
 
-    .buttonList{
-        width:600px;
-        margin: 0 auto;
-        margin-top:50px;
+  padding-bottom: 50px;
+  height: fit-content;
+  min-height: 80vh;
 
-        a{
-            margin:10px 0;
-        }
+  .buttonList {
+    width: 600px;
+    margin: 0 auto;
+    margin-top: 50px;
+    color: black;
+
+    a {
+      margin: 10px 0;
+      border: solid 1px $card-border-color;
     }
+    a:hover {
+      border: solid 1px $card-border-color;
+    }
+    a[disabled] {
+      border: solid 0px $card-border-color;
+    }
+
+    .subTitle {
+      color: white;
+
+      .subtitleBtn {
+        color: black;
+        font-weight: bold;
+        text-decoration: underline;
+      }
+    }
+
+    .noBorder {
+      border: solid 0px $card-border-color;
+    }
+    .noBorder:hover {
+      border: solid 0px $card-border-color;
+      color: rgb(15, 15, 15);
+    }
+    label {
+      font-size: 22px;
+      margin-left: 10px;
+    }
+
+    h3 {
+      font-size: 24px;
+    }
+
+    .statusImg {
+      width: 25px;
+      height: 25px;
+    }
+  }
+  table td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #250000;
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+  .separator::before,
+  .separator::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #000;
+  }
+  .separator::before {
+    margin-right: 0.25em;
+  }
+  .separator::after {
+    margin-left: 0.25em;
+  }
+}
+
+.about {
+  background-color: #5d8fbd;
+  font-size: 20px;
+
+  img {
+    margin: 0 auto;
+    border: white 2px solid;
+    max-height: 400px;
+    display: block;
+  }
+
+  .buttonList {
+    color: white;
+    text-align: justify;
+  }
+  a {
+    color: black;
+  }
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 62px;
+  height: 36px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+
+  input:checked + .slider {
+    background-color: #3273dc;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196f3;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  .slider.round {
+    border-radius: 34px;
+    border: solid 1px $card-border-color;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+}
+
+.slidecontainer {
+  width: 100%;
+
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: 0.2s;
+    transition: opacity 0.2s;
+  }
+
+  .slider:hover {
+    opacity: 1;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #3273dc;
+    border: solid 1px $card-border-color;
+    cursor: pointer;
+  }
+
+  .slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #3273dc;
+    border: solid 1px $card-border-color;
+    cursor: pointer;
+  }
+}
+
+.whiteText {
+  color: white;
+  font-size: 20px;
+}
+
+@media screen and (max-width: 700px) {
+  .menuContent {
+    .buttonList {
+      width: 90%;
+    }
+  }
 }

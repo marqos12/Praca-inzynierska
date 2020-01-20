@@ -1,87 +1,387 @@
 @import "../variables";
 
-$tab-width:12vw;
-$tile-tab-width:20vw;
-$timer-tab-height:95px;
-$rank-tab-heigth:30vh;
-$resources-tab-width:20vw;
-$resources-tab-height:7vh;
+$tab-width: 12vw;
+$tile-tab-width: 15vw;
+$timer-tab-height: 95px;
+$rank-tab-heigth: 30vh;
+$resources-tab-width: fit-content;
+$resources-tab-height: fit-content;
 
+.hud {
+  color: #ffffff;
 
+  .hud_card {
+    position: absolute;
+    z-index: 100;
+    background-color: $card-background-color;
+    padding: 10px;
+    border: 2px solid $card-border-color;
+  }
+  img {
+    width: 25px;
+    height: 25px;
+    position: relative;
+    top: 6px;
+    margin-right: 10px;
+  }
+  .timer {
+    right: 0;
+    width: $tab-width;
+    min-width: 130px;
+    height: $timer-tab-height;
+    border-bottom: 0;
+  }
 
-.hud{
-    color: #ffffff;
+  .gamersList {
+    right: 0;
+    min-width: 130px;
+    top: $timer-tab-height;
+    width: $tab-width;
+    height: $rank-tab-heigth;
+    border-bottom-left-radius: 15px;
+  }
 
-    .hud_card{
-        position: absolute;
-        z-index: 100;
-        background-color: $card-background-color;
-        padding:10px;
-        border:2px solid $card-border-color;
+  .menuButton {
+    padding: 6px;
+    left: 10px;
+    padding-top: 14px;
+    top: 10px;
+    border-radius: 25px;
+    width: 40px;
+    height: 40px;
+
+    img {
+      width: 25px;
+      height: 25px;
+      top: -9px;
+      position: relative;
     }
-    img{
-        width:25px;
-        height:25px;
-        position: relative;
-        top: 6px;
-        margin-right: 10px;
+  }
+
+  .manualButton {
+    top: 240px;
+  }
+
+  .newTile {
+    right: 0;
+    bottom: 0;
+    min-width: fit-content;
+    width: $tile-tab-width;
+    height: 20vh;
+    min-height: fit-content;
+    border-top-left-radius: 15px;
+
+    .newTileButton {
+      display: block;
+      margin: auto;
     }
-    .timer{
-        right: 0;
-        width:$tab-width;
-        height:$timer-tab-height;
-        border-bottom: 0
+  }
+
+  .rank {
+    left: 0;
+    bottom: 0;
+    width: 14vw;
+    height: $rank-tab-heigth;
+    border-top-right-radius: 15px;
+  }
+
+  .resources {
+    left: 14vw;
+    bottom: 0;
+    width: $resources-tab-width;
+    max-width: calc(100% - 60px);
+    height: $resources-tab-height;
+    border-top-right-radius: 15px;
+    border-left: 0;
+
+    div {
+      width: fit-content;
+      padding: 0 8px;
+      float: left;
     }
 
-    .gamersList{
-        right: 0;
-        top:$timer-tab-height;
-        width:$tab-width;
-        height:$rank-tab-heigth;
-        border-bottom-left-radius: 15px;
-
-        
+    .onSmallVisible {
+      width: 0px;
+      height: 0px;
+      overflow: hidden;
+      display: inline-block;
     }
-    
-    .newTile{
-        right: 0;
-        bottom: 0;
-        width:$tile-tab-width;
-        height:30vh;
-        border-top-left-radius: 15px;
+  }
 
-        .newTileButton{
-            display: block
-        }
+  .tileDetails {
+    bottom: 0;
+    width: 100vw;
+    height: 300px;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+
+    a {
+      width: fit-content;
+      float: right;
+      border: 2px solid #41e3ff;
+      margin-right: 20px;
     }
-
-    .rank{
-        left: 0;
-        bottom: 0;
-        width:$tab-width;
-        height:$rank-tab-heigth;
-        border-top-right-radius: 15px;
+    a:hover {
+      border: 2px solid #41e3ff;
     }
 
-    .resources{
-        left: $tab-width;
-        bottom: 0;
-        width:$resources-tab-width;
-        height:$resources-tab-height;
-        border-top-right-radius: 15px;
-        border-left:0;
-
-        div{
-            width:9vw;
-            display: inline-block;
-        }
+    img {
+      position: absolute;
     }
+    .closeButton {
+      width: 25px;
+      height: 25px;
+      top: 20px;
+      right: 20px;
+    }
+    .destroyButton {
+      width: 35px;
+      height: 35px;
+      top: 50px;
+      right: 25px;
+    }
+    .rotateButton {
+      width: 35px;
+      height: 35px;
+      top: 90px;
+      right: 25px;
+    }
+
+    .rotateButtons {
+      top: 100px;
+    }
+
+    .modernizeImage0 {
+      width: 22.75vw;
+      height: 22.75vw;
+      top: 100px;
+      left: 3vw;
+    }
+    .modernizeImage1 {
+      width: 22.75vw;
+      height: 22.75vw;
+      top: 100px;
+      left: calc(3vw + 22.75vw * 1 + 1vw * 1);
+    }
+    .modernizeImage2 {
+      width: 22.75vw;
+      height: 22.75vw;
+      top: 100px;
+      left: calc(3vw + 22.75vw * 2 + 1vw * 2);
+    }
+    .modernizeImage3 {
+      width: 22.75vw;
+      height: 22.75vw;
+      top: 100px;
+      left: calc(3vw + 22.75vw * 3 + 1vw * 3);
+    }
+
+    .arrL {
+      width: 35px;
+      height: 35px;
+      top: calc(120px + 22.75vw);
+      left: 50px;
+    }
+    .arrR {
+      width: 35px;
+      height: 35px;
+      top: calc(120px + 22.75vw);
+      left: 100px;
+    }
+    .modernizeWay {
+      position: absolute;
+      left: calc(20px + 22.75vw);
+      top: 100px;
+    }
+    .upgradeBack {
+      position: absolute;
+      top: calc(120px + 22.75vw);
+      right: 10vw;
+    }
+  }
+
+  .inGameChat {
+    position: absolute;
+    top: 150px;
+    left: 10px;
+    border-radius: 50px;
+  }
 }
 
-#phaser-game{
-    z-index: 10;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
+.inGameMenu {
+  position: absolute;
+  z-index: 100;
+  width: 100vw;
+  height: 100vh;
+  background-color: $card-background-color;
+
+  .menuTimer {
+    width: fit-content;
+    margin: 0 auto;
+    margin-bottom: 10px;
+
+    div {
+      float: left;
+      padding: 10px;
+      margin-left: 10px;
+      color: white;
+      font-size: 18px;
+    }
+    img {
+      width: 25px;
+      height: 25px;
+      position: relative;
+      left: -9px;
+      top: 6px;
+    }
+  }
+}
+
+.gameResult tr:first-child {
+  background-color: gold;
+}
+
+#phaser-game {
+  z-index: 10;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: absolute;
+}
+
+.tutorial {
+  z-index: 120;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  text-align: justify;
+  background-color: rgba(93, 143, 189, 0.815);
+
+  .container {
+    overflow: auto;
+  }
+  .menuContent {
+    padding-bottom: 220px;
+  }
+
+  .buttons {
     position: absolute;
+    bottom: 20px;
+    width: 600px;
+    max-width: 90%;
+
+    div {
+      width: 50%;
+      float: left;
+      margin-top: 20px;
+
+      a {
+        width: 80%;
+        margin: 0 auto;
+      }
+    }
+  }
+}
+
+.checkContainer {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+}
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+}
+
+.checkContainer:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+.checkContainer input:checked ~ .checkmark {
+  background-color: rgb(182, 7, 7);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkContainer input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkContainer .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+@media screen and (max-width: 1800px) {
+  .onSmallinvisible {
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    display: inline-block;
+  }
+}
+@media screen and (max-width: 700px) {
+  .hud {
+    width: 100%;
+    .resources {
+      right: 0;
+      top: 0;
+      left: unset;
+      border-left: 2px solid $card-border-color;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: 15px;
+      .onSmallVisible {
+        height: fit-content;
+        width: fit-content;
+      }
+    }
+
+    .timer,
+    .gamersList,
+    .rank {
+      display: none;
+    }
+  }
+}
+@media screen and (max-width: 1000px) {
+  .hud {
+    .gamersList {
+      img {
+        width: 0;
+      }
+    }
+  }
 }

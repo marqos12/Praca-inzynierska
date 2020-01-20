@@ -38,26 +38,25 @@ export function getTileSortedEdges(tileType, angle) {
 }
 
 export function getPossiblePlaces(tiles, newTile) {
-    //let newTile = tiles.pop();
     let newTileEdges = getTileSortedEdges(newTile.generalType, 0);
 
     let initPossiblePos = [];
     let tilesPos = [];
     tiles.forEach(tile => {
-     
-            tilesPos.push({ posX: tile.posX, posY: tile.posY });
 
-            let tileEdges = getTileSortedEdges(tile.generalType, tile.angle);
-            for (let i = 0; i < 4; i++) {
-                let j = 0;
-                tileEdges.forEach(edge => {
-                    if (newTileEdges[i] == edge && edge != GREEN) {
-                        initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
-                    }
-                    j++
-                })
-            }
-        
+        tilesPos.push({ posX: tile.posX, posY: tile.posY });
+
+        let tileEdges = getTileSortedEdges(tile.generalType, tile.angle);
+        for (let i = 0; i < 4; i++) {
+            let j = 0;
+            tileEdges.forEach(edge => {
+                if (newTileEdges[i] == edge && edge != GREEN && !((newTile.generalType != "END_TILE" && newTile.generalType != "OPTIONAL") && edge == "ACCESS")) {
+                    initPossiblePos.push(getPossiblePos(j, tile.posX, tile.posY))
+                }
+                j++
+            })
+        }
+
 
     })
 
@@ -218,60 +217,60 @@ export function translateTileName(tileName) {
             return "Park";
         case "CHURCH_1":
             return "Kościół";
+        case "POWER_STATION_1":
+            return "Elektrownia";
 
         case "GROCERY_STORE_1":
             return "Sklep spożywczy";
         case "ROAD_STRAIGHT_1":
-            return "Droga";
+            return "Droga prosta";
         case "ROAD_ACCESS_SINGLE_1":
-            return "Droga";
+            return "Droga z dojazdem";
         case "ROAD_CROSS_SINGLE_1":
-            return "Droga";
+            return "Droga skrzyżowanie";
         case "ROAD_ACCESS_DOUBLE_1":
-            return "Droga";
+            return "Droga z dojazami";
         case "ROAD_CROSS_DOUBLE_1":
-            return "Droga";
+            return "Droga skrzyżowanie";
         case "ROAD_CURVE_1":
-            return "Droga";
+            return "Droga zakręt";
     }
 }
 
-export function getOutcomes(influence) {
+export function getOutcomes(influence, summaryDucklings, usedInfluence) {
     let incomes = "";
     let incomesCounter = 1;
     if (influence) {
         incomes += "Korzyści: "
         if (influence.ducklings) { incomes += `ducklingsy: ${influence.ducklings}d;`; incomesCounter++; }
-        if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
+        if (summaryDucklings && summaryDucklings != influence.ducklings) { incomes += `(${summaryDucklings}d)`; incomesCounter++; }
+        if (incomesCounter >= 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.people) {
-            incomes += ` ludzie: ${influence.people}/ ${influence.peopleRange};`; incomesCounter++;
-            /*let circle = new Phaser.GameObjects.Ellipse(this.scene,0,0,influence.peopleRange*this.tile.displayWidth,influence.peopleRange*this.tile.displayWidth,0xff0000,0.2);this.influenceField.push(circle)*/
+            incomes += ` ludzie: ${influence.people} ${usedInfluence && usedInfluence.people ? `[${influence.people - usedInfluence.people})` : ""}/ ${influence.peopleRange};`; incomesCounter++;
         }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.shops) { incomes += ` sklep: ${influence.shops}/ ${influence.shopsRange};`; incomesCounter++; }
+        if (influence.shops) { incomes += ` sklep: ${influence.shops} ${usedInfluence && usedInfluence.shops ? `[${influence.shops - usedInfluence.shops}]` : ""}/ ${influence.shopsRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.work) { incomes += ` praca: ${influence.work}/ ${influence.workRange};`; incomesCounter++; }
+        if (influence.work) { incomes += ` praca: ${influence.work} ${usedInfluence && usedInfluence.work ? `[${influence.work - usedInfluence.work}]` : ""}/ ${influence.workRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.services) { incomes += ` usługi: ${influence.services}/ ${influence.servicesRange};`; incomesCounter++; }
+        if (influence.services) { incomes += ` usługi: ${influence.services} ${usedInfluence && usedInfluence.services ? `[${influence.services - usedInfluence.services}]` : ""}/ ${influence.servicesRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.goods) { incomes += ` dobra: ${influence.goods}/ ${influence.goodsRange};`; incomesCounter++; }
+        if (influence.goods) { incomes += ` dobra: ${influence.goods} ${usedInfluence && usedInfluence.goods ? `[${influence.goods - usedInfluence.goods}]` : ""}/ ${influence.goodsRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.entertainment) { incomes += ` rozrywka: ${influence.entertainment}/ ${influence.entertainmentRange};`; incomesCounter++; }
+        if (influence.entertainment) { incomes += ` rozrywka: ${influence.entertainment} ${usedInfluence && usedInfluence.entertainment ? `[${influence.entertainment - usedInfluence.entertainment}]` : ""}/ ${influence.entertainmentRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.cleanness) { incomes += ` czystość: ${influence.cleanness}/ ${influence.cleannessRange};`; incomesCounter++; }
+        if (influence.cleanness) { incomes += ` czystość: ${influence.cleanness} ${usedInfluence && usedInfluence.cleanness ? `[${influence.cleanness - usedInfluence.cleanness}]` : ""}/ ${influence.cleannessRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.crimePrevention) { incomes += ` bezpieczeństwo: ${influence.crimePrevention}/ ${influence.crimePreventionRange};`; incomesCounter++; }
+        if (influence.crimePrevention) { incomes += ` bezpieczeństwo: ${influence.crimePrevention} ${usedInfluence && usedInfluence.crimePrevention ? `[${influence.crimePrevention - usedInfluence.crimePrevention}]` : ""}/ ${influence.crimePreventionRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.fireSafety) { incomes += ` PPOŻ: ${influence.fireSafety}/ ${influence.fireSafetyRange};`; incomesCounter++; }
+        if (influence.fireSafety) { incomes += ` PPOŻ: ${influence.fireSafety} ${usedInfluence && usedInfluence.fireSafety ? `[${influence.fireSafety - usedInfluence.fireSafety}]` : ""}/ ${influence.fireSafetyRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.medicalCare) { incomes += ` ochrona zdrowia: ${influence.medicalCare}/ ${influence.medicalCareRange};`; incomesCounter++; }
+        if (influence.medicalCare) { incomes += ` ochrona zdrowia: ${influence.medicalCare} ${usedInfluence && usedInfluence.medicalCare ? `[${influence.medicalCare - usedInfluence.medicalCare}]` : ""}/ ${influence.medicalCareRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.energy) { incomes += ` energia elektryczna: ${influence.energy}/ ${influence.energyRange};`; incomesCounter++; }
+        if (influence.energy) { incomes += ` energia elektryczna: ${influence.energy} ${usedInfluence && usedInfluence.energy ? `[${influence.energy - usedInfluence.energy}]` : ""}/ ${influence.energyRange};`; incomesCounter++; }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
-        if (influence.science) { incomes += ` nauka: ${influence.science}/ ${influence.scienceRange};`; }
+        if (influence.science) { incomes += ` nauka: ${influence.science} ${usedInfluence && usedInfluence.science ? `[${influence.science - usedInfluence.science}]` : ""}/ ${influence.scienceRange};`; }
 
-        //this.influenceField.forEach(x => this.scene.add.existing(x));
-        //this.move();
     }
     return incomes;
 }
@@ -283,7 +282,6 @@ export function getNeedToUpgrade(incomeInfluence, needToUpgrade, ducklings) {
         incomes = "Wymagane do awansu: ";
         let incomesCounter = 0;
 
-        console.log("gameMechanics 281", incomeInfluence, needToUpgrade, ducklings)
 
         if (needToUpgrade.ducklings) {
             incomes += `\n ducklingsy: ${needToUpgrade.ducklings}d (${ducklings}d);`; incomesCounter++;
@@ -354,7 +352,6 @@ export function getNeedToUpgrade(incomeInfluence, needToUpgrade, ducklings) {
 }
 
 export function getWayOfUpgrade(tile) {
-    console.log(tile)
     switch (tile.name) {
         case "HOUSE_1":
             return ["HOUSE_2"];
@@ -382,6 +379,7 @@ export function getWayOfUpgrade(tile) {
                 "HOSPITAL_1",
                 "FIRE_HOUSE_1",
                 "POLICE_STATION_1",
+                "POWER_STATION_1",
                 "GARBAGE_DUMP_1",
                 "SEWAGE_FARM_1",
                 "CHURCH_1"];
@@ -427,4 +425,33 @@ export function getWayOfUpgrade(tile) {
         case "ROAD_CURVE_1":
             return ["ROAD_STRAIGHT_1", "ROAD_ACCESS_SINGLE_1", "ROAD_CROSS_SINGLE_1", "ROAD_ACCESS_DOUBLE_1", "ROAD_CROSS_DOUBLE_1", "ROAD_CURVE_1"];
     }
+
+}
+export function getTileOwnerName(tile) {
+    if (tile.owner)
+        return tile.owner.user.username
+    else
+        return "system"
+}
+
+export function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+export function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }

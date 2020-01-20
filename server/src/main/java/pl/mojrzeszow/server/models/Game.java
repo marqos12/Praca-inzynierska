@@ -1,5 +1,7 @@
 package pl.mojrzeszow.server.models;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+import pl.mojrzeszow.server.enums.GameEndType;
 
 @Entity
 @Table(name = "games")
@@ -36,12 +40,20 @@ public class Game {
 	@NotNull
 	private Long elapsed;
 
+	private GameEndType endType;
+
+	private Long startTime;
+
 	private Boolean inProgress;
 
 	private Long gamersCount;
 	private Long gamersCountLimit;
 
 	private boolean privateGame;
+
+	private LocalDateTime RTSLastRoundTime;
+	private Long rtsInterval;
+	private LocalDateTime lastActivity;
 
 	public Game() {
 	}
@@ -51,17 +63,20 @@ public class Game {
 		this.elapsed = 0L;
 		this.started = false;
 		this.ended = false;
-		this.gameLimit = 45L;
+		this.gameLimit = 100L;
 		this.isRTS = false;
 		this.privateGame = true;
 		this.gamersCountLimit = 4L;
 		this.gamersCount = 0L;
 		this.inProgress = false;
+		this.endType = GameEndType.ROUND_LIMIT;
+		this.rtsInterval = 20L;
 	}
 
 	public Game(Long id, @NotNull User author, @NotNull boolean ended, @NotNull boolean started, @NotNull boolean isRTS,
 			@NotNull Long gameLimit, @NotNull Long elapsed, Boolean inProgress, Long gamersCount, Long gamersCountLimit,
-			boolean privateGame) {
+			boolean privateGame, GameEndType gameEndType, Long startTime, Long rtsInterval,
+			LocalDateTime lastActivity) {
 		this.id = id;
 		this.author = author;
 		this.ended = ended;
@@ -73,6 +88,10 @@ public class Game {
 		this.gamersCount = gamersCount;
 		this.gamersCountLimit = gamersCountLimit;
 		this.privateGame = privateGame;
+		this.endType = gameEndType;
+		this.startTime = startTime;
+		this.rtsInterval = rtsInterval;
+		this.lastActivity = lastActivity;
 	}
 
 	public Long getId() {
@@ -161,5 +180,45 @@ public class Game {
 
 	public void setInProgress(Boolean inProgress) {
 		this.inProgress = inProgress;
+	}
+
+	public GameEndType getEndType() {
+		return endType;
+	}
+
+	public void setEndType(GameEndType endType) {
+		this.endType = endType;
+	}
+
+	public Long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Long startTime) {
+		this.startTime = startTime;
+	}
+
+	public LocalDateTime getRTSLastRoundTime() {
+		return RTSLastRoundTime;
+	}
+
+	public void setRTSLastRoundTime(LocalDateTime rTSLastRoundTime) {
+		RTSLastRoundTime = rTSLastRoundTime;
+	}
+
+	public Long getRtsInterval() {
+		return rtsInterval;
+	}
+
+	public void setRtsInterval(Long rtsInterval) {
+		this.rtsInterval = rtsInterval;
+	}
+
+	public LocalDateTime getLastActivity() {
+		return lastActivity;
+	}
+
+	public void setLastActivity(LocalDateTime lastActivity) {
+		this.lastActivity = lastActivity;
 	}
 }

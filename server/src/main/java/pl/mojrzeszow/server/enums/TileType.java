@@ -45,7 +45,8 @@ public enum TileType {
 	private static final int SIZE = VALUES.size();
 	private static final Random RANDOM = new Random();
 
-	private TileType(TileEdgeType left, TileEdgeType top, TileEdgeType right, TileEdgeType down, String generalType, int probability,int points,int costs) {
+	private TileType(TileEdgeType left, TileEdgeType top, TileEdgeType right, TileEdgeType down, String generalType,
+			int probability, int points, int costs) {
 		this.left = left;
 		this.top = top;
 		this.right = right;
@@ -58,13 +59,13 @@ public enum TileType {
 
 	public static TileType randomTileType() {
 		TileType random = null;
-		
-			random = VALUES.get(RANDOM.nextInt(SIZE));
-		
+
+		random = VALUES.get(RANDOM.nextInt(SIZE));
+
 		return random;
 	}
 
-	public List<TileEdgeType> getTileEdgeTypes(){
+	public List<TileEdgeType> getTileEdgeTypes() {
 		List<TileEdgeType> list = new ArrayList<>();
 		list.add(this.left);
 		list.add(this.top);
@@ -73,15 +74,17 @@ public enum TileType {
 		return list;
 	}
 
-	public static TileType randomEndTileType(){
+	public static TileType randomEndTileType() {
 		double random = Math.random();
-		if(random < 0.6)return HOUSE;
-		else if(random < 0.8)return SHOP;
+		if (random < 0.6)
+			return HOUSE;
+		else if (random < 0.8)
+			return SHOP;
 		else {
 			TileType randTileType = null;
-			do{
+			do {
 				randTileType = randomTileType();
-			} while(randTileType.getGeneralType() != "END_TILE" || randTileType ==HOUSE || randTileType == SHOP);
+			} while (randTileType.getGeneralType() != "END_TILE" || randTileType == HOUSE || randTileType == SHOP);
 			return randTileType;
 		}
 	}
@@ -90,14 +93,15 @@ public enum TileType {
 		return generalType;
 	}
 
-	public Long getProbability(){
+	public Long getProbability() {
 		return probability;
 	}
 
-	public Long getPoints(){
+	public Long getPoints() {
 		return points;
 	}
-	public Long getCosts(){
+
+	public Long getCosts() {
 		return costs;
 	}
 }

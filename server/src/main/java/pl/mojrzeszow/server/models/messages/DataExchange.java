@@ -5,6 +5,7 @@ import javax.validation.constraints.NotBlank;
 import pl.mojrzeszow.server.enums.TileType;
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Influence;
+import pl.mojrzeszow.server.models.User;
 
 public class DataExchange {
 
@@ -15,9 +16,11 @@ public class DataExchange {
 	public Long gamerId;
 	public Long posX;
 	public Long posY;
-	public int angle;
+	public Long angle;
 	public TileType type;
 	public Gamer gamer;
+	public User user;
+	public String message;
 	public long lvl;
 	public Influence incomeInfluence;
 	public Influence outcomeInfluence;
@@ -25,6 +28,9 @@ public class DataExchange {
 	public Long points;
 	public Long buildCosts;
 	public Long deconstructionCosts;
+	public Influence usedInfluence;
+	public Long summaryDucklings;
+	public String time;
 
 	public DataExchange() {
 	}
@@ -37,11 +43,11 @@ public class DataExchange {
 		this.type = type;
 	}
 
-	public @NotBlank int getAngle() {
+	public @NotBlank Long getAngle() {
 		return angle;
 	}
 
-	public void setAngle(int angle) {
+	public void setAngle(Long angle) {
 		this.angle = angle;
 	}
 
@@ -68,7 +74,7 @@ public class DataExchange {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Long getUserId() {
 		return userId;
 	}
@@ -102,7 +108,7 @@ public class DataExchange {
 	}
 
 	public DataExchange(Long id, Long userId, Long gameId, String sessionId, Long gamerId, Long posX, Long posY,
-			int angle, TileType type) {
+			Long angle, TileType type) {
 		this.id = id;
 		this.userId = userId;
 		this.gameId = gameId;
@@ -113,5 +119,5 @@ public class DataExchange {
 		this.angle = angle;
 		this.type = type;
 	}
-    
+
 }

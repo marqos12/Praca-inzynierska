@@ -15,9 +15,8 @@ public enum MessageType {
 
 	GAME_JOINED,
 
-
-
 	GAME_LIST_UPDATED,
 	ME_GAMER,
-	GAME_LEFT
+	GAME_LEFT,
+	GAME_ALONE_CREATED
 }

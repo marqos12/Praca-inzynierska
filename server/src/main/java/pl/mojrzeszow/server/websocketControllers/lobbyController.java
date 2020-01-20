@@ -14,7 +14,6 @@ import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
 import pl.mojrzeszow.server.service.LobbyService;
 
-
 @Controller
 
 @MessageMapping("/lobby")
@@ -33,6 +32,12 @@ public class lobbyController {
 	@SendToUser("/queue/reply")
 	public GameMessage<Game> createGame(@Payload DataExchange userId) {
 		return lobbyService.createGame(userId);
+	}
+
+	@MessageMapping("/createAloneGame")
+	@SendToUser("/queue/reply")
+	public GameMessage<Game> createAloneGame(@Payload DataExchange userId) {
+		return lobbyService.createAloneGame(userId);
 	}
 
 	@MessageMapping("/updateGame")
@@ -55,12 +60,22 @@ public class lobbyController {
 
 	@MessageMapping("/statusUpdate")
 	public GameMessage<Gamer> gamerStatusUpdate(@Payload Gamer gamer) {
-		return lobbyService.gamerStatusUpdate(gamer);
+		return lobbyService.gamerStatusUpdate(gamer, "t");
 	}
 
 	@MessageMapping("/startGame")
 	public void startGame(@Payload Game game) {
 		lobbyService.startGame(game);
+	}
+
+	@MessageMapping("/kickGamer")
+	public void kickGamer(@Payload DataExchange gamerData) {
+		lobbyService.kickGamer(gamerData);
+	}
+
+	@MessageMapping("/iAmAlive")
+	public void iAmAlive(@Payload DataExchange gamerData) {
+		lobbyService.iAmAlive(gamerData);
 	}
 
 }

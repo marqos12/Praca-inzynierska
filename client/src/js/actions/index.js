@@ -28,6 +28,11 @@ import {
     WS_SUBSCRIBE_GAME_LIST_CHANNEL,
     WS_UNSUBSCRIBE_GAME_LIST_CHANNEL,
     SET_ORIGIN,
+    BEEN_KICKED_OUT,
+    WS_ALONE_GAME_CREATED,
+    CHAT_GLOBAL_MESSAGE,
+    CHAT_GAME_MESSAGE,
+    SET_ALONE_GAME,
 } from "../constants/action-types";
 
 export function wsConnect() {
@@ -116,6 +121,10 @@ export function wsGameCreated(payload) {
     return { type: WS_GAME_CREATED, payload };
 }
 
+export function wsAloneGameCreated(payload) {
+    return { type: WS_ALONE_GAME_CREATED, payload };
+}
+
 export function wsGameUpdated(payload) {
     return { type: WS_GAME_UPDATED, payload };
 }
@@ -146,4 +155,20 @@ export function wsUnsubscribeGameListChannel(payload) {
 
 export function setOrigin(payload) {
     return { type: SET_ORIGIN, payload };
+}
+
+export function beenKickedOut(payload) {
+    return { type: BEEN_KICKED_OUT, payload };
+}
+
+export function chatGlobalMessage(payload) {
+    return { type: CHAT_GLOBAL_MESSAGE, payload };
+}
+
+export function chatGameMessage(payload) {
+    return { type: CHAT_GAME_MESSAGE, payload };
+}
+
+export function setAloneGame(payload) {
+    return { type: SET_ALONE_GAME, payload };
 }

@@ -28,7 +28,10 @@ export class Tile extends Phaser.GameObjects.Sprite {
 
         this.fixed = true;
         this.setInteractive();
-        //scene.input.setDraggable(this)
+        this.flash = null;
+        this.flashInterval = null;
+
+        this.highlightNewTileAfterDrag = null;
 
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
 
@@ -90,6 +93,11 @@ export class Tile extends Phaser.GameObjects.Sprite {
                     let draggedTile = new CustomEvent('draggedTile', { detail: this });
                     dispatchEvent(draggedTile);
                 }
+                if (gameObject.highlightNewTileAfterDrag)
+                    gameObject.highlightNewTileAfterDrag.setPosition(gameObject.x - gameObject.displayWidth * 0.1, gameObject.y - gameObject.displayWidth * 0.1);
+                else
+                    gameObject.showHighlightAfterDrag();
+
             }
 
             let draggingNewTile = new CustomEvent('draggingNewTile', { detail: this });
@@ -97,20 +105,31 @@ export class Tile extends Phaser.GameObjects.Sprite {
         });
 
         this.on('pointerdown', (pointer) => {
-            if (pointer.leftButtonDown(0)) {
-                if (this.clicked) {
-                    scene.input.activePointer.isDown = false;
-                    if (!this.fixed) {
-                        this.rotate()
+            if (pointer.leftButtonDown()) {
+                if (!scene.state.actualGame.tileDetails || pointer.position.y < (window.innerHeight - 300)) {
+
+                    if (this.clicked) {
+                        scene.input.activePointer.isDown = false;
+                        if (!this.fixed) {
+                            this.rotate()
+                            for (let i = 0; i < 4; i++) {
+                                if (isThisPossibleRotation(this, this.scene.tiles, this.dummyPosX, this.dummyPosY))
+                                    break;
+                                else this.rotate()
+                            }
+                        }
+                        else {
+                            let draggedTile = new CustomEvent('showDetails', { detail: this });
+                            dispatchEvent(draggedTile);
+
+                        }
                     }
                     else {
-                        let draggedTile = new CustomEvent('showDetails', { detail: this });
-                        dispatchEvent(draggedTile);
+                        setTimeout(() => {
+                            setTimeout(() => { this.clicked = false; }, 500)
+                            this.clicked = true;
+                        }, 50)
                     }
-                }
-                else {
-                    this.clicked = true;
-                    setTimeout(() => { this.clicked = false; }, 500)
                 }
             }
             if (pointer.rightButtonDown()) {
@@ -139,8 +158,9 @@ export class Tile extends Phaser.GameObjects.Sprite {
     update() {
     }
 
-    destroy2(){
-        if(this.highlight)this.highlight.destroy();
+    destroy2() {
+        if (this.highlight) this.highlight.destroy();
+        if (this.highlightNewTileAfterDrag) this.highlightNewTileAfterDrag.destroy()
         this.destroy();
     }
 
@@ -149,8 +169,13 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.posY = posY;
         this.x = this.posX * this.displayWidth + this.scene.tableCenterX - this.displayWidth / 2;
         this.y = this.posY * this.displayHeight + this.scene.tableCenterY - this.displayHeight / 2;
-        if(this.highlight)
-        this.highlight.setPosition(this.x + this.displayWidth / 8, this.y + this.displayWidth / 8)
+        if (this.highlight)
+            this.highlight.setPosition(this.x + this.displayWidth / 8, this.y + this.displayWidth / 8)
+        if (this.flash)
+            this.flash.setPosition(this.x, this.y)
+        if (this.highlightNewTileAfterDrag)
+            this.highlightNewTileAfterDrag.setPosition(this.x - this.displayWidth * 0.1, this.y - this.displayWidth * 0.1);
+
     }
 
     setAngle_My(angle) {
@@ -187,6 +212,15 @@ export class Tile extends Phaser.GameObjects.Sprite {
             this.highlight.setDisplaySize(this.displayWidth / 8, this.displayWidth / 4);
             this.highlight.setPosition(this.x + this.displayWidth / 8, this.y + this.displayWidth / 8)
         }
+        if (this.flash) {
+            this.flash.setDisplaySize(this.displayWidth, this.displayWidth);
+            this.flash.setPosition(this.x, this.y)
+        }
+        if (this.highlightNewTileAfterDrag) {
+            this.highlightNewTileAfterDrag.setDisplaySize(this.displayWidth * 1.2, this.displayWidth * 1.2);
+            this.highlightNewTileAfterDrag.setPosition(this.x - this.displayWidth * 0.1, this.y - this.displayWidth * 0.1);
+        }
+
     }
 
     rotate() {
@@ -203,5 +237,27 @@ export class Tile extends Phaser.GameObjects.Sprite {
         this.dy = 0;
         let rotatedTile = new CustomEvent('rotatedTile', { detail: this.getTileObj(this) });
         dispatchEvent(rotatedTile);
+    }
+
+    highlightNewTile() {
+        this.flash = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, this.displayWidth, this.displayHeight, 0xf0f000, 0.4)
+        this.flash.setOrigin(0, 0);
+        this.flash.setDepth(11);
+        this.flash.setPosition(this.x, this.y);
+        this.scene.add.existing(this.flash)
+        this.flashInterval = setInterval(() => {
+            clearInterval(this.flashInterval);
+            this.flash.destroy();
+            this.flash = null;
+        }, 2000)
+    }
+
+    showHighlightAfterDrag() {
+        this.highlightNewTileAfterDrag = new Phaser.GameObjects.Sprite(this.scene, this.x, this.y, "tileHighlight")
+        this.highlightNewTileAfterDrag.setOrigin(0, 0);
+        this.highlightNewTileAfterDrag.setDepth(100);
+        this.highlightNewTileAfterDrag.setDisplaySize(this.displayWidth * 1.2, this.displayWidth * 1.2)
+        this.highlightNewTileAfterDrag.setPosition(this.x - this.displayWidth * 0.1, this.y - this.displayWidth * 0.1);
+        this.scene.add.existing(this.highlightNewTileAfterDrag)
     }
 }

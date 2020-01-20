@@ -15,23 +15,22 @@ import pl.mojrzeszow.server.models.messages.GameMessage;
 import pl.mojrzeszow.server.service.GameService;
 
 @Controller
-
 @MessageMapping("/game")
 public class GameController {
 
 	@Autowired
 	private GameService gameService;
 
-	@MessageMapping("/updateStatus")
-	@SendToUser("/queue/reply")
-	public GameMessage<Gamer> getAllgames(@Payload Gamer gamer) throws Exception {
-		return gameService.getAllgames(gamer);
-	}
-
 	@MessageMapping("/joinGame")
 	@SendToUser("/queue/reply")
 	public GameMessage<List<Tile>> joinGame(@Payload Gamer gamer) {
 		return gameService.joinGame(gamer);
+	}
+
+	@MessageMapping("/updateStatus")
+	@SendToUser("/queue/reply")
+	public GameMessage<Gamer> getAllgames(@Payload Gamer gamer) throws Exception {
+		return gameService.getAllgames(gamer);
 	}
 
 	@MessageMapping("/saveTile")
@@ -44,6 +43,5 @@ public class GameController {
 	public void updateTile(@Payload DataExchange dataExchange) {
 		gameService.updateTile(dataExchange);
 	}
-
 
 }

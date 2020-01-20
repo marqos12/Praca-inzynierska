@@ -10,11 +10,11 @@ import pl.mojrzeszow.server.models.Game;
 import pl.mojrzeszow.server.models.Gamer;
 import pl.mojrzeszow.server.models.Tile;
 
-
 @Repository
-public interface TileRepository extends JpaRepository<Tile, Long>{
+public interface TileRepository extends JpaRepository<Tile, Long> {
 	Optional<Tile> findById(Long id);
+
 	List<Tile> findByGame(Game game);
+
 	List<Tile> findByGamer(Gamer gamer);
 }
-

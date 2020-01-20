@@ -15,7 +15,12 @@ import {
   WS_GAME_JOINED,
   WS_GAME_DISCONNECTED,
   LOGOUT,
-  SET_ORIGIN
+  SET_ORIGIN,
+  BEEN_KICKED_OUT,
+  WS_ALONE_GAME_CREATED,
+  CHAT_GLOBAL_MESSAGE,
+  CHAT_GAME_MESSAGE,
+  SET_ALONE_GAME
 } from "../constants/action-types";
 
 export function menuReducer(state, action) {
@@ -111,7 +116,17 @@ export function menuReducer(state, action) {
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload,
-        amIAuthor: true
+        amIAuthor: true,
+        alone: false
+      })
+    });
+  }
+  if (action.type === WS_ALONE_GAME_CREATED) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        game: action.payload,
+        amIAuthor: true,
+        alone: true
       })
     });
   }
@@ -120,6 +135,22 @@ export function menuReducer(state, action) {
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload
+      })
+    });
+  }
+
+  if (action.type === CHAT_GLOBAL_MESSAGE) {
+    return Object.assign({}, state, {
+      chats: Object.assign({}, state.chats, {
+        globalChatMessages: state.chats.globalChatMessages.concat([action.payload])
+      })
+    });
+  }
+
+  if (action.type === CHAT_GAME_MESSAGE) {
+    return Object.assign({}, state, {
+      chats: Object.assign({}, state.chats, {
+        gameChatMessages: state.chats.gameChatMessages.concat([action.payload])
       })
     });
   }
@@ -133,11 +164,16 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === WS_GAME_JOINED) {
+    if (state.actualGame.aliveMessageTimer)
+      clearInterval(state.actualGame.aliveMessageTimer);
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload.game,
         meGamer: action.payload,
-        amIAuthor: action.payload.game.author.id == action.payload.user.id
+        amIAuthor: action.payload.game.author.id == action.payload.user.id,
+        aliveMessageTimer: action.payload.interval,
+        tilesDisplayed: [],
+        tilesToDisplay: [],
       })
     });
   }
@@ -148,7 +184,10 @@ export function menuReducer(state, action) {
         game: null,
         gamers: [],
         amIAuthor: false,
-        meGamer: null
+        meGamer: null,
+      }),
+      chats: Object.assign({}, state.chats, {
+        gameChatMessages: []
       })
     });
   }
@@ -158,5 +197,27 @@ export function menuReducer(state, action) {
       origin: action.payload
     });
   }
+
+  if (action.type === BEEN_KICKED_OUT) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        game: null,
+        gamers: [],
+        amIAuthor: false,
+        meGamer: null
+      })
+    });
+  }
+
+  if (action.type === SET_ALONE_GAME) {
+    return Object.assign({}, state, {
+      actualGame: Object.assign({}, state.actualGame, {
+        alone: action.payload
+      })
+    });
+  }
+
+
+
   return state;
 }

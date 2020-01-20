@@ -2,7 +2,6 @@ import {
   WS_CONNECT_TO_SERVER,
   REGISTER,
   LOGIN,
-  WS_OPEN_PRIVATE_CANALS,
   WS_SEND_MESSAGE,
   WS_CONNECT_TO_GAME,
   WS_CANNEL_CONNECT,
@@ -26,6 +25,10 @@ import {
   wsSendMessage,
   wsGameDisconnected,
   wsGameUpdated,
+  beenKickedOut,
+  wsAloneGameCreated,
+  chatGlobalMessage,
+  chatGameMessage,
 } from "../actions/index";
 import { gameNewTileToDisplay, gameMyNewTile, gameMeGamerUpdate } from "../actions/gameActions";
 
@@ -36,31 +39,30 @@ export function menuMiddleware(getState, dispatch, action) {
     var socket = new SockJS('/gameWS');
     var stompClient = Stomp.over(socket);
 
+    stompClient.debug = null
     stompClient.connect({}, function (frame) {
-
       var url = stompClient.ws._transport.url;
       url = url.split("/")
       let sessionId = url[url.length - 2];
 
-      //nasłuch na kanale prywatnym kiedy ktoś nadaje do nas
       stompClient.subscribe("/user/" + sessionId + "/reply", function (x) {
         let resp = JSON.parse(x.body)
-        console.log("ogólny", resp);
         switch (resp.type) {
           case "NEW_TILE":
+            dispatch(gameMyNewTile(null))
             dispatch(gameMyNewTile(resp.payload))
             break;
-            case "ME_GAMER":
-              dispatch(gameMeGamerUpdate(resp.payload))
-              break;
+          case "ME_GAMER":
+            dispatch(gameMeGamerUpdate(resp.payload))
+            break;
+          case "GTFO_MESSAGE":
+            dispatch(beenKickedOut(resp.payload))
+            break;
         }
       });
-      //nasłuch na kanale prywatnym kiedy sami odpytujemy serwer
+
       stompClient.subscribe('/user/queue/reply', x => {
-
         let resp = JSON.parse(x.body)
-
-        console.log("moja zwrotka menuMiddleware 58 ", resp)
         switch (resp.type) {
           case "GAME_LIST_UPDATED":
             dispatch(wsGotGamesList(resp.payload));
@@ -69,17 +71,31 @@ export function menuMiddleware(getState, dispatch, action) {
             dispatch(wsGameCreated(resp.payload));
             dispatch(wsConnectGame(resp.payload));
             break;
+          case "GAME_ALONE_CREATED":
+            dispatch(wsAloneGameCreated(resp.payload));
+            dispatch(wsConnectGame(resp.payload));
+            break;
           case "ME_GAMER":
-            dispatch(wsGameJoined(resp.payload));
+            let interval = setInterval(() => {
+              dispatch(wsSendMessage({
+                channel: "/lobby/iAmAlive", payload: resp.payload
+              }))
+            }, 30000)
+            dispatch(wsGameJoined({ ...resp.payload, interval: interval }));
             dispatch(wsConnectGame(resp.payload.game));
             break;
           case "GAME_LEFT":
+            clearInterval(getState().actualGame.aliveMessageTimer);
             dispatch(wsGameDisconnected());
             break;
           case "GAME_JOINED":
             dispatch(gameNewTileToDisplay(resp.payload));
             break;
         }
+      });
+      stompClient.subscribe('/topic/chat/global', x => {
+        let resp = JSON.parse(x.body)
+        dispatch(chatGlobalMessage(resp))
       });
       return dispatch(wsConnected({ client: stompClient, sessionId: sessionId }))
     });
@@ -97,7 +113,7 @@ export function menuMiddleware(getState, dispatch, action) {
   }
 
   if (action.type === REGISTER) {
-    fetch(getState().origin + "/api/auth/signup", {
+    fetch("/api/auth/signup", {
       method: 'POST',
       cache: 'no-cache',
       credentials: 'same-origin',
@@ -106,8 +122,15 @@ export function menuMiddleware(getState, dispatch, action) {
       },
       body: JSON.stringify(action.payload),
     })
-      .then(response => response.json()).then(response => {
-        return dispatch(registered(response));
+      .then(response => {
+        if (response.status != 200) {
+          dispatch(registrationFailed(response.json()));
+          return "";
+        }
+        else return response.json()
+      }).then(response => {
+        if (response)
+          return dispatch(registered(response));
       })
       .catch(response => {
         return dispatch(registrationFailed(response));
@@ -115,7 +138,7 @@ export function menuMiddleware(getState, dispatch, action) {
   }
 
   if (action.type === LOGIN) {
-    fetch(getState().origin + "/api/auth/signin", {
+    fetch("/api/auth/signin", {
       method: 'POST',
       cache: 'no-cache',
       credentials: 'same-origin',
@@ -139,9 +162,8 @@ export function menuMiddleware(getState, dispatch, action) {
 
   if (action.type === WS_CONNECT_TO_GAME) {
     let stompClient = getState().ws.client;
-    let subscription = stompClient.subscribe("/topic/lobby/game/" + action.payload.id, resp => {
+    let subscription = stompClient.subscribe(`/topic/lobby/game/${action.payload.id}`, resp => {
       resp = JSON.parse(resp.body)
-      console.log("menuMiddleware 134", resp)
       switch (resp.type) {
         case "GAMERS_STATUS_UPDATE":
           dispatch(wsGamersStatusUpdate(resp.payload));
@@ -154,11 +176,20 @@ export function menuMiddleware(getState, dispatch, action) {
           break;
       }
     });
+    let chatSubscription = stompClient.subscribe(`/topic/chat/game/${action.payload.id}`, resp => {
+      resp = JSON.parse(resp.body)
+      dispatch(chatGameMessage(resp))
+
+    });
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: subscription }))
+    dispatch(wsChannelSubscription({ channel: "GAME_CHAT_CHANNEL", subscription: chatSubscription }))
   }
 
   if (action.type === WS_GAME_DISCONNECT) {
     dispatch(wsChannelSubscription({ channel: "GAME_LOBBY_CHANNEL", subscription: null }));
+    dispatch(wsChannelSubscription({ channel: "GAME_CHAT_CHANNEL", subscription: null }))
+
+    clearInterval(getState().actualGame.aliveMessageTimer);
     dispatch(wsSendMessage({
       channel: "/lobby/leaveGame", payload: {
         gamerId: getState().actualGame.meGamer.id
@@ -170,7 +201,6 @@ export function menuMiddleware(getState, dispatch, action) {
     let stompClient = getState().ws.client;
     let subscription = stompClient.subscribe("/topic/lobby/allGames", resp => {
       resp = JSON.parse(resp.body)
-      console.log("menuMiddleware 134", resp)
       dispatch(wsGotGamesList(resp));
     });
     dispatch(wsChannelSubscription({ channel: "GAME_LIST_CHANNEL", subscription: subscription }))

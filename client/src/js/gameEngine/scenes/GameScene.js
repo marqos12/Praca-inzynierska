@@ -1,8 +1,8 @@
 import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
-import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace } from "../../actions/gameActions.js";
+import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace, gameShowTileDetails, gameTileRotated, gameTileRotateRestored } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
-import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale, getTileGeneralType } from "../gameMechanics";
+import { getPossiblePlaces, makeHighlightScale, getTileGeneralType, translateTileName } from "../gameMechanics";
 import { TileDetails } from "./components/TileDetails";
 
 export default class GameScene extends Phaser.Scene {
@@ -17,10 +17,10 @@ export default class GameScene extends Phaser.Scene {
     this.origDragPoint;
     this.tableCenterX = 0;
     this.tableCenterY = 0;
-    this.myScale = 0.5;
+    this.myScale = window.innerWidth > 1000 ? 0.5 : 0.3;
 
-    this.tileWidth = 150;
-    this.halfOfTable = 15;
+    this.tileWidth = 300 * this.myScale;
+    this.halfOfTable = 23;
     this.tableWidth = this.halfOfTable * 2 + 1;
 
     this.state = store.getState();
@@ -43,6 +43,11 @@ export default class GameScene extends Phaser.Scene {
       if (this.initialized)
         this.stateChanged();
     });
+
+    this.newTileName = "";
+
+    this.plusButton = null;
+    this.minusButton = null;
   }
 
   create() {
@@ -64,96 +69,116 @@ export default class GameScene extends Phaser.Scene {
     this.fixedTiles.forEach(x => { x.setScale(this.myScale) })
     this.tileWidth = this.fixedTiles[0].displayWidth
 
+    if (window.innerWidth < 700) {
+      this.plusButton = new Phaser.GameObjects.Sprite(this, 30, 100, "plusButton");
+      this.plusButton.setDepth(900);
+      this.plusButton.setScale(0.5);
+      this.plusButton.setInteractive();
+      this.plusButton.on('pointerdown', (pointer) => {
+        if (pointer.leftButtonDown()) {
+          this.changeScale({ deltaY: -1 })
+        }
+      });
+      this.add.existing(this.plusButton);
+      this.minusButton = new Phaser.GameObjects.Sprite(this, 30, 130, "minusButton");
+      this.minusButton.setDepth(900);
+      this.minusButton.setScale(0.5);
+      this.minusButton.setInteractive();
+      this.minusButton.on('pointerdown', (pointer) => {
+        if (pointer.leftButtonDown()) {
+          this.changeScale({ deltaY: 1 })
+        }
+      });
+      this.add.existing(this.minusButton);
+    }
+
     this.stateChanged();
 
     this.events.on('destroy', () => {
       this.unsubscribe();
     })
 
-    addEventListener('draggedTile', (x) => {
+    addEventListener('draggedTile', this.draggedTileEventListener = (x) => {
       this.newTile.makeScale(this.myScale);
-      //this.tiles.push(this.newTile);
 
       this.newTileCard.destroy();
       this.newTileCard = null;
+      this.newTileName.destroy();
+      this.newTileName = null;
 
       this.highlightPossiblePlaces();
     })
 
-    addEventListener('draggingNewTile', (x) => {
+    addEventListener('draggingNewTile', this.draggingNewTileEventListener = (x) => {
       if (this.tileDetails) {
         this.tileDetails.destroy();
         this.tileDetails = null;
       }
     })
 
-    addEventListener('tileInGoodPlace', (x) => {
+    addEventListener('tileInGoodPlace', this.tileInGoodPlaceEventListener = (x) => {
       store.dispatch(gameTileInGoodPlace({ status: x.detail, tile: this.newTile }));
     })
 
-    addEventListener('showDetails', (x) => {
+    addEventListener('showDetails', this.showDetailsEventListener = (x) => {
+      if (window.innerWidth >= 700) {
+        if (this.tileDetails) this.tileDetails.destroy();
+        this.tileDetails = new TileDetails(this, x.detail);
+      }
+      else {
+        store.dispatch(gameShowTileDetails(null))
+        store.dispatch(gameShowTileDetails(x.detail))
+      }
+    })
+
+    addEventListener('updatedTile', this.updatedTileEventListener = (x) => {
       if (this.tileDetails) this.tileDetails.destroy();
       this.tileDetails = new TileDetails(this, x.detail);
     })
 
-    addEventListener('updatedTile', (x) => {
-      if (this.tileDetails) this.tileDetails.destroy();
-      this.tileDetails = new TileDetails(this, x.detail);
-    })
-
-    addEventListener('closeTileDetails', (x) => {
+    addEventListener('closeTileDetails', this.closeTileDetailsEventListener = (x) => {
       if (this.tileDetails) {
         this.tileDetails.destroy();
         this.tileDetails = null;
       }
     })
 
-    addEventListener("wheel", x => {
-      if (x.deltaY < 0)
-        this.myScale += 0.05;
-      else
-        this.myScale -= 0.05;
-
-      if (this.myScale < 0.2)
-        this.myScale = 0.2;
-
-      if (this.myScale > 2)
-        this.myScale = 2;
-
-      this.tiles.forEach(x => {
-        x.makeScale(this.myScale);
-
-      })
-      this.fixedTiles.forEach(x => {
-        x.makeScale(this.myScale);
-      })
-      this.possibleHihglights.forEach(x => {
-        makeHighlightScale(x, this.myScale)
-      })
-
-      if (this.newTile && !this.newTileCard)
-        this.newTile.makeScale(this.myScale)
-
-      let oldTileWidth = this.tileWidth;
-      this.tileWidth = this.fixedTiles[0].displayWidth
-
-
-      this.tableCenterX -= window.innerWidth / 2;
-      this.tableCenterX = this.tableCenterX / oldTileWidth * this.tileWidth;
-      this.tableCenterX += window.innerWidth / 2;
-
-      this.tableCenterY -= window.innerHeight / 2;
-      this.tableCenterY = this.tableCenterY / oldTileWidth * this.tileWidth;
-      this.tableCenterY += window.innerHeight / 2;
-
-      if (this.tileDetails) this.tileDetails.move();
-    })
+    addEventListener("wheel", this.wheelEventListener = x => this.changeScale(x))
 
     this.initialized = true;
+
+    window.addEventListener('resize', this.resizeEventListener = () => {
+      this.scale.resize(window.innerWidth, window.innerHeight);
+      if (this.newTileCard) {
+        this.newTile.setPosition(
+          window.innerWidth - this.newTile.displayWidth * 1.25,
+          window.innerHeight - this.newTile.displayWidth * 1.25)
+        this.newTileCard.setPosition(this.newTile.x + this.newTile.displayWidth / 2,
+          this.newTile.y + this.newTile.displayWidth / 2)
+        this.newTileName.setPosition(this.newTile.x, this.newTile.y - 23);
+      }
+    });
+
+    this.events.on('destroy', () => {
+      removeEventListener('draggedTile', this.draggedTileEventListener)
+      removeEventListener('draggingNewTile', this.draggingNewTileEventListener)
+      removeEventListener('tileInGoodPlace', this.tileInGoodPlaceEventListener)
+      removeEventListener('showDetails', this.showDetailsEventListener)
+      removeEventListener('updatedTile', this.updatedTileEventListener)
+      removeEventListener('closeTileDetails', this.closeTileDetailsEventListener)
+      removeEventListener("wheel", this.wheelEventListener)
+      window.removeEventListener('resize', this.resizeEventListener)
+    });
   }
 
   preload() {
-    this.load.image("arrow-back", 'assets/arrow-left.png');
+    this.load.image("plusButton", 'assets/plusB.png');
+    this.load.image("minusButton", 'assets/minusB.png');
+    this.load.image("rotateButton", 'assets/rotate.png');
+    this.load.image("rotateBigButton", 'assets/rotateButton.png');
+    this.load.image("saveButton", 'assets/saveBtn.png');
+    this.load.image("tileHighlight", 'assets/tileHighlight.png');
+
     this.load.image("backButton", 'assets/backB.png');
     this.load.image("buldozerButton", 'assets/buldozer.png');
     this.load.image("arrowLeft", 'assets/arrL.png');
@@ -167,7 +192,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("buildButton", 'assets/wybuduj.png');
     this.load.image("tileDetailsBackground", 'assets/tileInfo.png');
     this.load.atlas('tiles',
-      './assets/plates/plates.png',
+      './assets/plates/plates.jpg',
       './assets/plates/plates.json')
   }
 
@@ -182,6 +207,10 @@ export default class GameScene extends Phaser.Scene {
             x.highlight.x = x.x + this.tileWidth / 8;
             x.highlight.y = x.y + this.tileWidth / 8;
           }
+          if (x.flash) {
+            x.flash.x = x.x;
+            x.flash.y = x.y;
+          }
         })
         this.fixedTiles.forEach(x => {
           x.x -= this.origDragPoint.x - this.input.activePointer.position.x;
@@ -195,6 +224,8 @@ export default class GameScene extends Phaser.Scene {
         if (this.newTile && !this.newTileCard) {
           this.newTile.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           this.newTile.y -= this.origDragPoint.y - this.input.activePointer.position.y;
+
+          this.newTile.highlightNewTileAfterDrag.setPosition(this.newTile.x - this.tileWidth * 0.1, this.newTile.y - this.tileWidth * 0.1);
         }
 
         this.tableCenterX -= this.origDragPoint.x - this.input.activePointer.position.x;
@@ -231,46 +262,37 @@ export default class GameScene extends Phaser.Scene {
         let oldTile = this.tiles.filter(t => t.id == tile.id);
         if (oldTile.length > 0) {
           oldTile[0].destroy2();
-          oldTile[0] = null
+          let index = this.tiles.indexOf(oldTile[0]);
+          this.tiles.splice(index, 1);
         }
 
-
         this.tiles.push(tile2);
-        this.tiles = this.tiles.filter(t => t.id != tile.id||t.name==tile.type + "_" + tile.lvl);
+        this.tiles = this.tiles.filter(t => t.id != tile.id || t.name == tile.type + "_" + tile.lvl);
         this.add.existing(tile2.setDepth(2));
-
+        tile2.highlightNewTile();
       })
       store.dispatch(gameNewTileDisplayed(this.state.actualGame.game));
-      if (this.newTile) {
+      if (this.newTile && !this.newTileCard) {
         this.highlightPossiblePlaces()
       }
     }
 
     if (this.state.actualGame.myNewTile && !this.newTile) {
-      this.newTile = new Tile(
-        this,
-        window.innerWidth + 400,
-        window.innerHeight,
-        this.state.actualGame.myNewTile + "_1",
-        -1
-      )
-      this.newTile.fixed = false;
-      this.newTile.generalType = getTileGeneralType(this.state.actualGame.myNewTile);
-      this.newTile.makeScale(0.5)
-      //this.newTile.setInteractive()
-      this.input.setDraggable(this.newTile)
+      this.dispayMyNewTile();
 
-      this.add.existing(this.newTile.setDepth(101))
-
-
-      this.newTileCard = new Phaser.GameObjects.Sprite(
-        this,
-        window.innerWidth * 0.9,
-        window.innerHeight * 0.85,
-        "newTileBackground");
-      this.add.existing(this.newTileCard.setDepth(100))
     } else if (!this.state.actualGame.myNewTile && this.newTile) {
-      this.newTile.destroy();
+
+
+      if (this.newTileCard) {
+        this.newTileCard.destroy();
+        this.newTileCard = null;
+      }
+      if (this.newTileName) {
+        this.newTileName.destroy();
+        this.newTileName = null;
+      }
+
+      this.newTile.destroy2();
       this.newTile = null;
 
       this.possiblePlaces = [];
@@ -279,13 +301,61 @@ export default class GameScene extends Phaser.Scene {
       this.possibleHihglights = [];
       store.dispatch(gameTileInGoodPlace({ status: false, tile: null }));
     }
+    if (this.state.actualGame.rotateTile) {
+      let tile = this.tiles.filter(t => t.id == this.state.actualGame.tileDetails.id)
+      tile = tile[tile.length - 1]
+      tile.rotate();
+      store.dispatch(gameTileRotated());
+      store.dispatch(gameShowTileDetails(tile))
+    }
+
+    if (this.state.actualGame.restoreTileAngle) {
+      let tile = this.tiles.filter(t => t.id == this.state.actualGame.tileDetails.id)[0]
+      tile.setAngle_My(this.state.actualGame.tileOriginalAngle);
+      store.dispatch(gameTileRotateRestored());
+    }
   }
 
+  dispayMyNewTile() {
+    this.newTile = new Tile(
+      this,
+      window.innerWidth,
+      window.innerHeight,
+      this.state.actualGame.myNewTile + "_1",
+      -1
+    )
+    this.newTile.fixed = false;
+    this.newTile.generalType = getTileGeneralType(this.state.actualGame.myNewTile);
+    this.newTile.makeScale(0.5)
+    this.newTile.setPosition(
+      window.innerWidth - this.newTile.displayWidth * 1.25,
+      window.innerHeight - this.newTile.displayWidth * 1.25)
+    this.input.setDraggable(this.newTile)
+
+    this.add.existing(this.newTile.setDepth(101))
+
+
+    this.newTileCard = new Phaser.GameObjects.Sprite(
+      this,
+      this.newTile.x + this.newTile.displayWidth / 2,
+      this.newTile.y + this.newTile.displayWidth / 2,
+      "newTileBackground");
+    this.newTileCard.setDisplaySize(
+      this.newTile.displayWidth * 1.5,
+      this.newTile.displayWidth * 1.5
+    );
+    this.add.existing(this.newTileCard.setDepth(100))
+
+    let fontConf = { fontFamily: '"Roboto"', fontSize: "16px" };
+    this.newTileName = new Phaser.GameObjects.Text(this, this.newTile.x, this.newTile.y - 23, translateTileName(this.state.actualGame.myNewTile + "_1"), fontConf)
+    this.newTileName.setDepth(101)
+    this.add.existing(this.newTileName);
+  }
 
   highlightPossiblePlaces() {
     this.possibleHihglights.forEach(highlight => highlight.destroy())
     this.possibleHihglights = [];
-    this.possiblePlaces = getPossiblePlaces(this.tiles,this.newTile);
+    this.possiblePlaces = getPossiblePlaces(this.tiles, this.newTile);
     this.possiblePlaces.forEach(pos => {
       let highlight = new Phaser.GameObjects.Rectangle(
         this,
@@ -297,6 +367,52 @@ export default class GameScene extends Phaser.Scene {
       this.possibleHihglights.push(highlight);
       this.add.existing(highlight)
     })
+  }
+
+  changeScale(x) {
+    if (x.deltaY < 0)
+      this.myScale += 0.05;
+    else
+      this.myScale -= 0.05;
+
+    if (window.innerWidth >= 700 && this.myScale < 0.2)
+      this.myScale = 0.2;
+    else if (window.innerWidth < 700 && this.myScale < 0.1)
+      this.myScale = 0.1;
+
+
+    if (window.innerWidth >= 700 && this.myScale > 2)
+      this.myScale = 2;
+    else if (window.innerWidth < 700 && this.myScale > 0.6)
+      this.myScale = 0.6;
+
+    this.tiles.forEach(x => {
+      x.makeScale(this.myScale);
+
+    })
+    this.fixedTiles.forEach(x => {
+      x.makeScale(this.myScale);
+    })
+    this.possibleHihglights.forEach(x => {
+      makeHighlightScale(x, this.myScale)
+    })
+
+    if (this.newTile && !this.newTileCard)
+      this.newTile.makeScale(this.myScale)
+
+    let oldTileWidth = this.tileWidth;
+    this.tileWidth = this.fixedTiles[0].displayWidth
+
+
+    this.tableCenterX -= window.innerWidth / 2;
+    this.tableCenterX = this.tableCenterX / oldTileWidth * this.tileWidth;
+    this.tableCenterX += window.innerWidth / 2;
+
+    this.tableCenterY -= window.innerHeight / 2;
+    this.tableCenterY = this.tableCenterY / oldTileWidth * this.tileWidth;
+    this.tableCenterY += window.innerHeight / 2;
+
+    if (this.tileDetails) this.tileDetails.move();
   }
 
 }

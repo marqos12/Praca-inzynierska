@@ -1,4 +1,4 @@
-import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade } from "../../gameMechanics";
+import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade, getTileOwnerName } from "../../gameMechanics";
 import store from "../../../store";
 import { gameUpdateTile } from "../../../actions/gameActions";
 import { Tile } from "./Tile";
@@ -23,6 +23,7 @@ export class TileDetails {
         this.showUpgradeButton = true;
         this.destroyButton = null;
         this.canBeDestroyed = (this.tile.name != "OPTIONAL_1" && this.tile.name != "ROAD_STRAIGHT_1") && this.tile.owner && this.scene.state.actualGame.meGamer.id == this.tile.owner.id
+        this.isUserOwenr = this.tile.owner && this.scene.state.actualGame.meGamer.id == this.tile.owner.id
 
         this.background = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "tileDetailsBackground");
         this.background.setOrigin(0.5, 1);
@@ -33,8 +34,8 @@ export class TileDetails {
         });
         scene.add.existing(this.background);
 
-        this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + translateTileName(tile.name), fontConf)
-        this.tileName.setDepth(111);
+        this.tileName = new Phaser.GameObjects.Text(scene, this.x + 30, this.y + 30, "Nazwa: " + translateTileName(tile.name) + "\nWłaściciel: " + getTileOwnerName(tile), fontConf)
+        this.tileName.setDepth(112);
         this.tileName.setOrigin(0, 0);
         scene.add.existing(this.tileName);
 
@@ -43,7 +44,29 @@ export class TileDetails {
         this.upgradeDetails.setOrigin(0, 0);
         this.scene.add.existing(this.upgradeDetails);
 
-        this.closeButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "closeButton");
+        this.createButtons();
+
+        fetch("api/game/tile/" + tile.id).then(response =>
+            response.json()
+        ).then(response => {
+            this.details = response;
+            this.tileDetails()
+            this.move();
+        })
+
+        this.move();
+    }
+
+    createButtons() {
+        this.createCloseButton();
+        this.createRotationButton();
+        this.createBackButton();
+        this.createBuldozerButton();
+        this.createArrows();
+    }
+
+    createCloseButton() {
+        this.closeButton = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "closeButton");
         this.closeButton.setDepth(111);
         this.closeButton.setScale(0.5);
         this.closeButton.setInteractive();
@@ -54,8 +77,72 @@ export class TileDetails {
             }
         });
         this.scene.add.existing(this.closeButton);
+    }
 
-        this.backButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "backButton");
+    createRotationButton() {
+        this.initialRotation = { angle: this.tile.angle, originX: this.tile.originX, originY: this.tile.originY }
+        this.rotated = false;
+
+        this.rotateButton = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "rotateButton");
+        this.rotateButton.setDepth(111);
+        this.rotateButton.setScale(0.5);
+        this.rotateButton.setInteractive();
+        this.rotateButton.on('pointerdown', (pointer) => {
+            if (pointer.leftButtonDown()) {
+                this.tile.rotate();
+                if (!this.rotated) {
+                    this.tileName.text = "Nazwa: " + translateTileName(this.tile.name) + "\nWłaściciel: " + getTileOwnerName(this.tile);
+                    this.tileName.text += "\n\nObracanie płytki"
+                    this.createSubmitRotationButtons();
+                }
+                this.rotated = true;
+                this.move();
+            }
+        });
+        this.scene.add.existing(this.rotateButton);
+    }
+
+    createSubmitRotationButtons() {
+
+        this.cancelRotation = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "cancelButton");
+        this.cancelRotation.setDepth(111);
+        this.cancelRotation.setScale(0.7);
+        this.cancelRotation.setInteractive();
+        this.cancelRotation.on('pointerdown', (pointer) => {
+            if (pointer.leftButtonDown()) {
+                this.destroy();
+            }
+        });
+        this.scene.add.existing(this.cancelRotation);
+
+
+        this.rotateBigButton = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "rotateBigButton");
+        this.rotateBigButton.setDepth(111);
+        this.rotateBigButton.setScale(0.7);
+        this.rotateBigButton.setInteractive();
+        this.rotateBigButton.on('pointerdown', (pointer) => {
+            if (pointer.leftButtonDown()) {
+                this.tile.rotate();
+            }
+        });
+        this.scene.add.existing(this.rotateBigButton);
+
+        this.rotateConform = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "saveButton");
+        this.rotateConform.setDepth(111);
+        this.rotateConform.setScale(0.7);
+        this.rotateConform.setInteractive();
+        this.rotateConform.on('pointerdown', (pointer) => {
+            if (pointer.leftButtonDown()) {
+                store.dispatch(gameUpdateTile({ id: this.tile.id, angle: this.tile.angle }));
+                let closeTileDetails = new CustomEvent('closeTileDetails', { detail: this });
+                dispatchEvent(closeTileDetails);
+            }
+        });
+        this.scene.add.existing(this.rotateConform);
+    }
+
+    createBackButton() {
+        this.backButton = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "backButton");
         this.backButton.setDepth(111);
         this.backButton.setScale(0.7);
         this.backButton.setInteractive();
@@ -67,7 +154,7 @@ export class TileDetails {
                     this.showUpgradeDetails = false;
                     this.waysOfUpgrade.forEach(w => { w.destroy(0) });
                     this.waysOfUpgrade = [];
-                    this.tileName.text = "Nazwa: " + translateTileName(tile.name);
+                    this.tileName.text = "Nazwa: " + translateTileName(this.tile.name) + "\nWłaściciel: " + getTileOwnerName(this.tile);
                     this.tileDetails()
                     this.showUpgradeButton = true;
                     if (this.destroyButton) { this.destroyButton.destroy(); this.destroyButton = null; }
@@ -82,45 +169,50 @@ export class TileDetails {
                 }
             }
         });
-        scene.add.existing(this.backButton);
+        this.scene.add.existing(this.backButton);
+    }
 
-        this.buldozerButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "buldozerButton");
+    createBuldozerButton() {
+        this.buldozerButton = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "buldozerButton");
         this.buldozerButton.setDepth(111);
         this.buldozerButton.setScale(0.7);
         this.buldozerButton.setInteractive();
         this.buldozerButton.on('pointerdown', (pointer) => {
             if (pointer.leftButtonDown()) {
-                this.tileName.text = "Nazwa: " + translateTileName(tile.name);
-                fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + this.tile.name.slice(0, -2) + "/1").then(response =>
+                this.tileName.text = "Nazwa: " + translateTileName(this.tile.name) + "\nWłaściciel: " + getTileOwnerName(this.tile);
+                fetch("api/game/tile/rebuild/" + this.tile.name.slice(0, -2) + "/1").then(response =>
                     response.json()
                 ).then(response => {
-                    this.tileName.text += `\n\nWybużenie kosztować będzie ${response.deconstructionCosts} d \n\nCzy na pewno chcesz wybużyć budynek:\n\t ${translateTileName(tile.name)}`;
+                    this.tileName.text += `\n\nWyburzenie kosztować będzie ${response.deconstructionCosts} d \n\nCzy na pewno chcesz wyburzyć budynek:\n\t ${translateTileName(this.tile.name)}`;
                     this.upgradeMode = true;
                     this.showBackButton = true;
 
-                    if(response.deconstructionCosts <= this.scene.state.actualGame.meGamer.ducklings) {
-                    this.destroyButton = new Phaser.GameObjects.Sprite(scene, tile.x, tile.y, "destroyButton");
-                    this.destroyButton.setDepth(111);
-                    this.destroyButton.setScale(0.7);
-                    this.destroyButton.setInteractive();
-                    this.destroyButton.on('pointerdown', (pointer) => {
-                        if (pointer.leftButtonDown()) {
-                            if (this.tile.name.includes("ROAD"))
-                                store.dispatch(gameUpdateTile({ id: this.tile.id, type: "ROAD_STRAIGHT" }));
-                            else
-                                store.dispatch(gameUpdateTile({ id: this.tile.id, type: "OPTIONAL" }));
-                            let updatedTile = new CustomEvent('closeTileDetails', { detail: this.tile });
-                            dispatchEvent(updatedTile);
+                    if (response.deconstructionCosts <= this.scene.state.actualGame.meGamer.ducklings) {
+                        this.destroyButton = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "destroyButton");
+                        this.destroyButton.setDepth(111);
+                        this.destroyButton.setScale(0.7);
+                        this.destroyButton.setInteractive();
+                        this.destroyButton.on('pointerdown', (pointer) => {
+                            if (pointer.leftButtonDown()) {
+                                if (this.tile.name.includes("ROAD"))
+                                    store.dispatch(gameUpdateTile({ id: this.tile.id, type: "ROAD_STRAIGHT" }));
+                                else
+                                    store.dispatch(gameUpdateTile({ id: this.tile.id, type: "OPTIONAL" }));
+                                let updatedTile = new CustomEvent('closeTileDetails', { detail: this.tile });
+                                dispatchEvent(updatedTile);
 
-                        }
-                    });
-                    scene.add.existing(this.destroyButton);
-                }
+                            }
+                        });
+                        this.scene.add.existing(this.destroyButton);
+                    }
+                    this.move();
                 })
             }
         });
-        scene.add.existing(this.buldozerButton);
+        this.scene.add.existing(this.buldozerButton);
+    }
 
+    createArrows() {
         this.arrowLeft = new Phaser.GameObjects.Sprite(this.scene, this.tile.x, this.tile.y, "arrowLeft");
         this.arrowLeft.setDepth(111);
         this.arrowLeft.setScale(0.5);
@@ -140,20 +232,19 @@ export class TileDetails {
             this.move();
         });
         this.scene.add.existing(this.arrowRight);
-
-        fetch(window.location.href.split("#")[0] + "api/game/tile/" + tile.id).then(response =>
-            response.json()
-        ).then(response => {
-            this.details = response;
-            this.tileDetails()
-        })
-
-        this.move();
     }
-
 
     destroy() {
         this.background.destroy();
+
+        this.rotateButton.destroy();
+        if (this.rotated) {
+            this.returnRotation();
+        }
+        if (this.cancelRotation) this.cancelRotation.destroy();
+        if (this.rotateBigButton) this.rotateBigButton.destroy();
+        if (this.rotateConform) this.rotateConform.destroy();
+
         this.tileName.destroy();
         this.closeButton.destroy();
         if (this.upgradeButton) this.upgradeButton.destroy();
@@ -166,13 +257,19 @@ export class TileDetails {
         if (this.destroyButton) this.destroyButton.destroy();
     }
 
+    returnRotation() {
+        this.tile.setAngle_My(this.initialRotation.angle);
+    }
+
     move() {
         this.background.setPosition(this.tile.x + this.tile.displayWidth / 2, this.tile.y + this.tile.displayWidth / 4)
         this.tileName.setPosition(this.background.x - 180, this.background.y - 280);
-        this.closeButton.setPosition(this.background.x + 180, this.background.y - 280);
-        if (this.upgradeButton) if (this.showUpgradeButton) this.upgradeButton.setPosition(this.background.x + 130, this.background.y - 100); else this.upgradeButton.setPosition(-300, -300)
+        if (this.closeButton) this.closeButton.setPosition(this.background.x + 180, this.background.y - 280);
+        if (this.upgradeButton) if (this.showUpgradeButton && !this.rotated) this.upgradeButton.setPosition(this.background.x + 130, this.background.y - 100); else this.upgradeButton.setPosition(-300, -300)
         if (this.showBackButton) this.backButton.setPosition(this.background.x + 0, this.background.y - 100); else this.backButton.setPosition(-300, -300)
         if (this.destroyButton) this.destroyButton.setPosition(this.background.x + 130, this.background.y - 100);
+
+        if (this.isUserOwenr) this.rotateButton.setPosition(this.background.x + 175, this.background.y - 180); else this.rotateButton.setPosition(-300, -300)
 
         let i = 0;
         this.waysOfUpgrade.forEach(w => {
@@ -191,7 +288,13 @@ export class TileDetails {
             this.arrowRight.setPosition(-300, -300);
         }
         this.upgradeDetails.setPosition(this.background.x - 70, this.background.y - 240)
-        if (this.canBeDestroyed) this.buldozerButton.setPosition(this.background.x + 175, this.background.y - 230); else this.buldozerButton.setPosition(-300, -300);
+        if (this.canBeDestroyed && !this.rotated) this.buldozerButton.setPosition(this.background.x + 175, this.background.y - 230); else this.buldozerButton.setPosition(-300, -300);
+
+        if (this.rotated) {
+            this.cancelRotation.setPosition(this.background.x - 130, this.background.y - 140)
+            this.rotateBigButton.setPosition(this.background.x - 5, this.background.y - 140)
+            this.rotateConform.setPosition(this.background.x + 120, this.background.y - 140)
+        }
     }
 
     upgradeButtonClick() {
@@ -216,7 +319,7 @@ export class TileDetails {
     tileDetails() {
 
         this.tileName.text += `\n\nPoziom: ${this.details.lvl} \t Punkty: ${this.details.points}` +
-            `\n\n${getOutcomes(this.details.outcomeInfluence)}`;
+            `\n\n${getOutcomes(this.details.outcomeInfluence, this.details.summaryDucklings, this.details.usedInfluence)}`;
 
         if ((this.details.needToUppgrade != null || this.tile.name == "OPTIONAL_1" || this.tile.name == "ROAD_STRAIGHT_1") && this.scene.state.actualGame.meGamer.id == this.tile.owner.id) {
             let a = getNeedToUpgrade(this.details.incomeInfluence, this.details.needToUppgrade, this.scene.state.actualGame.meGamer.ducklings, this.canBeUpgrated);
@@ -260,13 +363,15 @@ export class TileDetails {
                 this.upgradeDetails.text = "Nazwa: " + translateTileName(way.name);
                 this.showUpgradeDetails = true;
 
-                fetch(window.location.href.split("#")[0] + "api/game/tile/rebuild/" + way.name.slice(0, -2) + "/1").then(response =>
+                fetch("api/game/tile/rebuild/" + way.name.slice(0, -2) + "/1").then(response =>
                     response.json()
                 ).then(response => {
                     this.upgradeDetails.text += `\nWymagane do budowy:\n${response.buildCosts} d\n${getOutcomes(response.outcomeInfluence)}`;
 
-                 if(response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings) 
-                    this.showUpgradeButton = true;
+
+                    if (response.buildCosts <= this.scene.state.actualGame.meGamer.ducklings)
+                        this.showUpgradeButton = true;
+                    this.move();
                 })
 
             });

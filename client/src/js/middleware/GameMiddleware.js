@@ -1,14 +1,13 @@
 import {
     GAME_WS_GAME_DISCONNECT,
     GAME_WS_GAME_JOIN,
-    GAME_TILE_UPDATE,
     GAME_UPDATE_TILE
 } from "../constants/game-action-types";
 import {
     wsChannelSubscription,
     wsSendMessage
 } from "../actions";
-import {  gameNewTileToDisplay } from "../actions/gameActions";
+import { gameNewTileToDisplay } from "../actions/gameActions";
 
 export function GameMiddleware(getState, dispatch, action) {
 
@@ -16,10 +15,9 @@ export function GameMiddleware(getState, dispatch, action) {
         let stompClient = getState().ws.client;
         let subscription = stompClient.subscribe("/topic/game/game/" + action.payload.id, resp => {
             resp = JSON.parse(resp.body)
-            console.log("gameMiddleware 17", resp)
             switch (resp.type) {
                 case "NEW_TILE":
-                        dispatch(gameNewTileToDisplay(resp.payload));
+                    dispatch(gameNewTileToDisplay(resp.payload));
                     break;
             }
         });
@@ -28,14 +26,13 @@ export function GameMiddleware(getState, dispatch, action) {
         dispatch(wsSendMessage({
             channel: "/game/joinGame", payload:
                 getState().actualGame.meGamer
-
         }));
     }
 
     if (action.type === GAME_UPDATE_TILE) {
         dispatch(wsSendMessage({
             channel: "/game/updateTile", payload:
-            action.payload
+                action.payload
         }));
     }
 
