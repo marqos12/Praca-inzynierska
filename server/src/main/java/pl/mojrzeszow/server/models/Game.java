@@ -70,12 +70,13 @@ public class Game {
 		this.gamersCount = 0L;
 		this.inProgress = false;
 		this.endType = GameEndType.ROUND_LIMIT;
-		this.rtsInterval=20L;
+		this.rtsInterval = 20L;
 	}
 
 	public Game(Long id, @NotNull User author, @NotNull boolean ended, @NotNull boolean started, @NotNull boolean isRTS,
 			@NotNull Long gameLimit, @NotNull Long elapsed, Boolean inProgress, Long gamersCount, Long gamersCountLimit,
-			boolean privateGame, GameEndType gameEndType, Long startTime,Long rtsInterval,LocalDateTime lastActivity) {
+			boolean privateGame, GameEndType gameEndType, Long startTime, Long rtsInterval,
+			LocalDateTime lastActivity) {
 		this.id = id;
 		this.author = author;
 		this.ended = ended;

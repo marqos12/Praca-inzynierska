@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import pl.mojrzeszow.server.models.Opinion;
 
-
 @Repository
 public interface OpinionRepository extends JpaRepository<Opinion, Long> {
 

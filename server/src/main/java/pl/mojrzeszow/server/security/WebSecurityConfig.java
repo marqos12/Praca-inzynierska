@@ -18,10 +18,6 @@ import pl.mojrzeszow.server.security.jwt.JwtAuthEntryPoint;
 import pl.mojrzeszow.server.security.jwt.JwtAuthTokenFilter;
 import pl.mojrzeszow.server.service.impl.UserDetailsServiceImpl;
 
-
-
-
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -37,16 +33,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthTokenFilter();
     }
 
-    /*@Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
-    }*/
-
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         authenticationManagerBuilder.inMemoryAuthentication().withUser("user").password("password").roles("USER");
-        
+
     }
 
     @Bean
@@ -62,26 +53,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().
-                authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        
+        http.cors().and().csrf().disable().authorizeRequests().antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/**").permitAll().anyRequest().authenticated().and().exceptionHandling()
+                .authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
-
-    /*@Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().authorizeRequests().antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/**").authenticated()
-                // .antMatchers("/app/**").authenticated()
-                .anyRequest().permitAll().and().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and();
-        // .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-    }*/
 }

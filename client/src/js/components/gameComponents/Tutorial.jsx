@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { NavLink } from 'react-router-dom';
 import { getCookie, setCookie } from "../../gameEngine/gameMechanics";
 import { closeTutorial } from "../../actions/gameActions";
 
@@ -15,8 +14,6 @@ const mapStateToProps = state => {
     };
 };
 
-
-
 class TutorialComponent extends Component {
     constructor() {
         super();
@@ -24,7 +21,7 @@ class TutorialComponent extends Component {
             page: -1,
             minPage: -1,
             maxPage: -1,
-            checkbox:false
+            checkbox: false
         }
         this.next = this.next.bind(this)
         this.prev = this.prev.bind(this)
@@ -76,12 +73,12 @@ class TutorialComponent extends Component {
                 })
                 break;
         }
-        this.setState({checkbox:getCookie("showTutorial")=="true"})      
-        if(this.props.startPage!=-1)
-        setCookie("tutorialLastShownPage",this.props.startPage,1000) 
+        this.setState({ checkbox: getCookie("showTutorial") == "true" })
+        if (this.props.startPage != -1)
+            setCookie("tutorialLastShownPage", this.props.startPage, 1000)
     }
 
-    close(){
+    close() {
         this.props.closeTutorial();
     }
 
@@ -128,12 +125,9 @@ class TutorialComponent extends Component {
                 <br />
                 <img src="assets/tutorial/obracanie4.jpg" /></div>;
 
-
             case 9: return <div>
                 <h2>Szczegóły płytki</h2>
             </div>;
-
-
 
             case 10: return <div>
                 <p>Klikając dwukrotnie na płytkę, możesz wyświetlić jej szczegóły. Znajdują się tam podstawowe informacje oraz 3 przyciski:</p>
@@ -177,13 +171,13 @@ class TutorialComponent extends Component {
         }
     }
 
-    checkboxClicked(){
-         setCookie("showTutorial",!this.state.checkbox,1000) 
-        this.setState({checkbox:!this.state.checkbox})
+    checkboxClicked() {
+        setCookie("showTutorial", !this.state.checkbox, 1000)
+        this.setState({ checkbox: !this.state.checkbox })
     }
 
     render() {
-        const { page,checkbox,minPage,maxPage } = this.state;
+        const { page, checkbox, minPage, maxPage } = this.state;
 
         return (
             <div className="tutorial">
@@ -194,12 +188,11 @@ class TutorialComponent extends Component {
                             {this.showPage(page)}
                             <div className="buttons">
                                 <div className="left">
-                                   {page>minPage? <a className="button is-large  is-link is-rounded is-fullwidth " onClick={this.prev}>Powrót</a>:""}
+                                    {page > minPage ? <a className="button is-large  is-link is-rounded is-fullwidth " onClick={this.prev}>Powrót</a> : ""}
                                 </div>
                                 <div className="right">
-                                {page<maxPage?  <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.next}>Dalej</a>:""}
+                                    {page < maxPage ? <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.next}>Dalej</a> : ""}
                                 </div>
-
 
                                 <br />
                                 <br />
@@ -207,7 +200,7 @@ class TutorialComponent extends Component {
                                 <br />
 
                                 <label className="checkContainer" >Nie pokazuj tego automatycznie
-                                    <input type="checkbox" checked={checkbox?"checked":""}onClick={this.checkboxClicked} />
+                                    <input type="checkbox" checked={checkbox ? "checked" : ""} onClick={this.checkboxClicked} />
                                     <span className="checkmark"></span>
                                 </label>
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.close}>Zamknij</a>

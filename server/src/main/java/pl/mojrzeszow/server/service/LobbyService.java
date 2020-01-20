@@ -55,13 +55,13 @@ public class LobbyService {
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_CREATED, game);
 		return gameMessage;
 	}
-	
+
 	public GameMessage<List<Game>> getAllgames(String message) {
-		List<Game> games = this.gameRepository.findByPrivateGameFalseAndStartedFalse().stream().sorted((g1,g2)->(int)(g2.getId()-g1.getId())).collect(Collectors.toList());
+		List<Game> games = this.gameRepository.findByPrivateGameFalseAndStartedFalse().stream()
+				.sorted((g1, g2) -> (int) (g2.getId() - g1.getId())).collect(Collectors.toList());
 		GameMessage<List<Game>> gameMessage = new GameMessage<List<Game>>(MessageType.GAME_LIST_UPDATED, games);
 		return gameMessage;
 	}
-
 
 	public GameMessage<Game> createAloneGame(DataExchange userId) {
 
@@ -77,14 +77,13 @@ public class LobbyService {
 	public GameMessage<Game> updateGame(Game game) {
 		game = gameRepository.save(game);
 
-		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse().stream().sorted((g1,g2)->(int)(g2.getId()-g1.getId())).collect(Collectors.toList());;
+		List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse().stream()
+				.sorted((g1, g2) -> (int) (g2.getId() - g1.getId())).collect(Collectors.toList());
+		;
 
 		simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + game.getId(),
 				new GameMessage<Game>(MessageType.GAME_UPDATE, game));
-
-
-		
 
 		GameMessage<Game> gameMessage = new GameMessage<Game>(MessageType.GAME_UPDATE, game);
 		return gameMessage;
@@ -100,15 +99,13 @@ public class LobbyService {
 		boolean exists = false;
 		Gamer gamer = null;
 
-
-
 		for (Gamer existGamer : gamers) {
 			if (existGamer.getUser().getId().equals(gamersData.getUserId())) {
 				exists = true;
 				gamer = existGamer;
 				gamer.setSessionId(gamersData.getSessionId());
 				gamer.setStatus("t");
-				sendGameChatSystemMessage(game, "Gracz "+gamer.getUser().getUsername()+" dołączył ponownie");
+				sendGameChatSystemMessage(game, "Gracz " + gamer.getUser().getUsername() + " dołączył ponownie");
 				break;
 			}
 		}
@@ -121,12 +118,9 @@ public class LobbyService {
 				List<Game> allGames = gameRepository.findByPrivateGameFalseAndStartedFalse();
 				simpMessagingTemplate.convertAndSend("/topic/lobby/allGames", allGames);
 
-				
-				sendGameChatSystemMessage(game,"Gracz "+gamer.getUser().getUsername()+" dołączył");
+				sendGameChatSystemMessage(game, "Gracz " + gamer.getUser().getUsername() + " dołączył");
 			}
 		}
-
-		
 
 		GameMessage<Gamer> gameMessage = null;
 		if (gamer != null) {
@@ -159,9 +153,8 @@ public class LobbyService {
 
 		}
 
-		
-		sendGameChatSystemMessage(game ,"Gracz "+gamer.getUser().getUsername()+" Rozłączył się");
-		
+		sendGameChatSystemMessage(game, "Gracz " + gamer.getUser().getUsername() + " Rozłączył się");
+
 		gamerRepository.delete(gamer);
 		game.setGamersCount(game.getGamersCount() - 1);
 		gameRepository.save(game);
@@ -182,20 +175,23 @@ public class LobbyService {
 		return gameMessage;
 	}
 
-	public GameMessage<Gamer> gamerStatusUpdate(Gamer gamer,String status) {
+	public GameMessage<Gamer> gamerStatusUpdate(Gamer gamer, String status) {
 
 		Gamer exactGamer = this.gamerRepository.findById(gamer.getId()).orElse(gamer);
 
-		if(!exactGamer.getStatus().equals(status))sendGameChatSystemMessage(gamer.getGame(),"Gracz "+gamer.getUser().getUsername()+" zmienił status");
-		if(exactGamer.isReady()!=gamer.isReady())sendGameChatSystemMessage(gamer.getGame(),"Gracz "+gamer.getUser().getUsername()+" zmienił gotowość");
+		if (!exactGamer.getStatus().equals(status))
+			sendGameChatSystemMessage(gamer.getGame(), "Gracz " + gamer.getUser().getUsername() + " zmienił status");
+		if (exactGamer.isReady() != gamer.isReady())
+			sendGameChatSystemMessage(gamer.getGame(), "Gracz " + gamer.getUser().getUsername() + " zmienił gotowość");
 
 		exactGamer.setStatus(status);
 		exactGamer.setReady(gamer.isReady());
 
 		this.gamerRepository.save(exactGamer);
 
-		if(status!="t" &&!exactGamer.getGame().isRTS()&&exactGamer.getGame().isStarted()&&!exactGamer.getGame().isEnded())
-		 	gameService.nextTurn(exactGamer);
+		if (status != "t" && !exactGamer.getGame().isRTS() && exactGamer.getGame().isStarted()
+				&& !exactGamer.getGame().isEnded())
+			gameService.nextTurn(exactGamer);
 
 		List<Gamer> gamers = this.gamerRepository.findByGame(gamer.getGame());
 		simpMessagingTemplate.convertAndSend("/topic/lobby/game/" + gamer.getGame().getId(),
@@ -207,7 +203,7 @@ public class LobbyService {
 
 	public void startGame(Game game) {
 
-		sendGameChatSystemMessage(game,"Rozpoczęcie gry");
+		sendGameChatSystemMessage(game, "Rozpoczęcie gry");
 
 		Game updatingGame = this.gameRepository.findById(game.getId()).orElse(null);
 		updatingGame.setStarted(game.isStarted());
@@ -238,7 +234,8 @@ public class LobbyService {
 	public void kickGamer(DataExchange gamerData) {
 		Gamer gamer = gamerRepository.findById(gamerData.getId()).orElse(null);
 		Game game = gamer.getGame();
-		sendGameChatSystemMessage(gamer.getGame(),"Gracz "+gamer.getUser().getUsername()+" został wyproszony ze stołu");
+		sendGameChatSystemMessage(gamer.getGame(),
+				"Gracz " + gamer.getUser().getUsername() + " został wyproszony ze stołu");
 
 		List<Gamer> gamers2 = this.gamerRepository.findByGame(game);
 		if (game.getAuthor().equals(gamer.getUser())) {
@@ -274,17 +271,17 @@ public class LobbyService {
 		Gamer gamer = gamerRepository.findById(gamerData.id).orElse(null);
 		gamer.setNotification(LocalDateTime.now());
 		gamerRepository.save(gamer);
-		gamerStatusUpdate(gamer,"t");
+		gamerStatusUpdate(gamer, "t");
 
 	}
 
-	public void sendGameChatSystemMessage(Game game, String messageString){
+	public void sendGameChatSystemMessage(Game game, String messageString) {
 		DataExchange message = new DataExchange();
 		message.user = new User();
 		message.user.setUsername("System");
-		message.message =messageString;
-		message.gameId=game.getId();
+		message.message = messageString;
+		message.gameId = game.getId();
 		message.time = LocalDateTime.now().format(formatter);
-		simpMessagingTemplate.convertAndSend("/topic/chat/game/"+message.gameId,message);
+		simpMessagingTemplate.convertAndSend("/topic/chat/game/" + message.gameId, message);
 	}
 }

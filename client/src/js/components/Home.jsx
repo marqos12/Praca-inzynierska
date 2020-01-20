@@ -32,7 +32,7 @@ class HomeComponent extends Component {
         if (this.props.auth.token)
             this.props.history.push("/panel")
     }
-    
+
     render() {
         return (
             <div className="container">

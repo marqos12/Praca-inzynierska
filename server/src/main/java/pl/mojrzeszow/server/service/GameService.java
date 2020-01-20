@@ -74,7 +74,7 @@ public class GameService {
 			game.setInProgress(true);
 			gameRepository.save(game);
 			Collections.shuffle(gamers);
-			Long i = new Long(1);
+			Long i = 1L;
 			for (Gamer gameGamer : gamers) {
 				gameGamer.setOrdinalNumber(i++);
 				gamerRepository.save(gameGamer);
@@ -139,12 +139,12 @@ public class GameService {
 		List<Gamer> gamers = gamerRepository.findByGame(game);
 
 		List<Gamer> aliveGamers = gamers.stream().filter(g -> g.getStatus().equals("t"))
-				 .sorted((g1, g2) -> (int) (g1.getOrdinalNumber() - g2.getOrdinalNumber()))
-				.collect(Collectors.toList());
+				.sorted((g1, g2) -> (int) (g1.getOrdinalNumber() - g2.getOrdinalNumber())).collect(Collectors.toList());
 		try {
 			List<Gamer> nextGamers = aliveGamers.stream()
 					.filter(g -> g.getOrdinalNumber() > currentGamer.getOrdinalNumber())
-					.sorted((g1, g2) -> (int) (g1.getOrdinalNumber() - g2.getOrdinalNumber())).collect(Collectors.toList());// .findFirst().orElse(aliveGamers.get(0));
+					.sorted((g1, g2) -> (int) (g1.getOrdinalNumber() - g2.getOrdinalNumber()))
+					.collect(Collectors.toList());// .findFirst().orElse(aliveGamers.get(0));
 			if (nextGamers.size() == 0)
 				return aliveGamers.get(0);
 			return nextGamers.get(0);

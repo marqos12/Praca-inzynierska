@@ -28,7 +28,7 @@ import pl.mojrzeszow.server.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/api/game")
-public class GameRESTController { 
+public class GameRESTController {
 
 	@Autowired
 	private GameRepository gameRepository;
@@ -112,32 +112,35 @@ public class GameRESTController {
 		dataExchange.outcomeInfluence = tile.getTileGeneratedInfluence();
 		dataExchange.incomeInfluence = tile.getInfluence();
 		dataExchange.needToUppgrade = tile.getTileInfluenceNeedToUpgrade();
-		dataExchange.points = tile.getType().getPoints()*tile.getLvl()*tile.getLvl();
+		dataExchange.points = tile.getType().getPoints() * tile.getLvl() * tile.getLvl();
 		dataExchange.lvl = tile.getLvl();
 		dataExchange.usedInfluence = tile.getUsedInfluence();
-		if(tile.getTileGeneratedInfluence()!=null)
-		dataExchange.summaryDucklings = tile.getTileGeneratedInfluence().getDucklings()+(tile.getAdditionalMoney()==null?0L:tile.getAdditionalMoney())-(tile.getTaxes()==null?0L:tile.getTaxes());
+		if (tile.getTileGeneratedInfluence() != null)
+			dataExchange.summaryDucklings = tile.getTileGeneratedInfluence().getDucklings()
+					+ (tile.getAdditionalMoney() == null ? 0L : tile.getAdditionalMoney())
+					- (tile.getTaxes() == null ? 0L : tile.getTaxes());
 		return dataExchange;
 	}
-	
+
 	@GetMapping("/tile/rebuild/{name}/{lvl}")
-	private DataExchange getTileId(@PathVariable String name,@PathVariable int lvl) {
+	private DataExchange getTileId(@PathVariable String name, @PathVariable int lvl) {
 		DataExchange dataExchange = new DataExchange();
 		TileType type = TileType.valueOf(name);
 		Tile tile = new Tile();
 		tile.setType(type);
 		tile.setLvl(1);
 		dataExchange.outcomeInfluence = tile.getTileGeneratedInfluence();
-		dataExchange.buildCosts = type.getCosts()*lvl*lvl;
-		dataExchange.deconstructionCosts = dataExchange.buildCosts/2;
+		dataExchange.buildCosts = type.getCosts() * lvl * lvl;
+		dataExchange.deconstructionCosts = dataExchange.buildCosts / 2;
 		return dataExchange;
-	}	
+	}
 
 	@PostMapping("/opinion")
 	private Opinion sendOpinion(@RequestBody Opinion opinion) {
 
 		return opinionRepository.save(opinion);
 	}
+
 	@GetMapping("/opinion")
 	private List<Opinion> getOpinion() {
 

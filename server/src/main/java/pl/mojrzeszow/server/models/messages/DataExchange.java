@@ -74,7 +74,7 @@ public class DataExchange {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Long getUserId() {
 		return userId;
 	}
@@ -108,7 +108,7 @@ public class DataExchange {
 	}
 
 	public DataExchange(Long id, Long userId, Long gameId, String sessionId, Long gamerId, Long posX, Long posY,
-	Long angle, TileType type) {
+			Long angle, TileType type) {
 		this.id = id;
 		this.userId = userId;
 		this.gameId = gameId;
@@ -119,5 +119,5 @@ public class DataExchange {
 		this.angle = angle;
 		this.type = type;
 	}
-    
+
 }

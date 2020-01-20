@@ -49,10 +49,8 @@ class RegistrationComponent extends Component {
             this.setState({ errorMessage: "Podano zbyt krótki login!" })
         else if (username.length > 50)
             this.setState({ errorMessage: "Podano zbyt długi login!" })
-        /*else if (!this.validateEmail(email))
-            this.setState({ errorMessage: "Podano niepoprawny adres e-mail!" })*/
-        else
-        {
+        
+        else {
             this.props.register({ username: username, email: email, password: password, role: ["user", "pm"], name: 'stefan' })
             this.setState({ errorMessage: "" })
         }
@@ -77,7 +75,7 @@ class RegistrationComponent extends Component {
                                 </div>
                             </div>
                             <div className="field">
-                                <label className="label">E-mail</label>
+                                <label className="label">E-mail *</label>
                                 <div className="control has-icons-left">
                                     <input className="input is-link is-rounded is-large" type="text" placeholder="E-mail" id="email" value={email} onChange={this.handleChange} />
                                     <span className="icon is-small is-left">

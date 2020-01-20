@@ -1,6 +1,5 @@
 package pl.mojrzeszow.server.websocketControllers;
 
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -22,15 +21,13 @@ public class ChatController {
 	@MessageMapping("/chat/global")
 	public void globalChatMessage(@Payload DataExchange message) throws Exception {
 		message.time = LocalDateTime.now().format(formatter);
-		simpMessagingTemplate.convertAndSend("/topic/chat/global",message);
+		simpMessagingTemplate.convertAndSend("/topic/chat/global", message);
 	}
-	
+
 	@MessageMapping("/chat/game")
 	public void gameChatMessage(@Payload DataExchange message) throws Exception {
 		message.time = LocalDateTime.now().format(formatter);
-		simpMessagingTemplate.convertAndSend("/topic/chat/game/"+message.gameId,message);
+		simpMessagingTemplate.convertAndSend("/topic/chat/game/" + message.gameId, message);
 	}
-	
-
 
 }

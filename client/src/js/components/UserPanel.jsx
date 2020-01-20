@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
-import { wsConnect, wsOpenTestCanal, wsSendTestMessage, wsSendMessage, setHistory, logout } from "../actions/index";
+import { wsConnect, wsSendMessage, setHistory, logout } from "../actions/index";
 import GllobalChat from "./gameComponents/GlobalChat.jsx";
 import { getCookie, setCookie } from "../gameEngine/gameMechanics";
 
@@ -23,8 +23,6 @@ const mapStateToProps = state => {
         cookies: state.cookies
     };
 };
-
-
 
 class HomeComponent extends Component {
     constructor() {
@@ -50,15 +48,13 @@ class HomeComponent extends Component {
     }
 
     componentDidMount() {
-        //if (!this.props.ws.client)
-        // this.props.wsConnect();
         if (getCookie("alertShown") == "") {
             let openTutorial = setInterval(() => {
 
                 clearInterval(openTutorial);
-            alert("Krótki poradnik jak grać zobaczysz w trakcie pierwszej rozgrywki. Zachęcam do wybrania opcji \"Graj Sam\" w celu wypróbowania gry")
+                alert("Krótki poradnik jak grać zobaczysz w trakcie pierwszej rozgrywki. Zachęcam do wybrania opcji \"Graj Sam\" w celu wypróbowania gry")
 
-            setCookie("alertShown", true, 1000)
+                setCookie("alertShown", true, 1000)
             }, 500)
         }
 
@@ -66,7 +62,7 @@ class HomeComponent extends Component {
 
     logout() {
         this.props.cookies.set('auth', JSON.stringify({}), { path: '/' });
-        
+
         setCookie("alertShown", true, -1000)
         setCookie("tutorialLastShownPage", true, -1000)
         setCookie("showTutorial", true, -1000)
@@ -109,11 +105,8 @@ class HomeComponent extends Component {
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.createNewAloneGame}>Graj sam</a>
                         <a className="button is-large  is-link is-rounded is-fullwidth" href="assets/manual.pdf" target="_blank">Zobacz poradnik</a>
                         <NavLink to="/opinion" className="button is-large  is-link is-rounded is-fullwidth" >Przekaż opinię</NavLink>
-                        {/*<NavLink to="/friends" className="button is-large  is-link is-rounded is-fullwidth">Znajomi</NavLink>
-                        <NavLink to="/settings" className="button is-large  is-link is-rounded is-fullwidth">Ustawienia</NavLink>*/}
+
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Wyloguj</a>
-
-
                     </div>
 
                 </div>

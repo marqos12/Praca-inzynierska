@@ -117,7 +117,7 @@ export function menuReducer(state, action) {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload,
         amIAuthor: true,
-        alone:false
+        alone: false
       })
     });
   }
@@ -126,7 +126,7 @@ export function menuReducer(state, action) {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload,
         amIAuthor: true,
-        alone:true
+        alone: true
       })
     });
   }
@@ -146,7 +146,7 @@ export function menuReducer(state, action) {
       })
     });
   }
-  
+
   if (action.type === CHAT_GAME_MESSAGE) {
     return Object.assign({}, state, {
       chats: Object.assign({}, state.chats, {
@@ -164,16 +164,16 @@ export function menuReducer(state, action) {
   }
 
   if (action.type === WS_GAME_JOINED) {
-    if(state.actualGame.aliveMessageTimer)
-    clearInterval(state.actualGame.aliveMessageTimer);
+    if (state.actualGame.aliveMessageTimer)
+      clearInterval(state.actualGame.aliveMessageTimer);
     return Object.assign({}, state, {
       actualGame: Object.assign({}, state.actualGame, {
         game: action.payload.game,
         meGamer: action.payload,
         amIAuthor: action.payload.game.author.id == action.payload.user.id,
-        aliveMessageTimer:action.payload.interval,
-        tilesDisplayed:[],
-        tilesToDisplay:[],
+        aliveMessageTimer: action.payload.interval,
+        tilesDisplayed: [],
+        tilesToDisplay: [],
       })
     });
   }
@@ -211,7 +211,7 @@ export function menuReducer(state, action) {
 
   if (action.type === SET_ALONE_GAME) {
     return Object.assign({}, state, {
-      actualGame:  Object.assign({}, state.actualGame, {
+      actualGame: Object.assign({}, state.actualGame, {
         alone: action.payload
       })
     });

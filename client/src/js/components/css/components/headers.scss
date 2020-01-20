@@ -1,28 +1,27 @@
 @import "../variables";
 
-
-.gameTitle{
-    text-shadow: 2px 2px 2px #CCCCCC;
+.gameTitle {
+  text-shadow: 2px 2px 2px #cccccc;
+  position: relative;
+  top: -12px;
+  font-size: 60px;
+  color: $primary_text_color;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  text-align: center;
+  span {
+    color: $accent_text_color;
     position: relative;
-    top:-12px;
-    font-size: 60px;
-    color:$primary_text_color;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    text-align: center;
-    span{
-        color:$accent_text_color;
-        position: relative;
-        font-size: 100px;
-        top:12px;
-    }
+    font-size: 100px;
+    top: 12px;
+  }
 }
 
 @media screen and (max-width: 1000px) {
-    .gameTitle{
-        top:0;
-        font-size: 40px;
-        span{
-            font-size: 60px;
-        }
+  .gameTitle {
+    top: 0;
+    font-size: 40px;
+    span {
+      font-size: 60px;
     }
   }
+}

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { NavLink } from 'react-router-dom';
-import { wsConnect, wsOpenTestCanal, wsSendTestMessage, wsSendMessage, wsGameDisconnect } from "../../actions/index";
+import { wsSendMessage, wsGameDisconnect } from "../../actions/index";
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -33,7 +32,7 @@ class GameComponent extends Component {
             endType: "ROUND_LIMIT",
             firstLoad: false,
             gamersLimit: 4,
-            rtsInterval:20
+            rtsInterval: 20
         };
 
         this.loopPrevent = false;
@@ -42,8 +41,6 @@ class GameComponent extends Component {
         this.leaveGame = this.leaveGame.bind(this);
         this.updateGame = this.updateGame.bind(this);
         this.kickGamer = this.kickGamer.bind(this);
-
-
     }
 
     componentDidMount() {
@@ -88,7 +85,6 @@ class GameComponent extends Component {
     }
 
     kickGamer(gamer) {
-
         this.props.wsSendMessage({
             channel: "/lobby/kickGamer", payload: { id: gamer.id }
         })
@@ -137,7 +133,7 @@ class GameComponent extends Component {
                     endType: this.props.actualGame.game.endType,
                     firstLoad: true,
                     gamersLimit: this.props.actualGame.game.gamersCountLimit,
-                    rtsInterval:this.props.actualGame.game.rtsInterval
+                    rtsInterval: this.props.actualGame.game.rtsInterval
                 }))
             }
 
@@ -174,13 +170,12 @@ class GameComponent extends Component {
 
     render() {
 
-        const { privateGame, isRts, gameLimit, ready, canStart, endType, rtsInterval } = this.state;
+        const { isRts, gameLimit, endType, rtsInterval } = this.state;
         const limitValues = this.getEndTypeRange();
         return (
             <div className="container">
                 <div className="menuContent">
                     {this.props.actualGame.game ?
-
 
                         <div className="buttonList">
                             {this.props.actualGame.amIAuthor ?
@@ -219,20 +214,19 @@ class GameComponent extends Component {
 
                                     </div>
 
+                                    {isRts ? <div>
+                                        <div className="field">
+                                            <div className="control">
+                                                <label class="label">Częstotliwość następnej rundy: <b>{rtsInterval}</b></label>
+                                                <input className="input is-medium is-info" type="number" placeholder="Limit gry" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
+                                            </div>
+                                        </div>
 
-                                    {isRts?<div>
-                                    <div className="field">
-                                        <div className="control">
-                                            <label class="label">Częstotliwość następnej rundy: <b>{rtsInterval}</b></label>
-                                            <input className="input is-medium is-info" type="number" placeholder="Limit gry" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
+                                        <div className="slidecontainer">
+                                            <input type="range" min="3" max="120" className="slider" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
                                         </div>
                                     </div>
-
-                                    <div className="slidecontainer">
-                                        <input type="range" min="3"max="120" className="slider" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
-                                    </div>
-                                    </div>
-                                    :""}
+                                        : ""}
 
                                     <div className="separator">Limit gry</div>
 
@@ -252,8 +246,6 @@ class GameComponent extends Component {
 
                                     <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.updateGame}>Zatwierdź ustawienia </a>
 
-
-
                                 </div>
                                 : <div>
 
@@ -270,7 +262,4 @@ class GameComponent extends Component {
 }
 const Game = connect(mapStateToProps, mapDispatchToProps)(GameComponent);
 export default Game;
-
-
-
 

@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "influences")
-public class Influence{
+public class Influence {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -38,7 +38,6 @@ public class Influence{
     Long cleannessRange;
     Long science;
     Long scienceRange;
-
 
     public Influence() {
     }

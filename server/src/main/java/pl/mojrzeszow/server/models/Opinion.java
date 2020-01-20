@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "opinion")
-public class Opinion{
+public class Opinion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -19,7 +19,10 @@ public class Opinion{
     String message1;
     String message2;
     String message3;
-    public Opinion(){}
+
+    public Opinion() {
+    }
+
     public Opinion(Long id, String username, User user, String message1, String message2, String message3) {
         this.id = id;
         this.username = username;

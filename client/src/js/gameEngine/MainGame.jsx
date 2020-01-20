@@ -62,7 +62,7 @@ class MainGameComponent extends Component {
                 this.setState({ refresh: this.state.refresh + 1 })
             }, 1000)
         })
-        if (getCookie("showTutorial") != "true"&&!getCookie("tutorialLastShownPage")|| getCookie("tutorialLastShownPage")< -1) {
+        if (getCookie("showTutorial") != "true" && !getCookie("tutorialLastShownPage") || getCookie("tutorialLastShownPage") < -1) {
             let openTutorial = setInterval(() => {
 
                 clearInterval(openTutorial);
@@ -101,14 +101,11 @@ class MainGameComponent extends Component {
                 }))
 
             }
-
-
         }
         if (this.props.actualGame.closeTutorial) {
             this.setState({ startPage: false }),
                 this.props.tutorialClosed();
         }
-
     }
 
     commitNewTilePosiotion() {
@@ -196,7 +193,7 @@ class MainGameComponent extends Component {
         })
     }
 
-    openManual(){
+    openManual() {
         this.setState({ startPage: -1 })
     }
 
@@ -287,8 +284,7 @@ class MainGameComponent extends Component {
                             </div>
                             <div className="buttonList">
                                 <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.closeMenu}>Powrót do gry</a>
-                                {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opcje</a>
-                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</a>*/}
+
                                 <NavLink to="/panel" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame}>Opuść grę</NavLink>
                             </div>
                         </div>
@@ -321,8 +317,7 @@ class MainGameComponent extends Component {
                                 </table>
 
                                 {actualGame.amIAuthor ? <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.continueGame}>Kontynuuj</a> : ""}
-                                {/*<a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Powrót do lobby</a>
-                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={this.logout}>Opuść grę</a>*/}
+
                                 <br />
                                 <p className="whiteText">Jeżeli gra Ci się spodobała, przekaż mi proszę swoją opinię, abym mógł ją ciągle ulepszać :) </p>
                                 <NavLink to="/opinion" className="button is-large  is-link is-rounded is-fullwidth" onClick={this.leaveGame} >Przekaż opinię</NavLink>

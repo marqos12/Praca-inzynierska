@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { NavLink } from 'react-router-dom';
-import { wsConnect, wsOpenTestCanal, wsSendTestMessage, wsSendMessage, wsGameDisconnect } from "../../actions/index";
+import { wsSendMessage, wsGameDisconnect } from "../../actions/index";
 import GameChat from "./GameChat.jsx";
 
 function mapDispatchToProps(dispatch) {
@@ -34,8 +33,8 @@ class NewGameComponent extends Component {
             endType: "ROUND_LIMIT",
             firstLoad: false,
             gamersLimit: 4,
-            rtsInterval:20,
-            edited:false,
+            rtsInterval: 20,
+            edited: false,
         };
 
         this.loopPrevent = false;
@@ -45,9 +44,6 @@ class NewGameComponent extends Component {
         this.updateGame = this.updateGame.bind(this);
         this.kickGamer = this.kickGamer.bind(this);
         this.chatTest = this.chatTest.bind(this);
-
-
-
     }
 
     componentDidMount() {
@@ -85,14 +81,13 @@ class NewGameComponent extends Component {
         game.endType = endType;
         game.gamersCountLimit = gamersLimit;
         game.rtsInterval = rtsInterval;
-        this.setState({edited:false})
+        this.setState({ edited: false })
         this.props.wsSendMessage({
             channel: "/lobby/updateGame", payload: game
         })
     }
 
     kickGamer(gamer) {
-
         this.props.wsSendMessage({
             channel: "/lobby/kickGamer", payload: { id: gamer.id }
         })
@@ -141,10 +136,9 @@ class NewGameComponent extends Component {
                     endType: this.props.actualGame.game.endType,
                     firstLoad: true,
                     gamersLimit: this.props.actualGame.game.gamersCountLimit,
-                    rtsInterval:this.props.actualGame.game.rtsInterval
+                    rtsInterval: this.props.actualGame.game.rtsInterval
                 }))
             }
-
         }
         if (this.state.initialized && !this.props.actualGame.meGamer) {
             this.props.history.push("/panel")
@@ -152,15 +146,19 @@ class NewGameComponent extends Component {
     }
 
     handleChange(event) {
-        this.setState({ [event.target.id]: event.target.value,
-        edited:true });
+        this.setState({
+            [event.target.id]: event.target.value,
+            edited: true
+        });
         if (event.target.id == 'endType')
             this.setState({ 'gameLimit': this.getEndTypeRange(event.target.value).default });
     }
 
     checkboxHandleChange(event) {
-        this.setState({ [event.target.id]: event.target.checked ,
-            edited:true});
+        this.setState({
+            [event.target.id]: event.target.checked,
+            edited: true
+        });
     }
 
     getEndTypeRange(endType = this.state.endType) {
@@ -179,17 +177,17 @@ class NewGameComponent extends Component {
     }
 
     chatTest() {
-        this.props.wsSendMessage({ channel: "/chat/game", payload: { user:this.props.auth.usser, message:"Test komunikacji", gameId:this.props.actualGame.game.id } })
+        this.props.wsSendMessage({ channel: "/chat/game", payload: { user: this.props.auth.usser, message: "Test komunikacji", gameId: this.props.actualGame.game.id } })
     }
+
     render() {
 
-        const { privateGame, isRts, gameLimit, ready, canStart, endType, gamersLimit,rtsInterval,edited } = this.state;
+        const { privateGame, isRts, gameLimit, ready, canStart, endType, gamersLimit, rtsInterval, edited } = this.state;
         const limitValues = this.getEndTypeRange();
         return (
             <div className="container">
                 <div className="menuContent">
                     {this.props.actualGame.game ?
-
 
                         <div className="buttonList">
                             {this.props.actualGame.amIAuthor ?
@@ -198,7 +196,6 @@ class NewGameComponent extends Component {
 
                             {this.props.actualGame.amIAuthor ?
                                 <div>
-
                                     <div className="separator">Typ rozgrywki</div>
 
                                     <div className="columns">
@@ -208,14 +205,14 @@ class NewGameComponent extends Component {
                                                     <input id="isRts" type="checkbox" name="isRts" checked={isRts} onChange={this.checkboxHandleChange} />
                                                     <span className="slider round"></span>
                                                 </label>
-                                                <label for="isRts">Tryb gry: {!isRts?"turowa":"RTS"}</label>
+                                                <label for="isRts">Tryb gry: {!isRts ? "turowa" : "RTS"}</label>
                                             </div>
                                             <div className="field">
                                                 <label className="switch">
                                                     <input id="privateGame" type="checkbox" name="privateGame" checked={privateGame} onChange={this.checkboxHandleChange} />
                                                     <span className="slider round"></span>
                                                 </label>
-                                                <label for="privateGame">Gra {!privateGame?"publiczna":"prywatna"}</label>
+                                                <label for="privateGame">Gra {!privateGame ? "publiczna" : "prywatna"}</label>
                                             </div>
                                         </div>
                                         <div className="column field">
@@ -232,22 +229,20 @@ class NewGameComponent extends Component {
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
+                                    {isRts ? <div>
+                                        <div className="field">
+                                            <div className="control">
+                                                <label class="label">Częstotliwość następnej rundy: <b>{rtsInterval}</b></label>
+                                                <input className="input is-medium is-info" type="number" placeholder="Limit gry" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
+                                            </div>
+                                        </div>
 
-                                {isRts?<div>
-                                    <div className="field">
-                                        <div className="control">
-                                            <label class="label">Częstotliwość następnej rundy: <b>{rtsInterval}</b></label>
-                                            <input className="input is-medium is-info" type="number" placeholder="Limit gry" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
+                                        <div className="slidecontainer">
+                                            <input type="range" min="3" max="120" className="slider" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
                                         </div>
                                     </div>
-
-                                    <div className="slidecontainer">
-                                        <input type="range" min="3"max="120" className="slider" id="rtsInterval" value={rtsInterval} onChange={this.handleChange} />
-                                    </div>
-                                    </div>
-                                    :""}
+                                        : ""}
 
                                     <div className="separator">Limit gry</div>
 
@@ -276,7 +271,7 @@ class NewGameComponent extends Component {
                                     <br />
                                     <br />
 
-                                    <a className="button is-large  is-link is-rounded is-fullwidth" disabled={edited?"":"disabled"} onClick={this.updateGame}>Zatwierdź ustawienia</a>
+                                    <a className="button is-large  is-link is-rounded is-fullwidth" disabled={edited ? "" : "disabled"} onClick={this.updateGame}>Zatwierdź ustawienia</a>
 
                                     <h3>Kod do bezpośredniego dołączenia: {this.props.actualGame.game.id}</h3>
 
@@ -316,7 +311,7 @@ class NewGameComponent extends Component {
                                 <tbody>
                                     {this.props.actualGame.gamers.map((gamer, index) => {
                                         return <tr key={index} >
-                                            <td>{gamer.status=="t" ? <img src="assets/smail.gif" className="statusImg" /> : gamer.status=="n"?<img src="assets/noSmail.gif" className="statusImg" />: <img src="assets/sad.gif" className="statusImg" />}</td>
+                                            <td>{gamer.status == "t" ? <img src="assets/smail.gif" className="statusImg" /> : gamer.status == "n" ? <img src="assets/noSmail.gif" className="statusImg" /> : <img src="assets/sad.gif" className="statusImg" />}</td>
                                             <td><b>{gamer.user.username}</b></td>
                                             <td>{gamer.ready ? <img src="assets/check.png" className="statusImg" /> : ""}</td>
                                             {this.props.actualGame.amIAuthor ?
@@ -329,11 +324,10 @@ class NewGameComponent extends Component {
                             {(this.props.actualGame.amIAuthor) ? <a className="button is-large  is-link is-rounded is-fullwidth " disabled={(canStart) ? "" : "disabled"} onClick={() => this.startGame()}>Rozpocznij grę</a> : <span></span>}
                             <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.leaveGame()}>Wyjdź z gry</a>
 
-                            
                         </div>
                         : <div></div>}
                 </div>
-                <GameChat inGame={false}/>
+                <GameChat inGame={false} />
             </div>
         );
     }

@@ -25,26 +25,26 @@ public class Gamer {
 	@NotNull
 	@ManyToOne
 	private User user;
-	
+
 	@NotNull
 	@ManyToOne
 	private Game game;
 
 	private String sessionId;
-	
+
 	@NotNull
 	private LocalDateTime notification;
-	
+
 	private String status;
-		
+
 	private boolean ready;
-	
+
 	@NotNull
 	private Long ordinalNumber;
-	
+
 	@NotNull
 	private Long points;
-	
+
 	@NotNull
 	private Long ducklings;
 	private Long ducklingsPerRound;
@@ -53,13 +53,12 @@ public class Gamer {
 
 	private TileType newTileType;
 
-	
-	public Gamer () {}
-	
-	
-	public Gamer( @NotBlank User user, @NotBlank Game game, String sessionId) {
+	public Gamer() {
+	}
+
+	public Gamer(@NotBlank User user, @NotBlank Game game, String sessionId) {
 		super();
-		
+
 		this.user = user;
 		this.game = game;
 		this.sessionId = sessionId;
@@ -73,11 +72,9 @@ public class Gamer {
 		this.withTile = false;
 	}
 
-
-
-	public Gamer(Long id, @NotNull User user, @NotNull Game game, String sessionId,  LocalDateTime notification,
+	public Gamer(Long id, @NotNull User user, @NotNull Game game, String sessionId, LocalDateTime notification,
 			@NotNull String status, boolean ready, @NotNull Long ordinalNumber, @NotNull Long points,
-			@NotNull Long ducklings, Boolean withTile, TileType newTileType,Long ducklingsPerRound) {
+			@NotNull Long ducklings, Boolean withTile, TileType newTileType, Long ducklingsPerRound) {
 		this.id = id;
 		this.user = user;
 		this.game = game;
@@ -92,7 +89,6 @@ public class Gamer {
 		this.newTileType = newTileType;
 		this.ducklingsPerRound = ducklingsPerRound;
 	}
-	
 
 	public Long getId() {
 		return id;
@@ -197,6 +193,5 @@ public class Gamer {
 	public void setDucklingsPerRound(Long ducklingsPerRound) {
 		this.ducklingsPerRound = ducklingsPerRound;
 	}
-	
-	
+
 }

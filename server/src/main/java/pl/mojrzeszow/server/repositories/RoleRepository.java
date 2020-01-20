@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import pl.mojrzeszow.server.enums.RoleName;
 import pl.mojrzeszow.server.models.Role;
- 
- 
+
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findByName(RoleName roleName);

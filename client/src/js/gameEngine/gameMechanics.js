@@ -247,7 +247,6 @@ export function getOutcomes(influence, summaryDucklings, usedInfluence) {
         if (incomesCounter >= 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.people) {
             incomes += ` ludzie: ${influence.people} ${usedInfluence && usedInfluence.people ? `[${influence.people - usedInfluence.people})` : ""}/ ${influence.peopleRange};`; incomesCounter++;
-            /*let circle = new Phaser.GameObjects.Ellipse(this.scene,0,0,influence.peopleRange*this.tile.displayWidth,influence.peopleRange*this.tile.displayWidth,0xff0000,0.2);this.influenceField.push(circle)*/
         }
         if (incomesCounter == 2) { incomesCounter = 0; incomes += "\n"; }
         if (influence.shops) { incomes += ` sklep: ${influence.shops} ${usedInfluence && usedInfluence.shops ? `[${influence.shops - usedInfluence.shops}]` : ""}/ ${influence.shopsRange};`; incomesCounter++; }

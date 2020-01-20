@@ -2,7 +2,7 @@ import { FixedTile } from "./components/FixedTile";
 import store from "../../store";
 import { gameWsGameJoined, gameNewTileDisplayed, gameTileInGoodPlace, gameShowTileDetails, gameTileRotated, gameTileRotateRestored } from "../../actions/gameActions.js";
 import { Tile } from "./components/Tile.js";
-import { getTileSortedEdges, highlightPossiblePlaces, getPossiblePlaces, makeHighlightScale, getTileGeneralType, translateTileName } from "../gameMechanics";
+import { getPossiblePlaces, makeHighlightScale, getTileGeneralType, translateTileName } from "../gameMechanics";
 import { TileDetails } from "./components/TileDetails";
 
 export default class GameScene extends Phaser.Scene {
@@ -98,9 +98,8 @@ export default class GameScene extends Phaser.Scene {
       this.unsubscribe();
     })
 
-    addEventListener('draggedTile',this.draggedTileEventListener= (x) => {
+    addEventListener('draggedTile', this.draggedTileEventListener = (x) => {
       this.newTile.makeScale(this.myScale);
-      //this.tiles.push(this.newTile);
 
       this.newTileCard.destroy();
       this.newTileCard = null;
@@ -110,18 +109,18 @@ export default class GameScene extends Phaser.Scene {
       this.highlightPossiblePlaces();
     })
 
-    addEventListener('draggingNewTile',this.draggingNewTileEventListener= (x) => {
+    addEventListener('draggingNewTile', this.draggingNewTileEventListener = (x) => {
       if (this.tileDetails) {
         this.tileDetails.destroy();
         this.tileDetails = null;
       }
     })
 
-    addEventListener('tileInGoodPlace',this.tileInGoodPlaceEventListener= (x) => {
+    addEventListener('tileInGoodPlace', this.tileInGoodPlaceEventListener = (x) => {
       store.dispatch(gameTileInGoodPlace({ status: x.detail, tile: this.newTile }));
     })
 
-    addEventListener('showDetails', this.showDetailsEventListener=(x) => {
+    addEventListener('showDetails', this.showDetailsEventListener = (x) => {
       if (window.innerWidth >= 700) {
         if (this.tileDetails) this.tileDetails.destroy();
         this.tileDetails = new TileDetails(this, x.detail);
@@ -132,24 +131,23 @@ export default class GameScene extends Phaser.Scene {
       }
     })
 
-    addEventListener('updatedTile',this.updatedTileEventListener= (x) => {
+    addEventListener('updatedTile', this.updatedTileEventListener = (x) => {
       if (this.tileDetails) this.tileDetails.destroy();
       this.tileDetails = new TileDetails(this, x.detail);
     })
 
-    addEventListener('closeTileDetails',this.closeTileDetailsEventListener= (x) => {
+    addEventListener('closeTileDetails', this.closeTileDetailsEventListener = (x) => {
       if (this.tileDetails) {
         this.tileDetails.destroy();
         this.tileDetails = null;
       }
     })
 
-    addEventListener("wheel",this.wheelEventListener= x => this.changeScale(x))
+    addEventListener("wheel", this.wheelEventListener = x => this.changeScale(x))
 
     this.initialized = true;
 
-
-    window.addEventListener('resize', this.resizeEventListener=() => {
+    window.addEventListener('resize', this.resizeEventListener = () => {
       this.scale.resize(window.innerWidth, window.innerHeight);
       if (this.newTileCard) {
         this.newTile.setPosition(
@@ -158,24 +156,22 @@ export default class GameScene extends Phaser.Scene {
         this.newTileCard.setPosition(this.newTile.x + this.newTile.displayWidth / 2,
           this.newTile.y + this.newTile.displayWidth / 2)
         this.newTileName.setPosition(this.newTile.x, this.newTile.y - 23);
-
       }
     });
-    
-    this.events.on('destroy', ()=>{
-      removeEventListener('draggedTile',this.draggedTileEventListener)
-      removeEventListener('draggingNewTile',this.draggingNewTileEventListener)
-      removeEventListener('tileInGoodPlace',this.tileInGoodPlaceEventListener)
+
+    this.events.on('destroy', () => {
+      removeEventListener('draggedTile', this.draggedTileEventListener)
+      removeEventListener('draggingNewTile', this.draggingNewTileEventListener)
+      removeEventListener('tileInGoodPlace', this.tileInGoodPlaceEventListener)
       removeEventListener('showDetails', this.showDetailsEventListener)
-      removeEventListener('updatedTile',this.updatedTileEventListener)
-      removeEventListener('closeTileDetails',this.closeTileDetailsEventListener)
-      removeEventListener("wheel",this.wheelEventListener)
-      window.removeEventListener('resize',this.resizeEventListener)
+      removeEventListener('updatedTile', this.updatedTileEventListener)
+      removeEventListener('closeTileDetails', this.closeTileDetailsEventListener)
+      removeEventListener("wheel", this.wheelEventListener)
+      window.removeEventListener('resize', this.resizeEventListener)
     });
   }
 
   preload() {
-
     this.load.image("plusButton", 'assets/plusB.png');
     this.load.image("minusButton", 'assets/minusB.png');
     this.load.image("rotateButton", 'assets/rotate.png');
@@ -228,9 +224,8 @@ export default class GameScene extends Phaser.Scene {
         if (this.newTile && !this.newTileCard) {
           this.newTile.x -= this.origDragPoint.x - this.input.activePointer.position.x;
           this.newTile.y -= this.origDragPoint.y - this.input.activePointer.position.y;
-          
-          this.newTile.highlightNewTileAfterDrag.setPosition( this.newTile.x-this.tileWidth*0.1,this.newTile.y-this.tileWidth*0.1);
-        
+
+          this.newTile.highlightNewTileAfterDrag.setPosition(this.newTile.x - this.tileWidth * 0.1, this.newTile.y - this.tileWidth * 0.1);
         }
 
         this.tableCenterX -= this.origDragPoint.x - this.input.activePointer.position.x;
@@ -268,7 +263,7 @@ export default class GameScene extends Phaser.Scene {
         if (oldTile.length > 0) {
           oldTile[0].destroy2();
           let index = this.tiles.indexOf(oldTile[0]);
-          this.tiles.splice(index,1);
+          this.tiles.splice(index, 1);
         }
 
         this.tiles.push(tile2);
@@ -419,7 +414,5 @@ export default class GameScene extends Phaser.Scene {
 
     if (this.tileDetails) this.tileDetails.move();
   }
-
-
 
 }

@@ -8,39 +8,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
- 
+
 import java.util.Date;
- 
+
 @Component
 public class JwtProvider {
- 
+
     private static final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
- 
+
     @Value("${server.jwtSecret}")
     private String jwtSecret;
- 
+
     @Value("${server.jwtExpiration}")
     private int jwtExpiration;
- 
+
     public String generateJwtToken(Authentication authentication) {
- 
+
         UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
- 
-        return Jwts.builder()
-                    .setSubject((userPrincipal.getUsername()))
-                    .setIssuedAt(new Date())
-                    //.setExpiration(new Date((new Date()).getTime() + jwtExpiration))
-                    .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                    .compact();
+
+        return Jwts.builder().setSubject((userPrincipal.getUsername())).setIssuedAt(new Date())
+
+                .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
- 
+
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser()
-                      .setSigningKey(jwtSecret)
-                      .parseClaimsJws(token)
-                      .getBody().getSubject();
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
- 
+
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
@@ -56,7 +50,7 @@ public class JwtProvider {
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims string is empty -> Message: {}", e);
         }
-        
+
         return false;
     }
 }

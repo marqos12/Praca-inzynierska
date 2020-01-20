@@ -17,51 +17,57 @@ import pl.mojrzeszow.server.repositories.GamerRepository;
 @Component
 public class GameRTService {
 
-
-	@Autowired
+    @Autowired
     private GameRepository gameRepository;
-    
-	@Autowired
+
+    @Autowired
     private GamerRepository gamerRepository;
-    
-    @Autowired 
+
+    @Autowired
     private GameService gameService;
-    
-    @Autowired 
+
+    @Autowired
     private LobbyService lobbyService;
 
     @Scheduled(fixedRate = 3000)
     public void RTSGamesLoop() {
         List<Game> games = gameRepository.findByStartedTrueAndIsRTSTrueAndEndedFalse();
-        List<Game> newGames = games.stream().filter(g->g.getRTSLastRoundTime()==null).collect(Collectors.toList());
-        List<Game> otherGames = games.stream().filter(g->g.getRTSLastRoundTime()!=null&&ChronoUnit.SECONDS.between(g.getRTSLastRoundTime(), LocalDateTime.now())>=g.getRtsInterval()).collect(Collectors.toList());
-        List<Game> unactiveGames = games.stream().filter(g->g.getRTSLastRoundTime()!=null&&ChronoUnit.MINUTES.between(g.getRTSLastRoundTime(), LocalDateTime.now())>=10).collect(Collectors.toList());
-        for(Game game: newGames){
+        List<Game> newGames = games.stream().filter(g -> g.getRTSLastRoundTime() == null).collect(Collectors.toList());
+        List<Game> otherGames = games.stream().filter(g -> g.getRTSLastRoundTime() != null
+                && ChronoUnit.SECONDS.between(g.getRTSLastRoundTime(), LocalDateTime.now()) >= g.getRtsInterval())
+                .collect(Collectors.toList());
+        List<Game> unactiveGames = games.stream()
+                .filter(g -> g.getRTSLastRoundTime() != null
+                        && ChronoUnit.MINUTES.between(g.getRTSLastRoundTime(), LocalDateTime.now()) >= 10)
+                .collect(Collectors.toList());
+        for (Game game : newGames) {
             game.setRTSLastRoundTime(LocalDateTime.now());
             gameService.newRoundRTSMode(game);
         }
-        for(Game game:otherGames){
+        for (Game game : otherGames) {
             game.setRTSLastRoundTime(LocalDateTime.now());
             gameService.newRoundRTSMode(game);
         }
-        for(Game game: unactiveGames){
+        for (Game game : unactiveGames) {
             game.setEnded(true);
         }
         gameRepository.saveAll(unactiveGames);
         gameRepository.saveAll(newGames);
         gameRepository.saveAll(otherGames);
     }
-    
+
     @Scheduled(fixedRate = 30000)
     public void aliveCheck() {
-        List<Gamer> notLiveGamers = gamerRepository.findByNotificationBetweenAndStatusNot(LocalDateTime.now().minusMinutes(2),LocalDateTime.now().minusMinutes(1), "d");
-        List<Gamer> deadGamers = gamerRepository.findByNotificationLessThanAndStatusNot(LocalDateTime.now().minusMinutes(2), "d");
+        List<Gamer> notLiveGamers = gamerRepository.findByNotificationBetweenAndStatusNot(
+                LocalDateTime.now().minusMinutes(2), LocalDateTime.now().minusMinutes(1), "d");
+        List<Gamer> deadGamers = gamerRepository
+                .findByNotificationLessThanAndStatusNot(LocalDateTime.now().minusMinutes(2), "d");
 
-        for(Gamer gamer:notLiveGamers){
-            lobbyService.gamerStatusUpdate(gamer,"n");
+        for (Gamer gamer : notLiveGamers) {
+            lobbyService.gamerStatusUpdate(gamer, "n");
         }
-        for(Gamer gamer:deadGamers){
-            lobbyService.gamerStatusUpdate(gamer,"d");
+        for (Gamer gamer : deadGamers) {
+            lobbyService.gamerStatusUpdate(gamer, "d");
         }
     }
 

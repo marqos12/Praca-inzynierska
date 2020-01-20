@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
-import { wsConnect, wsOpenPrivateCanals, wsSendMessage, wsChannelSubscription, wsSubscribeGameListChannel, wsUnsubscribeGameListChannel } from "../../actions/index";
+import { wsSendMessage, wsSubscribeGameListChannel, wsUnsubscribeGameListChannel } from "../../actions/index";
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -20,24 +20,22 @@ const mapStateToProps = state => {
     };
 };
 
-
-
 class SearchGamesComponent extends Component {
     constructor() {
         super();
         this.state = {
             initialized: false,
-            gameIdInput:false,
-            id:''
+            gameIdInput: false,
+            id: ''
         }
         this.handleChange = this.handleChange.bind(this);
         this.joinGame = this.joinGame.bind(this);
         this.openInput = this.openInput.bind(this);
     }
 
-    joinGame(id,game) {
-        if(game==null || game.gamersCount<game.gamersCountLimit)
-        this.props.history.push("/game/" + id)
+    joinGame(id, game) {
+        if (game == null || game.gamersCount < game.gamersCountLimit)
+            this.props.history.push("/game/" + id)
     }
 
     componentDidMount() {
@@ -56,7 +54,6 @@ class SearchGamesComponent extends Component {
             this.props.wsSendMessage({ channel: "/lobby/getGames", payload: "" });
             this.setState({ initialized: true })
         }
-
     }
 
     componentWillUnmount() {
@@ -67,8 +64,8 @@ class SearchGamesComponent extends Component {
         this.setState({ [event.target.id]: event.target.value });
     }
 
-    openInput(){
-        this.setState({gameIdInput:true})
+    openInput() {
+        this.setState({ gameIdInput: true })
     }
 
     render() {
@@ -79,23 +76,19 @@ class SearchGamesComponent extends Component {
                 <div className="menuContent">
                     <h1 className="gameTitle">Lista otwartych gier </h1>
                     <div className="buttonList">
-                       
-                       {gameIdInput?
-                        <div className="field">
-                            <div className="control has-icons-left">
-                                <input className="input is-link is-rounded is-large" type="text" id="id" autocomplete="off" placeholder="Kod gry" value={id} onChange={this.handleChange} />
-                                <span className="icon is-small is-left">
-                                    <i className="fas fa-user"></i>
-                                </span>
-                            </div>
-                            <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.joinGame(id)}>Dołącz do gry</a>
-                        </div>:""}
-                       
+
+                        {gameIdInput ?
+                            <div className="field">
+                                <div className="control has-icons-left">
+                                    <input className="input is-link is-rounded is-large" type="text" id="id" autocomplete="off" placeholder="Kod gry" value={id} onChange={this.handleChange} />
+                                    <span className="icon is-small is-left">
+                                        <i className="fas fa-user"></i>
+                                    </span>
+                                </div>
+                                <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.joinGame(id)}>Dołącz do gry</a>
+                            </div> : ""}
+
                         <a className="button is-large  is-link is-rounded is-fullwidth" onClick={() => this.openInput()}>Podaj kod gry</a>
-
-
-
-
 
                         <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                             <thead>
@@ -108,7 +101,7 @@ class SearchGamesComponent extends Component {
                             </thead>
                             <tbody>
                                 {gamesList.map((game, index) => {
-                                    return <tr key={index} onClick={() => this.joinGame(game.id,game)}>
+                                    return <tr key={index} onClick={() => this.joinGame(game.id, game)}>
                                         <td>{game.rts ? "RTS" : "Turowa"}</td>
                                         <td>{game.gamersCount}/{game.gamersCountLimit}</td>
                                         <td>{game.gameLimit}</td>

@@ -14,7 +14,6 @@ import pl.mojrzeszow.server.models.messages.DataExchange;
 import pl.mojrzeszow.server.models.messages.GameMessage;
 import pl.mojrzeszow.server.service.LobbyService;
 
-
 @Controller
 
 @MessageMapping("/lobby")
@@ -61,22 +60,22 @@ public class lobbyController {
 
 	@MessageMapping("/statusUpdate")
 	public GameMessage<Gamer> gamerStatusUpdate(@Payload Gamer gamer) {
-		return lobbyService.gamerStatusUpdate(gamer,"t");
+		return lobbyService.gamerStatusUpdate(gamer, "t");
 	}
 
 	@MessageMapping("/startGame")
 	public void startGame(@Payload Game game) {
 		lobbyService.startGame(game);
 	}
-	
+
 	@MessageMapping("/kickGamer")
 	public void kickGamer(@Payload DataExchange gamerData) {
-		 lobbyService.kickGamer(gamerData);
+		lobbyService.kickGamer(gamerData);
 	}
-	
+
 	@MessageMapping("/iAmAlive")
 	public void iAmAlive(@Payload DataExchange gamerData) {
-		 lobbyService.iAmAlive(gamerData);
+		lobbyService.iAmAlive(gamerData);
 	}
 
 }

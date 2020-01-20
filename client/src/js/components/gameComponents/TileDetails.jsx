@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { NavLink } from 'react-router-dom';
-import { wsConnect, wsOpenPrivateCanals, wsSendMessage } from "../../actions/index";
 import { translateTileName, getOutcomes, getNeedToUpgrade, getWayOfUpgrade, getTileOwnerName } from "../../gameEngine/gameMechanics";
 import { gameShowTileDetails, gameUpdateTile, gameRotateTile, gameRestoreTileRotate } from "../../actions/gameActions";
 
@@ -19,8 +17,6 @@ const mapStateToProps = state => {
         actualGame: state.actualGame
     };
 };
-
-
 
 class TileDetailsComponent extends Component {
     constructor() {
@@ -59,7 +55,6 @@ class TileDetailsComponent extends Component {
         this.rotateSave = this.rotateSave.bind(this);
     }
 
-
     componentDidMount() {
         this.setState(Object.assign({}, this.state, {
             canBeDestroyed: (this.props.actualGame.tileDetails.name != "OPTIONAL_1" && this.props.actualGame.tileDetails.name != "ROAD_STRAIGHT_1")
@@ -67,7 +62,7 @@ class TileDetailsComponent extends Component {
             canBeRotated: this.props.actualGame.tileDetails.owner && this.props.actualGame.meGamer.id == this.props.actualGame.tileDetails.owner.id
         }))
 
-        fetch( "api/game/tile/" + this.props.actualGame.tileDetails.id).then(response =>
+        fetch("api/game/tile/" + this.props.actualGame.tileDetails.id).then(response =>
             response.json()
         ).then(response => {
 
@@ -91,8 +86,6 @@ class TileDetailsComponent extends Component {
                 }))
             }
 
-
-
             this.setState(Object.assign({}, this.state, {
                 lvlNpoint: lvlNpoint,
                 outcomes: outcomes,
@@ -111,7 +104,6 @@ class TileDetailsComponent extends Component {
         fetch("api/game/tile/rebuild/" + this.props.actualGame.tileDetails.name.slice(0, -2) + "/1").then(response =>
             response.json()
         ).then(response => {
-
             this.setState(Object.assign({}, this.state, {
                 destroyMode: true,
                 destroyCost: response.deconstructionCosts
@@ -221,7 +213,7 @@ class TileDetailsComponent extends Component {
         this.setState({ rotateMode: true })
     }
     rotateSave() {
-        this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id, angle:this.props.actualGame.tileDetails.angle });
+        this.props.gameUpdateTile({ id: this.props.actualGame.tileDetails.id, angle: this.props.actualGame.tileDetails.angle });
         this.close();
     }
 
@@ -237,8 +229,6 @@ class TileDetailsComponent extends Component {
         this.close();
     }
 
-
-
     render() {
         const { actualGame } = this.props;
         const {
@@ -250,7 +240,6 @@ class TileDetailsComponent extends Component {
             destroyMode,
             canBeDestroyed,
             modernizeMode,
-            modernizeWays,
             modernizePage,
             modernizeName,
             modernizeCost,
@@ -264,7 +253,7 @@ class TileDetailsComponent extends Component {
                     <div>
                         <p>Nazwa: {translateTileName(actualGame.tileDetails.name)}</p>
                         <p>Właściciel: {getTileOwnerName(actualGame.tileDetails)}</p>
-                        
+
                         <br />
                         {!destroyMode ?
                             <div>

@@ -1,7 +1,7 @@
 package pl.mojrzeszow.server.models;
 
 import java.util.ArrayList;
-import java.util.List; 
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -63,7 +63,8 @@ public class Tile {
 
 	public Tile(Long id, @NotBlank Gamer gamer, @NotBlank Game game, @NotBlank TileType type, @NotBlank int model,
 			@NotBlank int angle, @NotBlank int lvl, @NotBlank Long posX, @NotBlank Long posY, Influence influence,
-			Influence usedInfluence, String influenceTakenFrom, String influenceGiveTo, Long additionalMoney,Long taxes) {
+			Influence usedInfluence, String influenceTakenFrom, String influenceGiveTo, Long additionalMoney,
+			Long taxes) {
 		super();
 		this.id = id;
 		this.gamer = gamer;
@@ -80,7 +81,7 @@ public class Tile {
 		this.influenceTakenFrom = influenceTakenFrom;
 		this.influenceGiveTo = influenceGiveTo;
 		this.additionalMoney = additionalMoney;
-		this.taxes=taxes;
+		this.taxes = taxes;
 	}
 
 	public List<TileEdgeType> getSortedEdgeTypes() {

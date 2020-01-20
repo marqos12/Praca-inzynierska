@@ -33,7 +33,6 @@ public class GameController {
 		return gameService.getAllgames(gamer);
 	}
 
-
 	@MessageMapping("/saveTile")
 	// @SendToUser("/queue/reply")
 	public void saveTile(@Payload DataExchange dataExchange) {
@@ -44,6 +43,5 @@ public class GameController {
 	public void updateTile(@Payload DataExchange dataExchange) {
 		gameService.updateTile(dataExchange);
 	}
-
 
 }
